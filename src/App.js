@@ -1,20 +1,17 @@
-import React, { Component, Fragment } from 'react'
-import CssBaseline from '@material-ui/core/CssBaseline'
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
-import red from '@material-ui/core/colors/red'
-
+import React, { Component } from 'react'
+import ChipInput from 'material-ui-chip-input'
 import {
   AppBar,
   Chip,
-  
+  CssBaseline,
   List,
   ListItem,
   ListItemText,
-  
   Toolbar,
   Typography,
 } from '@material-ui/core'
-import ChipInput from 'material-ui-chip-input'
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
+import red from '@material-ui/core/colors/red'
 
 const theme = createMuiTheme({
   palette: {
@@ -24,39 +21,42 @@ const theme = createMuiTheme({
 
 // eslint-disable-next-line
 let tags = [
+  'anxiety',
+  'bpm',
+  'calories',
   'coffee',
-  'water',
+  'distance',
   'exercise',
   'gas',
+  'knee push ups',
+  'mental energy',
+  'mood',
+  'pace',
+  'physical energy',
+  'pull ups',
+  'push ups',
+  'water',
+  'weight',
+  'wide arm push ups',
 ]
 
-let tag_example = {
-  name: 'mood',
-  value: 5,
-}
-
-let datum_example = {
-  id: 1,
-  time: Date.now(),
-  tags: [
-    tag_example,
-    { name: 'energy', value: 3 },
-  ],
-}
-
-let another_datum = {
-  id: 2,
-  time: Date.now(),
-  tags: [
-    { name: 'pull ups', value: 20 },
-    { name: 'bpm', value: 170 },
-  ],
-}
-
-// eslint-disable-next-line
 let datums = [
-  datum_example,
-  another_datum,
+  {
+    id: 1,
+    time: Date.now(),
+    tags: [
+      { name: 'mood', value: 5 },
+      { name: 'energy', value: 3 },
+    ],
+  },
+  {
+    id: 2,
+    time: Date.now(),
+    tags: [
+      { name: 'pull ups', value: 20 },
+      { name: 'bpm', value: 170 },
+    ],
+  },
   {
     id: 3,
     time: Date.now(),
@@ -72,49 +72,60 @@ let datums = [
       { name: 'weight', value: 150 },
     ],
   },
+  {
+    id: 5,
+    time: Date.now(),
+    tags: [
+      { name: 'water', value: null },
+    ]
+  }
 ]
 
 class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      datums: [
-        {
-          id: 1,
-          tags: ['yey', 'bravo'],
-        },
-        {
-          id: 2,
-          tags: ['eyyy?'],
-        },
-      ],
-      chips: ['one', 'two'],
+      datums: datums,
+      activeDatum: {
+        id: null,
+        time: null,
+        tags: [
+          { name: 'one', value: null },
+          { name: 'two', value: null },
+        ],
+      },
     }
-    this.handleChange = this.handleChange.bind(this)
-    this.handleSubmit = this.handleSubmit.bind(this)
-    this.addChip = this.addChip.bind(this)
+    this.addDatum = this.addDatum.bind(this)
+    this.addTag = this.addTag.bind(this)
   }
 
-  handleChange(e) {
-    this.setState({ text: e.target.value })
-  }
-
-  handleSubmit(e) {
+  addDatum(e) {
     e.preventDefault()
-    this.setState(state => (
-      {
-        datums: state.datums.concat({
-          tags: state.chips
-        }),
-        chips: [],
-      }
-    ))
+    const emptyDatum = {
+      id: null,
+      time: null,
+      tags: [],
+    }
+    this.setState(
+      state => ({
+        datums: state.datums.concat(state.activeDatum),
+        activeDatum: emptyDatum,
+      })
+    )
   }
 
-  addChip(chip) {
-    this.setState(state => ({
-      chips: state.chips.concat(chip)
-    }))
+  addTag(tag) {
+    this.setState(
+      state => ({
+        activeDatum: {
+          ...state.activeDatum,
+          tags: state.activeDatum.tags.concat({
+            name: tag,
+            value: null,
+          }),
+        }
+      })
+    )
   }
 
   render() {
@@ -136,7 +147,7 @@ class App extends Component {
               <ListItemText>
                 {datum.tags.map(tag => (
                   <Chip 
-                    label={tag} 
+                    label={tag.name} 
                     style={{
                       marginRight: 8,
                     }}
@@ -147,10 +158,10 @@ class App extends Component {
           ))}
         </List>
 
-        <form onSubmit={this.handleSubmit}>
+        <form onSubmit={this.addDatum}>
           <ChipInput
-            value={this.state.chips}
-            onAdd={this.addChip}
+            value={this.state.activeDatum.tags.map(tag => tag.name)}
+            onAdd={this.addTag}
             style={{ 
               position: 'absolute',
               bottom: 8,
