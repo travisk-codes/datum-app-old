@@ -1,17 +1,26 @@
 import React, { Component, Fragment } from 'react'
 import CssBaseline from '@material-ui/core/CssBaseline'
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
+import red from '@material-ui/core/colors/red'
+
 import {
   AppBar,
   Chip,
-
+  
   List,
   ListItem,
   ListItemText,
-
+  
   Toolbar,
   Typography,
 } from '@material-ui/core'
 import ChipInput from 'material-ui-chip-input'
+
+const theme = createMuiTheme({
+  palette: {
+    primary: red,
+  },
+})
 
 // eslint-disable-next-line
 let tags = [
@@ -110,7 +119,7 @@ class App extends Component {
 
   render() {
     return (
-      <Fragment>
+      <MuiThemeProvider theme={theme}>
         <CssBaseline />
 
         <AppBar position='static'>
@@ -150,7 +159,7 @@ class App extends Component {
             }}
           />
         </form>
-      </Fragment>
+      </MuiThemeProvider>
     );
   }
 }
