@@ -2,23 +2,18 @@ import React, { Component, Fragment } from 'react'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import {
   AppBar,
-  Button,
-  Checkbox,
   Chip,
 
   List,
   ListItem,
-  ListItemSecondaryAction,
   ListItemText,
 
-  MenuItem,
-  Select,
-  TextField,
   Toolbar,
   Typography,
 } from '@material-ui/core'
 import ChipInput from 'material-ui-chip-input'
 
+// eslint-disable-next-line
 let tags = [
   'coffee',
   'water',
@@ -49,6 +44,7 @@ let another_datum = {
   ],
 }
 
+// eslint-disable-next-line
 let datums = [
   datum_example,
   another_datum,
@@ -73,18 +69,21 @@ class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      items: [
+      datums: [
         {
-          text: 'ayy'
+          id: 1,
+          tags: ['yey', 'bravo'],
         },
         {
-          text: 'bravo'
+          id: 2,
+          tags: ['eyyy?'],
         },
       ],
-      text: '',
+      chips: ['one', 'two'],
     }
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
+    this.addChip = this.addChip.bind(this)
   }
 
   handleChange(e) {
@@ -93,19 +92,20 @@ class App extends Component {
 
   handleSubmit(e) {
     e.preventDefault()
-    if (!this.state.text.length) { return }
-
-    const newItem = {
-      text: this.state.text,
-      id: Date.now(),
-    }
-
     this.setState(state => (
       {
-        items: state.items.concat(newItem),
-        text: '',
+        datums: state.datums.concat({
+          tags: state.chips
+        }),
+        chips: [],
       }
     ))
+  }
+
+  addChip(chip) {
+    this.setState(state => ({
+      chips: state.chips.concat(chip)
+    }))
   }
 
   render() {
@@ -116,42 +116,45 @@ class App extends Component {
         <AppBar position='static'>
           <Toolbar>
             <Typography variant='title' color='inherit'>
-              Datum
+              <span role='img' aria-label='Graph'>📊</span> Datum
             </Typography>
           </Toolbar>
         </AppBar>
 
         <List>
-          {this.state.items.map(item => (
-            <ListItem disableRipple button divider key={item.id}>
-              <Checkbox />
-              <Button>ayy</Button>
+          {this.state.datums.map(datum => (
+            <ListItem divider>
               <ListItemText>
-                {item.text}
+                {datum.tags.map(tag => (
+                  <Chip 
+                    label={tag} 
+                    style={{
+                      marginRight: 8,
+                    }}
+                  />
+                ))}
               </ListItemText>
             </ListItem>
           ))}
         </List>
 
-        <form onSubmit={this.handleSubmit} autoComplete='off'>
-          <TextField
-            id='new-todo'
-            label='New Datum'
-            value={this.state.text}
-            onChange={this.handleChange}
-            margin='dense'
-            variant='outlined'
-            style={{ margin: 8 }}
+        <form onSubmit={this.handleSubmit}>
+          <ChipInput
+            value={this.state.chips}
+            onAdd={this.addChip}
+            style={{ 
+              position: 'absolute',
+              bottom: 8,
+              left: 8,
+              right: 8,
+            }}
           />
         </form>
-        
-        <ChipInput
-          defaultValue={['Yey', 'Bravo']}
-          style={{ margin: 8 }}
-        />
       </Fragment>
     );
   }
 }
+
+// TODO: on chip click/touch, pop up menu for tag values, with 'add value' option, then a modal?
 
 export default App;
