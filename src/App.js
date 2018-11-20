@@ -27,14 +27,18 @@ let tags = [
   'coffee',
   'distance',
   'exercise',
+  'finances',
   'gas',
   'knee push ups',
   'mental energy',
+  'milage',
   'mood',
   'pace',
   'physical energy',
   'pull ups',
   'push ups',
+  'sleep',
+  'todo',
   'water',
   'weight',
   'wide arm push ups',
@@ -78,7 +82,7 @@ let datums = [
     tags: [
       { name: 'water', value: null },
     ]
-  }
+  },
 ]
 
 class App extends Component {
@@ -106,29 +110,39 @@ class App extends Component {
       time: null,
       tags: [],
     }
-    this.setState(
-      state => ({
-        datums: state.datums.concat(state.activeDatum),
-        activeDatum: emptyDatum,
-      })
-    )
+    this.setState(state => ({
+      datums: state.datums.concat(state.activeDatum),
+      activeDatum: emptyDatum,
+    }))
   }
 
-  addTag(tag) {
-    this.setState(
-      state => ({
-        activeDatum: {
-          ...state.activeDatum,
-          tags: state.activeDatum.tags.concat({
-            name: tag,
-            value: null,
-          }),
-        }
-      })
-    )
+  addTag(newTag) {
+    this.setState(state => ({
+      activeDatum: {
+        ...state.activeDatum,
+        tags: state.activeDatum.tags.concat({
+          name: newTag,
+          value: null,
+        }),
+      }
+    }))
   }
 
   render() {
+    const datums = this.state.datums.map(datum => (
+      <ListItem divider>
+        <ListItemText>
+          {datum.tags.map(tag =>(
+            <Chip 
+              label={tag.name}
+              style={{
+                marginRight: 8,
+              }}
+            />
+          ))}
+        </ListItemText>
+      </ListItem>
+    ))
     return (
       <MuiThemeProvider theme={theme}>
         <CssBaseline />
@@ -141,22 +155,7 @@ class App extends Component {
           </Toolbar>
         </AppBar>
 
-        <List>
-          {this.state.datums.map(datum => (
-            <ListItem divider>
-              <ListItemText>
-                {datum.tags.map(tag => (
-                  <Chip 
-                    label={tag.name} 
-                    style={{
-                      marginRight: 8,
-                    }}
-                  />
-                ))}
-              </ListItemText>
-            </ListItem>
-          ))}
-        </List>
+        <List>{datums}</List>
 
         <form onSubmit={this.addDatum}>
           <ChipInput
