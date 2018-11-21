@@ -6,17 +6,25 @@ import {
   CssBaseline,
   List,
   ListItem,
+  ListItemSecondaryAction,
   ListItemText,
+  Menu,
+  MenuItem,
   Toolbar,
   Typography,
+  IconButton,
 } from '@material-ui/core'
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
+import MoreIcon from '@material-ui/icons/MoreVert'
 import red from '@material-ui/core/colors/red'
 
 const theme = createMuiTheme({
   palette: {
     primary: red,
   },
+  typography: {
+    useNextVariants: true,
+  }
 })
 
 // eslint-disable-next-line
@@ -85,6 +93,50 @@ let datums = [
   },
 ]
 
+class DatumMenu extends Component {
+  state = {
+    anchorEl: null,
+  }
+
+  handleClick = event => {
+    this.setState({ anchorEl: event.currentTarget })
+  }
+
+  handleClose = () => {
+    this.setState({ anchorEl: null })
+  }
+
+  handleDelete = () => {
+    this.props.onSelectDelete()
+    this.handleClose()
+  }
+
+  render() {
+    const { anchorEl } = this.state
+
+    return (
+      <div>
+        <IconButton
+          aria-owns={anchorEl ? 'simple-menu' : undefined}
+          aria-haspopup="true"
+          onClick={this.handleClick}
+        >
+          <MoreIcon />
+        </IconButton>
+        <Menu
+          id="simple-menu"
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={this.handleClose}
+        >
+          <MenuItem onClick={this.handleClose}>Edit</MenuItem>
+          <MenuItem onClick={this.handleDelete}>Delete</MenuItem>
+        </Menu>
+      </div>
+    );
+  }
+}
+
 class App extends Component {
   constructor(props) {
     super(props)
@@ -105,6 +157,7 @@ class App extends Component {
 
   addDatum(e) {
     e.preventDefault()
+    if (!this.state.activeDatum.tags.length) return
     const emptyDatum = {
       id: null,
       time: null,
@@ -114,6 +167,17 @@ class App extends Component {
       datums: state.datums.concat(state.activeDatum),
       activeDatum: emptyDatum,
     }))
+  }
+
+  deleteDatum(id) {
+    console.log(`datum ${id} deleted`)
+    this.setState(state => ({
+      datums: state.datums.filter(datum => datum.id !== id)
+    }))
+  }
+
+  editDatum(id) {
+    // TODO
   }
 
   addTag(newTag) {
@@ -130,17 +194,25 @@ class App extends Component {
 
   render() {
     const datums = this.state.datums.map(datum => (
-      <ListItem divider>
+      <ListItem divider key={datum.id}>
         <ListItemText>
-          {datum.tags.map(tag =>(
-            <Chip 
+          {datum.tags.map((tag, index) => (
+            <Chip
+              key={index}
               label={tag.name}
               style={{
-                marginRight: 8,
+                margin: 4,
+                marginLeft: 0,
               }}
             />
           ))}
         </ListItemText>
+        <ListItemSecondaryAction>
+          <DatumMenu
+            onSelectDelete={() => this.deleteDatum(datum.id)}
+            onEdit={this.editDatum}
+          />
+        </ListItemSecondaryAction>
       </ListItem>
     ))
     return (
@@ -149,23 +221,29 @@ class App extends Component {
 
         <AppBar position='static'>
           <Toolbar>
-            <Typography variant='title' color='inherit'>
+            <Typography variant='h6' color='inherit'>
               <span role='img' aria-label='Graph'>📊</span> Datum
             </Typography>
           </Toolbar>
         </AppBar>
 
-        <List>{datums}</List>
+        <List dense>{datums}</List>
 
         <form onSubmit={this.addDatum}>
           <ChipInput
             value={this.state.activeDatum.tags.map(tag => tag.name)}
             onAdd={this.addTag}
-            style={{ 
-              position: 'absolute',
+            disableUnderline
+            style={{
+              position: 'fixed',
               bottom: 8,
               left: 8,
               right: 8,
+              paddingTop: 6,
+              paddingLeft: 6,
+              borderRadius: 24,
+              backgroundColor: '#fafafa',
+              boxShadow: '0px 2px 20px rgba(0, 0, 0, 0.2)',
             }}
           />
         </form>
