@@ -153,19 +153,20 @@ class App extends Component {
     }
     this.addDatum = this.addDatum.bind(this)
     this.addTag = this.addTag.bind(this)
+    this.deleteTag = this.deleteTag.bind(this)
   }
 
   addDatum(e) {
     e.preventDefault()
     if (!this.state.activeDatum.tags.length) return
-    const emptyDatum = {
-      id: null,
+    const newDatum = {
+      id: Date.now(),
       time: null,
       tags: [],
     }
     this.setState(state => ({
       datums: state.datums.concat(state.activeDatum),
-      activeDatum: emptyDatum,
+      activeDatum: newDatum,
     }))
   }
 
@@ -188,6 +189,17 @@ class App extends Component {
           name: newTag,
           value: null,
         }),
+      }
+    }))
+  }
+
+  deleteTag(tag, index) {
+    this.setState(state => ({
+      activeDatum: {
+        ...state.activeDatum,
+        tags: state.activeDatum.tags.filter((tag, i) => (
+          i !== index
+        ))
       }
     }))
   }
@@ -233,7 +245,27 @@ class App extends Component {
           <ChipInput
             value={this.state.activeDatum.tags.map(tag => tag.name)}
             onAdd={this.addTag}
+            onDelete={this.deleteTag}
             disableUnderline
+            chipRenderer={(
+              {
+                isFocused,
+                handleClick,
+                value,
+              }, 
+              key
+            ) => (
+              <Chip
+                key={key}
+                label={value}
+                onClick={handleClick}
+                style={{
+                  backgroundColor: isFocused ? 'lightgrey' : null,
+                  marginTop: -24,
+                  marginRight: 4,
+                }}
+              />
+            )}
             style={{
               position: 'fixed',
               bottom: 8,
