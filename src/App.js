@@ -23,7 +23,7 @@ const theme = createMuiTheme({
     primary: red,
   },
   typography: {
-    useNextVariants: true,
+    useNextVariants: true, // removes a console error
   }
 })
 
@@ -173,11 +173,30 @@ class App extends Component {
       tags: [],
     }
     this.setState(state => ({
-      datums: state.activeDatum.id ? state.datums.map(datum => (
+      datums: state.stashedDatum ? state.datums.map(datum => (
         datum.id === state.activeDatum.id ? state.activeDatum : datum
       )) : state.datums.concat(state.activeDatum),
       activeDatum: state.stashedDatum ? state.stashedDatum : newDatum,
     }))
+    /*this.setState(state => {
+      
+      return {
+        datums,
+        activeDatum,
+      }
+    }) TODO: maybe make activeDatum a stack? */ 
+    
+    /* BUG:
+    1. new empty datum
+    2. put in some tags
+    3. edit a datum
+    4. unable to submit new datum
+    5. delete tags
+    6. enter new tag
+    7. submit datum with new tag
+    8. datum disappears, tags from step 2 reappear
+    ( stashed datum not updating? )
+    */
   }
 
   deleteDatum(id) {
@@ -246,7 +265,7 @@ class App extends Component {
       <MuiThemeProvider theme={theme}>
         <CssBaseline />
 
-        <AppBar position='static'>
+        <AppBar position='fixed'>
           <Toolbar>
             <Typography variant='h6' color='inherit'>
               <span role='img' aria-label='Graph'>📊</span> Datum
@@ -254,7 +273,15 @@ class App extends Component {
           </Toolbar>
         </AppBar>
 
-        <List dense>{datums}</List>
+        <List 
+          dense
+          style={{
+            paddingTop: 52, // for app bar (feels right)
+            paddingBottom: 42, // for datum bar
+          }}
+        >
+          {datums}
+        </List>
 
         <form onSubmit={this.addDatum}>
           <ChipInput
@@ -283,12 +310,12 @@ class App extends Component {
             )}
             style={{
               position: 'fixed',
-              bottom: 8,
-              left: 8,
-              right: 8,
+              bottom: 0,
+              left: 0,
+              right: 0,
               paddingTop: 6,
               paddingLeft: 6,
-              borderRadius: 24,
+
               backgroundColor: '#fafafa',
               boxShadow: '0px 2px 20px rgba(0, 0, 0, 0.2)',
             }}
