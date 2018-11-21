@@ -111,6 +111,11 @@ class DatumMenu extends Component {
     this.handleClose()
   }
 
+  handleEdit = () => {
+    this.props.onSelectEdit()
+    this.handleClose()
+  }
+
   render() {
     const { anchorEl } = this.state
 
@@ -129,7 +134,7 @@ class DatumMenu extends Component {
           open={Boolean(anchorEl)}
           onClose={this.handleClose}
         >
-          <MenuItem onClick={this.handleClose}>Edit</MenuItem>
+          <MenuItem onClick={this.handleEdit}>Edit</MenuItem>
           <MenuItem onClick={this.handleDelete}>Delete</MenuItem>
         </Menu>
       </div>
@@ -150,8 +155,11 @@ class App extends Component {
           { name: 'two', value: null },
         ],
       },
+      stashedDatum: null,
     }
     this.addDatum = this.addDatum.bind(this)
+    this.deleteDatum = this.deleteDatum.bind(this)
+    this.editDatum = this.editDatum.bind(this)
     this.addTag = this.addTag.bind(this)
     this.deleteTag = this.deleteTag.bind(this)
   }
@@ -165,8 +173,10 @@ class App extends Component {
       tags: [],
     }
     this.setState(state => ({
-      datums: state.datums.concat(state.activeDatum),
-      activeDatum: newDatum,
+      datums: state.activeDatum.id ? state.datums.map(datum => (
+        datum.id === state.activeDatum.id ? state.activeDatum : datum
+      )) : state.datums.concat(state.activeDatum),
+      activeDatum: state.stashedDatum ? state.stashedDatum : newDatum,
     }))
   }
 
@@ -178,7 +188,11 @@ class App extends Component {
   }
 
   editDatum(id) {
-    // TODO
+    console.log(`editing datum ${id}`)
+    this.setState(state => ({
+      stashedDatum: state.activeDatum,
+      activeDatum: state.datums.filter(datum => datum.id === id)[0] // escape array returned from filter
+    }))
   }
 
   addTag(newTag) {
@@ -222,11 +236,12 @@ class App extends Component {
         <ListItemSecondaryAction>
           <DatumMenu
             onSelectDelete={() => this.deleteDatum(datum.id)}
-            onEdit={this.editDatum}
+            onSelectEdit={() => this.editDatum(datum.id)}
           />
         </ListItemSecondaryAction>
       </ListItem>
     ))
+    console.log(this.state.activeDatum)
     return (
       <MuiThemeProvider theme={theme}>
         <CssBaseline />
