@@ -147,14 +147,7 @@ class App extends Component {
     super(props)
     this.state = {
       datums: datums,
-      activeDatum: {
-        id: null,
-        time: null,
-        tags: [
-          { name: 'one', value: null },
-          { name: 'two', value: null },
-        ],
-      },
+      activeDatum: this.getEmptyDatum(),
       stashedDatum: null,
     }
     this.addDatum = this.addDatum.bind(this)
@@ -164,39 +157,43 @@ class App extends Component {
     this.deleteTag = this.deleteTag.bind(this)
   }
 
+  getEmptyDatum = () => ({
+    id: null,
+    time: null,
+    tags: [],
+  })
+
   addDatum(e) {
     e.preventDefault()
     if (!this.state.activeDatum.tags.length) return
-    const newDatum = {
-      id: Date.now(),
-      time: null,
-      tags: [],
+
+    let activeDatumAfterAdd
+    let { datums, activeDatum, stashedDatum } = this.state
+
+    if (this.state.stashedDatum) {
+      activeDatumAfterAdd = stashedDatum
+      stashedDatum = null
+    } else {
+      activeDatumAfterAdd = this.getEmptyDatum()
     }
-    this.setState(state => ({
-      datums: state.stashedDatum ? state.datums.map(datum => (
-        datum.id === state.activeDatum.id ? state.activeDatum : datum
-      )) : state.datums.concat(state.activeDatum),
-      activeDatum: state.stashedDatum ? state.stashedDatum : newDatum,
-    }))
-    /*this.setState(state => {
-      
-      return {
-        datums,
-        activeDatum,
-      }
-    }) TODO: maybe make activeDatum a stack? */ 
-    
-    /* BUG:
-    1. new empty datum
-    2. put in some tags
-    3. edit a datum
-    4. unable to submit new datum
-    5. delete tags
-    6. enter new tag
-    7. submit datum with new tag
-    8. datum disappears, tags from step 2 reappear
-    ( stashed datum not updating? )
-    */
+
+    if (activeDatum.id) { // i.e. already exists
+      datums = datums.map(datum => (
+        datum.id === activeDatum.id ? activeDatum : datum
+      ))
+    } else {
+      activeDatum.id = datums.length + 1
+      activeDatum.time = Date.now()
+      datums = datums.concat(activeDatum)
+    }
+    this.setState({
+      datums,
+      activeDatum: activeDatumAfterAdd,
+      stashedDatum,
+    })
+    window.setTimeout(() => {
+      window.scrollTo({ top: document.body.scrollHeight, left: 0, behavior: 'smooth' })
+    }, 100) // give state some time to update before scroll, janky solution :/
   }
 
   deleteDatum(id) {
@@ -276,8 +273,8 @@ class App extends Component {
         <List 
           dense
           style={{
-            paddingTop: 52, // for app bar (feels right)
-            paddingBottom: 42, // for datum bar
+            marginTop: 64, // TODO: set dynamically to app bar height
+            marginBottom: 38, // for datum bar
           }}
         >
           {datums}
