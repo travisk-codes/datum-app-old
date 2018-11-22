@@ -214,12 +214,21 @@ class App extends Component {
   }
 
   addTag(newTag) {
+    let tagName, tagValue
+    const split = newTag.indexOf(':')
+    if (split >= 0) {
+      tagName = newTag.substring(0, split)
+      tagValue = newTag.substring(split + 1)
+    } else {
+      tagName = newTag
+      tagValue = null
+    }
     this.setState(state => ({
       activeDatum: {
         ...state.activeDatum,
         tags: state.activeDatum.tags.concat({
-          name: newTag,
-          value: null,
+          name: tagName,
+          value: tagValue,
         }),
       }
     }))
@@ -242,6 +251,7 @@ class App extends Component {
         <ListItemText>
           {datum.tags.map((tag, index) => (
             <Tag
+              key={index}
               name={tag.name}
               value={tag.value}
               style={{
@@ -313,6 +323,17 @@ class App extends Component {
                   marginRight: 4,
                 }}
               />
+              /*<Tag
+                key={key}
+                name={tag.name}
+                value={tag.value ? tag.value : null}
+                onClick={handleClick}
+                style={{
+                  backgroundColor: isFocused ? 'lightgrey' : null,
+                  marginTop: -24,
+                  marginRight: 4,
+                }}
+              />*/
             )}
             style={{
               position: 'fixed',

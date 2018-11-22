@@ -27,7 +27,7 @@ const Tag = (props) => {
         style={{
           borderTopRightRadius: props.value ? 0 : 16,
           borderBottomRightRadius: props.value ? 0: 16,
-          paddingRight: props.value ? 12 : 6,
+          paddingRight: props.value ? 0 : 6,
         }}
       />
       { props.value ? <Chip
