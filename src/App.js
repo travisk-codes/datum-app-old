@@ -241,14 +241,22 @@ class App extends Component {
       <ListItem divider key={datum.id}>
         <ListItemText>
           {datum.tags.map((tag, index) => (
-            <Chip
+            <Tag
+              name={tag.name}
+              value={tag.value}
+              style={{
+                margin: 4,
+                marginLeft: 0,
+              }}
+            />
+            /*<Chip
               key={index}
               label={tag.name}
               style={{
                 margin: 4,
                 marginLeft: 0,
               }}
-            />
+            />*/
           ))}
         </ListItemText>
         <ListItemSecondaryAction>
@@ -280,8 +288,6 @@ class App extends Component {
         >
           {datums}
         </List>
-
-        <Tag />
 
         <form onSubmit={this.addDatum}>
           <ChipInput

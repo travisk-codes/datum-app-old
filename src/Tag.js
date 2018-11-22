@@ -11,25 +11,29 @@ const styles = {
   }
 }
 
-function Tag(props) {
+const Tag = (props) => {
   const { classes } = props
   return (
-    <div>
+    <div style={{
+      ...props.style,
+      display: 'inline-block',
+    }}>
       <Chip
-        label='tag'
-        color='secondary'
+        label={props.name}
+        color='primary'
         classes={{
          label: classes.tag,
         }}
         style={{
-          borderTopRightRadius: 0,
-          borderBottomRightRadius: 0,
+          borderTopRightRadius: props.value ? 0 : 16,
+          borderBottomRightRadius: props.value ? 0: 16,
+          paddingRight: props.value ? 12 : 6,
         }}
       />
-      <Chip
-        label='value'
+      { props.value ? <Chip
+        label={props.value}
         variant='outlined'
-        color='secondary'
+        color='primary'
         classes={{
           label: classes.value,
         }}
@@ -37,7 +41,7 @@ function Tag(props) {
           borderTopLeftRadius: 0,
           borderBottomLeftRadius: 0,
         }}
-      />
+      /> : null }
     </div>
   )
 }
