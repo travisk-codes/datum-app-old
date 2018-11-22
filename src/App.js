@@ -18,6 +18,8 @@ import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
 import MoreIcon from '@material-ui/icons/MoreVert'
 import red from '@material-ui/core/colors/red'
 
+import Tag from './Tag'
+
 const theme = createMuiTheme({
   palette: {
     primary: red,
@@ -257,7 +259,6 @@ class App extends Component {
         </ListItemSecondaryAction>
       </ListItem>
     ))
-    console.log(this.state.activeDatum)
     return (
       <MuiThemeProvider theme={theme}>
         <CssBaseline />
@@ -279,6 +280,8 @@ class App extends Component {
         >
           {datums}
         </List>
+
+        <Tag />
 
         <form onSubmit={this.addDatum}>
           <ChipInput
@@ -325,4 +328,4 @@ class App extends Component {
 
 // TODO: on chip click/touch, pop up menu for tag values, with 'add value' option, then a modal?
 
-export default App;
+export default App
