@@ -11,7 +11,6 @@ import {
   Menu,
   MenuItem,
   Toolbar,
-  Typography,
   IconButton,
 } from '@material-ui/core'
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
@@ -19,6 +18,7 @@ import MoreIcon from '@material-ui/icons/MoreVert'
 import red from '@material-ui/core/colors/red'
 
 import Tag from './Tag'
+import logo from './datum-logo.svg'
 
 const theme = createMuiTheme({
   palette: {
@@ -283,9 +283,14 @@ class App extends Component {
 
         <AppBar position='fixed'>
           <Toolbar>
-            <Typography variant='h6' color='inherit'>
-              <span role='img' aria-label='Graph'>📊</span> Datum
-            </Typography>
+            <img 
+              src={logo} 
+              alt='logo' 
+              style={{
+                marginTop: 4,
+                height: 40,
+              }}
+            />
           </Toolbar>
         </AppBar>
 
