@@ -2,7 +2,6 @@ import React, { Component, Fragment } from 'react'
 import ChipInput from 'material-ui-chip-input'
 import {
   AppBar,
-  Chip,
   CssBaseline,
   List,
   ListItem,
@@ -257,9 +256,8 @@ class App extends Component {
       <ListItem divider key={datum.id}>
         <ListItemText>
           {datum.tags.map((tag, index) => (
-            <Fragment>
+            <Fragment key={index}>
               <Tag
-                key={index}
                 name={tag.name}
                 value={tag.value}
               />
@@ -304,7 +302,7 @@ class App extends Component {
 
         <form onSubmit={this.addDatum}>
           <ChipInput
-            value={this.state.activeDatum.tags.map(tag => tag.name)}
+            value={this.state.activeDatum.tags.map(tag => `${tag.name}:${tag.value}`)}
             onAdd={this.addTag}
             onDelete={this.deleteTag}
             disableUnderline
@@ -316,10 +314,8 @@ class App extends Component {
               }, 
               key
             ) => (
-              <Fragment>
+              <Fragment key={key}>
                 <Tag
-                  key={key}
-                  name={value}
                   onClick={handleClick}
                   nameValueString={value}
                   isActiveDatumTag

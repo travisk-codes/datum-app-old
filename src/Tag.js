@@ -11,26 +11,47 @@ const styles = {
   }
 }
 
+function splitNameValueString(string) {
+  let tagName, tagValue
+  const split = string.indexOf(':')
+  if (split >= 0) { // i.e. there's a colon
+    tagName = string.substring(0, split)
+    tagValue = string.substring(split + 1)
+  } else {
+    tagName = string
+    tagValue = null
+  }
+  return { tagName, tagValue }
+}
+
 const Tag = (props) => {
   const { classes } = props
-  
+  let tagName, tagValue
+  if (props.nameValueString) {
+    let results = splitNameValueString(props.nameValueString)
+    tagName = results.tagName
+    tagValue = results.tagValue
+  } else {
+    tagName = props.name
+    tagValue = props.value
+  }
   return (
     <Fragment>
       <Chip
-        label={props.name}
+        label={tagName}
         color='primary'
         classes={{
          label: classes.tag,
         }}
         style={{
-          borderTopRightRadius: props.value ? 0 : 16,
-          borderBottomRightRadius: props.value ? 0: 16,
-          paddingRight: props.value ? 0 : 6,
+          borderTopRightRadius: tagValue ? 0 : 16,
+          borderBottomRightRadius: tagValue ? 0: 16,
+          paddingRight: tagValue ? 0 : 6,
           marginTop: props.isActiveDatumTag ? -24 : 0,
         }}
       />
-      { props.value ? <Chip
-        label={props.value}
+      { tagValue ? <Chip
+        label={tagValue}
         variant='outlined'
         color='primary'
         classes={{
