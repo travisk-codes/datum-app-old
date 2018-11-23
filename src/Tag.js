@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Chip from '@material-ui/core/Chip';
 
@@ -13,11 +13,9 @@ const styles = {
 
 const Tag = (props) => {
   const { classes } = props
+  
   return (
-    <div style={{
-      ...props.style,
-      display: 'inline-block',
-    }}>
+    <Fragment>
       <Chip
         label={props.name}
         color='primary'
@@ -28,6 +26,7 @@ const Tag = (props) => {
           borderTopRightRadius: props.value ? 0 : 16,
           borderBottomRightRadius: props.value ? 0: 16,
           paddingRight: props.value ? 0 : 6,
+          marginTop: props.isActiveDatumTag ? -24 : 0,
         }}
       />
       { props.value ? <Chip
@@ -40,9 +39,10 @@ const Tag = (props) => {
         style={{
           borderTopLeftRadius: 0,
           borderBottomLeftRadius: 0,
+          marginTop: props.isActiveDatumTag ? -24 : 0,
         }}
       /> : null }
-    </div>
+    </Fragment>
   )
 }
 

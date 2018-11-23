@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import ChipInput from 'material-ui-chip-input'
 import {
   AppBar,
@@ -149,7 +149,14 @@ class App extends Component {
     super(props)
     this.state = {
       datums: datums,
-      activeDatum: this.getEmptyDatum(),
+      activeDatum: {
+        id: null,
+        time: null,
+        tags: [
+          { name: 'water', value: 8 },
+          { name: 'ayyy', value: 'bravo'},
+        ]
+      },
       stashedDatum: null,
     }
     this.addDatum = this.addDatum.bind(this)
@@ -250,23 +257,14 @@ class App extends Component {
       <ListItem divider key={datum.id}>
         <ListItemText>
           {datum.tags.map((tag, index) => (
-            <Tag
-              key={index}
-              name={tag.name}
-              value={tag.value}
-              style={{
-                margin: 4,
-                marginLeft: 0,
-              }}
-            />
-            /*<Chip
-              key={index}
-              label={tag.name}
-              style={{
-                margin: 4,
-                marginLeft: 0,
-              }}
-            />*/
+            <Fragment>
+              <Tag
+                key={index}
+                name={tag.name}
+                value={tag.value}
+              />
+              <div style={{display:'inline-block', width: 6}} />
+            </Fragment>
           ))}
         </ListItemText>
         <ListItemSecondaryAction>
@@ -318,27 +316,16 @@ class App extends Component {
               }, 
               key
             ) => (
-              <Chip
-                key={key}
-                label={value}
-                onClick={handleClick}
-                style={{
-                  backgroundColor: isFocused ? 'lightgrey' : null,
-                  marginTop: -24,
-                  marginRight: 4,
-                }}
-              />
-              /*<Tag
-                key={key}
-                name={tag.name}
-                value={tag.value ? tag.value : null}
-                onClick={handleClick}
-                style={{
-                  backgroundColor: isFocused ? 'lightgrey' : null,
-                  marginTop: -24,
-                  marginRight: 4,
-                }}
-              />*/
+              <Fragment>
+                <Tag
+                  key={key}
+                  name={value}
+                  onClick={handleClick}
+                  nameValueString={value}
+                  isActiveDatumTag
+                />
+                <div style={{display: 'inline-block', width: 6}} />
+              </Fragment>
             )}
             style={{
               position: 'fixed',
@@ -347,7 +334,6 @@ class App extends Component {
               right: 0,
               paddingTop: 6,
               paddingLeft: 6,
-
               backgroundColor: '#fafafa',
               boxShadow: '0px 2px 20px rgba(0, 0, 0, 0.2)',
             }}
