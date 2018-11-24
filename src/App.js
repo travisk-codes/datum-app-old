@@ -19,6 +19,7 @@ import red from '@material-ui/core/colors/red'
 import Tag from './Tag'
 import DatumBar from './DatumBar'
 import AutoSuggest from './AutoSuggest'
+import datums from './datums'
 import logo from './datum-logo.svg'
 
 const theme = createMuiTheme({
@@ -29,47 +30,6 @@ const theme = createMuiTheme({
     useNextVariants: true, // removes a console error
   }
 })
-
-let datums = [
-  {
-    id: 1,
-    time: Date.now(),
-    tags: [
-      { name: 'mood', value: 5 },
-      { name: 'energy', value: 3 },
-    ],
-  },
-  {
-    id: 2,
-    time: Date.now(),
-    tags: [
-      { name: 'pull ups', value: 20 },
-      { name: 'bpm', value: 170 },
-    ],
-  },
-  {
-    id: 3,
-    time: Date.now(),
-    tags: [
-      { name: 'mood', value: 4 },
-      { name: 'coffee', value: null },
-    ],
-  },
-  {
-    id: 4,
-    time: Date.now(),
-    tags: [
-      { name: 'weight', value: 150 },
-    ],
-  },
-  {
-    id: 5,
-    time: Date.now(),
-    tags: [
-      { name: 'water', value: null },
-    ]
-  },
-]
 
 class DatumMenu extends Component {
   state = {
@@ -100,14 +60,14 @@ class DatumMenu extends Component {
     return (
       <div>
         <IconButton
-          aria-owns={anchorEl ? 'simple-menu' : undefined}
+          aria-owns={anchorEl ? 'list-datum-menu' : undefined}
           aria-haspopup="true"
           onClick={this.handleClick}
         >
           <MoreIcon />
         </IconButton>
         <Menu
-          id="simple-menu"
+          id="list-datum-menu"
           anchorEl={anchorEl}
           open={Boolean(anchorEl)}
           onClose={this.handleClose}
@@ -124,7 +84,8 @@ class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      datums: datums,
+      datums,
+      stashedDatum: null,
       activeDatum: {
         id: null,
         time: null,
@@ -133,7 +94,6 @@ class App extends Component {
           { name: 'ayyy', value: 'bravo'},
         ]
       },
-      stashedDatum: null,
     }
     this.addDatum = this.addDatum.bind(this)
     this.deleteDatum = this.deleteDatum.bind(this)
@@ -150,18 +110,10 @@ class App extends Component {
 
   addDatum(e) {
     e.preventDefault()
-    if (!this.state.activeDatum.tags.length) return
-
-    let activeDatumAfterAdd
     let { datums, activeDatum, stashedDatum } = this.state
-
-    if (this.state.stashedDatum) {
-      activeDatumAfterAdd = stashedDatum
-      stashedDatum = null
-    } else {
-      activeDatumAfterAdd = this.getEmptyDatum()
-    }
-
+    if (!activeDatum.tags.length) return
+    
+    // append new or replace edited datum
     if (activeDatum.id) { // i.e. already exists
       datums = datums.map(datum => (
         datum.id === activeDatum.id ? activeDatum : datum
@@ -171,11 +123,22 @@ class App extends Component {
       activeDatum.time = Date.now()
       datums = datums.concat(activeDatum)
     }
+      
+    // load empty or stashed datum
+    if (stashedDatum) {
+      activeDatum = stashedDatum
+      stashedDatum = null
+    } else {
+      activeDatum = this.getEmptyDatum()
+    }
+
     this.setState({
       datums,
-      activeDatum: activeDatumAfterAdd,
       stashedDatum,
+      activeDatum,
     })
+
+    // scroll to new datum at end of list
     window.setTimeout(() => {
       window.scrollTo({ top: document.body.scrollHeight, left: 0, behavior: 'smooth' })
     }, 100) // give state some time to update before scroll, janky solution :/
@@ -196,14 +159,14 @@ class App extends Component {
     }))
   }
 
-  addTag(newTag) {
+  addTag(tag) {
     let tagName, tagValue
-    const split = newTag.indexOf(':')
-    if (split >= 0) {
-      tagName = newTag.substring(0, split)
-      tagValue = newTag.substring(split + 1)
+    const split = tag.indexOf(':')
+    if (split > 0) {
+      tagName = tag.substring(0, split)
+      tagValue = tag.substring(split + 1)
     } else {
-      tagName = newTag
+      tagName = tag
       tagValue = null
     }
     this.setState(state => ({
@@ -229,6 +192,7 @@ class App extends Component {
   }
 
   render() {
+    const TagSpacer = () => (<div style={{ display: 'inline-block', width: 6 }} />)
     const datums = this.state.datums.map(datum => (
       <ListItem divider key={datum.id}>
         <ListItemText>
@@ -238,7 +202,7 @@ class App extends Component {
                 name={tag.name}
                 value={tag.value}
               />
-              <div style={{display:'inline-block', width: 6}} />
+              <TagSpacer />
             </Fragment>
           ))}
         </ListItemText>
@@ -267,12 +231,10 @@ class App extends Component {
           </Toolbar>
         </AppBar>
 
-        <List 
-          style={{
-            marginTop: 64, // TODO: set dynamically to app bar height
-            marginBottom: 38, // for datum bar
-          }}
-        >
+        <List style={{
+          marginTop: 64, // TODO: set dynamically to app bar height
+          marginBottom: 38, // for datum bar
+        }}>
           {datums}
         </List>
 
@@ -310,7 +272,7 @@ class App extends Component {
                   nameValueString={value}
                   isActiveDatumTag
                 />
-                <div style={{display: 'inline-block', width: 6}} />
+                <TagSpacer />
               </Fragment>
             )}
             style={{
