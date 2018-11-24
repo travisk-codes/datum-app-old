@@ -30,7 +30,7 @@ const Tag = (props) => {
   if (props.nameValueString) {
     let results = splitNameValueString(props.nameValueString)
     tagName = results.tagName
-    tagValue = results.tagValue
+    tagValue = results.tagValue === 'null' ? null : results.tagValue
   } else {
     tagName = props.name
     tagValue = props.value

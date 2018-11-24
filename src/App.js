@@ -17,6 +17,8 @@ import MoreIcon from '@material-ui/icons/MoreVert'
 import red from '@material-ui/core/colors/red'
 
 import Tag from './Tag'
+import DatumBar from './DatumBar'
+import AutoSuggest from './AutoSuggest'
 import logo from './datum-logo.svg'
 
 const theme = createMuiTheme({
@@ -27,31 +29,6 @@ const theme = createMuiTheme({
     useNextVariants: true, // removes a console error
   }
 })
-
-// eslint-disable-next-line
-let tags = [
-  'anxiety',
-  'bpm',
-  'calories',
-  'coffee',
-  'distance',
-  'exercise',
-  'finances',
-  'gas',
-  'knee push ups',
-  'mental energy',
-  'milage',
-  'mood',
-  'pace',
-  'physical energy',
-  'pull ups',
-  'push ups',
-  'sleep',
-  'todo',
-  'water',
-  'weight',
-  'wide arm push ups',
-]
 
 let datums = [
   {
@@ -291,7 +268,6 @@ class App extends Component {
         </AppBar>
 
         <List 
-          dense
           style={{
             marginTop: 64, // TODO: set dynamically to app bar height
             marginBottom: 38, // for datum bar
@@ -299,6 +275,20 @@ class App extends Component {
         >
           {datums}
         </List>
+
+        <DatumBar 
+          value={this.state.activeDatum.tags.map(tag => `${tag.name}:${tag.value}`)}
+          onAddTag={this.addTag}
+          onDeleteTag={this.deleteTag}
+          style={{
+            paddingTop: 10,
+            paddingBottom: 4,
+            paddingLeft: 6,
+            boxShadow: '0px 2px 20px rgba(0, 0, 0, 0.2',
+          }}
+        />
+
+        <AutoSuggest />
 
         <form onSubmit={this.addDatum}>
           <ChipInput
@@ -328,7 +318,8 @@ class App extends Component {
               bottom: 0,
               left: 0,
               right: 0,
-              paddingTop: 6,
+              paddingTop: 10,
+              paddingBottom: 4,
               paddingLeft: 6,
               backgroundColor: '#fafafa',
               boxShadow: '0px 2px 20px rgba(0, 0, 0, 0.2)',
