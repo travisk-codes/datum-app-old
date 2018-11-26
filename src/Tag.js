@@ -41,14 +41,16 @@ const Tag = (props) => {
         label={tagName}
         color={ props.color || 'primary' }
         classes={{
-         label: classes.tag,
+          label: classes.tag,
         }}
+        clickable
         onClick={props.onClick}
         style={{
           borderTopRightRadius: tagValue ? 0 : 16,
           borderBottomRightRadius: tagValue ? 0: 16,
           paddingRight: tagValue ? 0 : 6,
           marginTop: props.isActiveDatumTag ? -24 : 0,
+          ...props.style,
         }}
       />
       { tagValue ? <Chip
@@ -62,6 +64,7 @@ const Tag = (props) => {
           borderTopLeftRadius: 0,
           borderBottomLeftRadius: 0,
           marginTop: props.isActiveDatumTag ? -24 : 0,
+          ...props.style,
         }}
       /> : null }
     </Fragment>

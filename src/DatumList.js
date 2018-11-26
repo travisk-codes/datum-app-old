@@ -11,7 +11,6 @@ import {
 import MoreIcon from '@material-ui/icons/MoreVert'
 
 import Tag from './Tag'
-import initDatums from './datums'
 
 class DatumMenu extends Component {
 	state = {
@@ -63,10 +62,7 @@ class DatumMenu extends Component {
 }
 
 class DatumList extends Component {
-	constructor(props) {
-		super(props)
-	}
-
+	
 	shouldComponentUpdate(nextProps, nextState) {
 		if (this.props.datums !== nextProps.datums) return true
 		return false

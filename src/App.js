@@ -1,25 +1,14 @@
-import React, { Component, Fragment } from 'react'
-import ChipInput from 'material-ui-chip-input'
+import React, { Component } from 'react'
 import {
   AppBar,
   CssBaseline,
-  List,
-  ListItem,
-  ListItemSecondaryAction,
-  ListItemText,
-  Menu,
-  MenuItem,
   Toolbar,
-  IconButton,
 } from '@material-ui/core'
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
-import MoreIcon from '@material-ui/icons/MoreVert'
 import red from '@material-ui/core/colors/red'
 
-import Tag from './Tag'
 import DatumBar from './DatumBar'
 import DatumList from './DatumList'
-import AutoSuggest from './AutoSuggest'
 import datums from './datums'
 import logo from './datum-logo.svg'
 
@@ -31,6 +20,21 @@ const theme = createMuiTheme({
     useNextVariants: true, // removes a console error
   }
 })
+
+const TopBar = () => (
+  <AppBar position='fixed'>
+    <Toolbar>
+      <img
+        src={logo}
+        alt='logo'
+        style={{
+          marginTop: 4,
+          height: 40,
+        }}
+      />
+    </Toolbar>
+  </AppBar>
+)
 
 class App extends Component {
   constructor(props) {
@@ -157,22 +161,8 @@ class App extends Component {
     return (
       <MuiThemeProvider theme={theme}>
         <CssBaseline />
-
-        <AppBar position='fixed'>
-          <Toolbar>
-            <img 
-              src={logo} 
-              alt='logo' 
-              style={{
-                marginTop: 4,
-                height: 40,
-              }}
-            />
-          </Toolbar>
-        </AppBar>
-
+        <TopBar />
         <DatumList datums={this.state.datums} />
-
         <form onSubmit={this.addDatum}>
           <DatumBar
             value={this.state.activeDatum.tags.map(tag => `${tag.name}:${tag.value}`)}
@@ -181,17 +171,6 @@ class App extends Component {
             InputProps={{
               onChange: this.updateDatumBarInput,
               value: this.state.datumBarInputValue,
-            }}
-            style={{
-              backgroundColor: 'whitesmoke',
-              position: 'fixed',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              paddingTop: 10,
-              paddingBottom: 4,
-              paddingLeft: 6,
-              boxShadow: '0px 2px 20px rgba(0, 0, 0, 0.2',
             }}
           />
         </form>
