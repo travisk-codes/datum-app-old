@@ -18,6 +18,7 @@ import red from '@material-ui/core/colors/red'
 
 import Tag from './Tag'
 import DatumBar from './DatumBar'
+import DatumList from './DatumList'
 import AutoSuggest from './AutoSuggest'
 import datums from './datums'
 import logo from './datum-logo.svg'
@@ -30,55 +31,6 @@ const theme = createMuiTheme({
     useNextVariants: true, // removes a console error
   }
 })
-
-class DatumMenu extends Component {
-  state = {
-    anchorEl: null,
-  }
-
-  handleClick = event => {
-    this.setState({ anchorEl: event.currentTarget })
-  }
-
-  handleClose = () => {
-    this.setState({ anchorEl: null })
-  }
-
-  handleDelete = () => {
-    this.props.onSelectDelete()
-    this.handleClose()
-  }
-
-  handleEdit = () => {
-    this.props.onSelectEdit()
-    this.handleClose()
-  }
-
-  render() {
-    const { anchorEl } = this.state
-
-    return (
-      <div>
-        <IconButton
-          aria-owns={anchorEl ? 'list-datum-menu' : undefined}
-          aria-haspopup="true"
-          onClick={this.handleClick}
-        >
-          <MoreIcon />
-        </IconButton>
-        <Menu
-          id="list-datum-menu"
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={this.handleClose}
-        >
-          <MenuItem onClick={this.handleEdit}>Edit</MenuItem>
-          <MenuItem onClick={this.handleDelete}>Delete</MenuItem>
-        </Menu>
-      </div>
-    );
-  }
-}
 
 class App extends Component {
   constructor(props) {
@@ -202,28 +154,6 @@ class App extends Component {
   }
 
   render() {
-    const TagSpacer = () => (<div style={{ display: 'inline-block', width: 6 }} />)
-    const datums = this.state.datums.map(datum => (
-      <ListItem divider key={datum.id}>
-        <ListItemText>
-          {datum.tags.map((tag, index) => (
-            <Fragment key={index}>
-              <Tag
-                name={tag.name}
-                value={tag.value}
-              />
-              <TagSpacer />
-            </Fragment>
-          ))}
-        </ListItemText>
-        <ListItemSecondaryAction>
-          <DatumMenu
-            onSelectDelete={() => this.deleteDatum(datum.id)}
-            onSelectEdit={() => this.editDatum(datum.id)}
-          />
-        </ListItemSecondaryAction>
-      </ListItem>
-    ))
     return (
       <MuiThemeProvider theme={theme}>
         <CssBaseline />
@@ -241,18 +171,17 @@ class App extends Component {
           </Toolbar>
         </AppBar>
 
-        <List style={{
-          marginTop: 64, // TODO: set dynamically to app bar height
-          marginBottom: 43, // for datum bar
-        }}>
-          {datums}
-        </List>
+        <DatumList datums={this.state.datums} />
 
         <form onSubmit={this.addDatum}>
           <DatumBar
             value={this.state.activeDatum.tags.map(tag => `${tag.name}:${tag.value}`)}
             onAddTag={this.addTag}
             onDeleteTag={this.deleteTag}
+            InputProps={{
+              onChange: this.updateDatumBarInput,
+              value: this.state.datumBarInputValue,
+            }}
             style={{
               backgroundColor: 'whitesmoke',
               position: 'fixed',
