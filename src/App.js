@@ -94,12 +94,14 @@ class App extends Component {
           { name: 'ayyy', value: 'bravo'},
         ]
       },
+      datumBarInputValue: '',
     }
     this.addDatum = this.addDatum.bind(this)
     this.deleteDatum = this.deleteDatum.bind(this)
     this.editDatum = this.editDatum.bind(this)
     this.addTag = this.addTag.bind(this)
     this.deleteTag = this.deleteTag.bind(this)
+    this.updateDatumBarInput = this.updateDatumBarInput.bind(this)
   }
 
   getEmptyDatum = () => ({
@@ -136,6 +138,7 @@ class App extends Component {
       datums,
       stashedDatum,
       activeDatum,
+      datumBarInputValue: '',
     })
 
     // scroll to new datum at end of list
@@ -176,7 +179,8 @@ class App extends Component {
           name: tagName,
           value: tagValue,
         }),
-      }
+      },
+      datumBarInputValue: '',
     }))
   }
 
@@ -189,6 +193,12 @@ class App extends Component {
         ))
       }
     }))
+  }
+
+  updateDatumBarInput(e) {
+    this.setState({
+      datumBarInputValue: e.target.value,
+    })
   }
 
   render() {
@@ -233,49 +243,18 @@ class App extends Component {
 
         <List style={{
           marginTop: 64, // TODO: set dynamically to app bar height
-          marginBottom: 38, // for datum bar
+          marginBottom: 43, // for datum bar
         }}>
           {datums}
         </List>
 
-        <DatumBar 
-          value={this.state.activeDatum.tags.map(tag => `${tag.name}:${tag.value}`)}
-          onAddTag={this.addTag}
-          onDeleteTag={this.deleteTag}
-          style={{
-            paddingTop: 10,
-            paddingBottom: 4,
-            paddingLeft: 6,
-            boxShadow: '0px 2px 20px rgba(0, 0, 0, 0.2',
-          }}
-        />
-
-        <AutoSuggest />
-
         <form onSubmit={this.addDatum}>
-          <ChipInput
+          <DatumBar
             value={this.state.activeDatum.tags.map(tag => `${tag.name}:${tag.value}`)}
-            onAdd={this.addTag}
-            onDelete={this.deleteTag}
-            disableUnderline
-            chipRenderer={(
-              {
-                isFocused,
-                handleClick,
-                value,
-              }, 
-              key
-            ) => (
-              <Fragment key={key}>
-                <Tag
-                  onClick={handleClick}
-                  nameValueString={value}
-                  isActiveDatumTag
-                />
-                <TagSpacer />
-              </Fragment>
-            )}
+            onAddTag={this.addTag}
+            onDeleteTag={this.deleteTag}
             style={{
+              backgroundColor: 'whitesmoke',
               position: 'fixed',
               bottom: 0,
               left: 0,
@@ -283,8 +262,7 @@ class App extends Component {
               paddingTop: 10,
               paddingBottom: 4,
               paddingLeft: 6,
-              backgroundColor: '#fafafa',
-              boxShadow: '0px 2px 20px rgba(0, 0, 0, 0.2)',
+              boxShadow: '0px 2px 20px rgba(0, 0, 0, 0.2',
             }}
           />
         </form>

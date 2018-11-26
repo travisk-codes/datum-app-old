@@ -39,10 +39,11 @@ const Tag = (props) => {
     <Fragment>
       <Chip
         label={tagName}
-        color='primary'
+        color={ props.color || 'primary' }
         classes={{
          label: classes.tag,
         }}
+        onClick={props.onClick}
         style={{
           borderTopRightRadius: tagValue ? 0 : 16,
           borderBottomRightRadius: tagValue ? 0: 16,
@@ -53,7 +54,7 @@ const Tag = (props) => {
       { tagValue ? <Chip
         label={tagValue}
         variant='outlined'
-        color='primary'
+        color={ props.color || 'primary' }
         classes={{
           label: classes.value,
         }}

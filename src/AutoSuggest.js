@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
 import Autosuggest from 'react-autosuggest'
 import match from 'autosuggest-highlight/match'
@@ -9,11 +9,13 @@ import { withStyles } from '@material-ui/core/styles'
 import ChipInput from 'material-ui-chip-input'
 import tagNames from './tagNames'
 import DatumBar from './DatumBar'
+import Tag from './Tag'
 
 const suggestions = tagNames.map(tag => ({name: tag}))
 
 function renderInput(inputProps) {
   const { classes, autoFocus, value, onChange, onAdd, onDelete, chips, ref, ...other } = inputProps
+  const TagSpacer = () => (<div style={{ display: 'inline-block', width: 6 }} />)
 
   return (
     <ChipInput
@@ -23,7 +25,31 @@ function renderInput(inputProps) {
       onDelete={onDelete}
       value={chips}
       inputRef={ref}
+      disableUnderline
       {...other}
+      chipRenderer={(
+        {
+          isFocused,
+          handleClick,
+          value,
+        },
+        key
+      ) => (
+          <Fragment key={key}>
+            <Tag
+              onClick={handleClick}
+              nameValueString={value}
+              isActiveDatumTag
+            />
+            <TagSpacer />
+          </Fragment>
+        )}
+      style={{
+        paddingTop: 10,
+        paddingBottom: 4,
+        paddingLeft: 6,
+        boxShadow: '0px 2px 20px rgba(0, 0, 0, 0.2',
+      }}
     />
   )
 }
@@ -99,10 +125,12 @@ const styles = theme => ({
     marginTop: theme.spacing.unit,
     marginBottom: theme.spacing.unit * 3,
     left: 0,
-    right: 0
+    right: 0,
+    top: -38,
+    transform: 'translateY(-100%)',
   },
   suggestion: {
-    display: 'block'
+    display: 'inline-block'
   },
   suggestionsList: {
     margin: 0,
@@ -174,7 +202,7 @@ class ReactAutosuggestExample extends React.Component {
         focusInputOnSuggestionClick={false}
         inputProps={{
           classes,
-          chips: this.state.value,
+          chips: this.props.value,
           onChange: this.handletextFieldInputChange,
           value: this.state.textFieldInput,
           onAdd: (chip) => this.handleAddChip(chip),
