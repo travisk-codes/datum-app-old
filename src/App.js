@@ -28,8 +28,7 @@ const TopBar = () => (
         src={logo}
         alt='logo'
         style={{
-          marginTop: 4,
-          height: 40,
+          height: 34,
         }}
       />
     </Toolbar>
@@ -71,7 +70,7 @@ class App extends Component {
     let { datums, activeDatum, stashedDatum } = this.state
     if (!activeDatum.tags.length) return
     
-    // append new or replace edited datum
+    // append new or replace edited datum in list
     if (activeDatum.id) { // i.e. already exists
       datums = datums.map(datum => (
         datum.id === activeDatum.id ? activeDatum : datum
@@ -82,7 +81,7 @@ class App extends Component {
       datums = datums.concat(activeDatum)
     }
       
-    // load empty or stashed datum
+    // load empty or stashed datum in datum bar
     if (stashedDatum) {
       activeDatum = stashedDatum
       stashedDatum = null
@@ -162,7 +161,11 @@ class App extends Component {
       <MuiThemeProvider theme={theme}>
         <CssBaseline />
         <TopBar />
-        <DatumList datums={this.state.datums} />
+        <DatumList
+          datums={this.state.datums}
+          onSelectEdit={this.editDatum}
+          onSelectDelete={this.deleteDatum}
+        />
         <form onSubmit={this.addDatum}>
           <DatumBar
             value={this.state.activeDatum.tags.map(tag => `${tag.name}:${tag.value}`)}

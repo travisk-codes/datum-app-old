@@ -85,8 +85,8 @@ class DatumList extends Component {
 				</ListItemText>
 				<ListItemSecondaryAction>
 					<DatumMenu
-						onSelectDelete={() => this.deleteDatum(datum.id)}
-						onSelectEdit={() => this.editDatum(datum.id)}
+						onSelectDelete={() => this.props.onSelectDelete(datum.id)}
+						onSelectEdit={() => this.props.onSelectEdit(datum.id)}
 					/>
 				</ListItemSecondaryAction>
 			</ListItem>

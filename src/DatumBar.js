@@ -3,6 +3,18 @@ import ChipInput from 'material-ui-chip-input'
 import Tag from './Tag'
 import tagNames from './tagNames'
 
+const chipInputStyle = {
+  backgroundColor: 'whitesmoke',
+  position: 'fixed',
+  bottom: 0,
+  left: 0,
+  right: 0,
+  paddingTop: 10,
+  paddingBottom: 4,
+  paddingLeft: 6,
+  boxShadow: '0px 2px 20px rgba(0, 0, 0, 0.2',
+}
+
 const TagBar = props => (
   <div style={{
     backgroundColor: 'whitesmoke',
@@ -20,7 +32,7 @@ const TagBar = props => (
       tag.indexOf(props.filter) >= 0
     )).map((tag, i) => (
       <Tag
-        onClick={props.onSelectTag}
+        onClick={() => props.onSelectTag(tag)}
         key={i}
         name={tag}
         style={{
@@ -41,18 +53,26 @@ class DatumBar extends Component {
       tagValueMenuOpen: false,
       activeTag: null,
     }
+    this.selectTag = this.selectTag.bind(this)
   }
+
+  selectTag(tag) {
+    this.props.onAddTag(tag)
+    this.setState({
+      tagMenuOpen: false,
+    })
+  }
+
   render() {
     return (
       <Fragment>
         <TagBar 
           open={this.state.tagMenuOpen}
           filter={this.props.InputProps.value}
-          onSelectTag={this.props.onAddTag}
+          onSelectTag={this.selectTag}
         />
         <ChipInput
           onFocus={() => this.setState({tagMenuOpen: true})}
-          onBlur={() => this.setState({tagMenuOpen: false})}
           value={this.props.value}
           onAdd={this.props.onAddTag}
           onDelete={this.props.onDeleteTag}
@@ -72,22 +92,11 @@ class DatumBar extends Component {
                 onClick={handleClick}
                 nameValueString={value}
                 isActiveDatumTag
-                color={ isFocused ? 'secondary' : 'primary' }
               />
               <div style={{display: 'inline-block', width: 6}} />
             </Fragment>
           )}
-          style={{
-            backgroundColor: 'whitesmoke',
-            position: 'fixed',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            paddingTop: 10,
-            paddingBottom: 4,
-            paddingLeft: 6,
-            boxShadow: '0px 2px 20px rgba(0, 0, 0, 0.2',
-          }}
+          style={chipInputStyle}
         />
       </Fragment>
     )
