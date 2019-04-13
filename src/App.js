@@ -45,11 +45,11 @@ class App extends Component {
         id: null,
         time: null,
         tags: [
-          { name: 'water', value: 8 },
-          { name: 'ayyy', value: 'bravo'},
+          //{ name: 'water', value: 8 },
+          //{ name: 'ayyy', value: 'bravo'},
         ]
       },
-      datumBarInputValue: '',
+      datumBarInputValue: '',//'weight',
     }
     this.addDatum = this.addDatum.bind(this)
     this.deleteDatum = this.deleteDatum.bind(this)
