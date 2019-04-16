@@ -2,6 +2,8 @@ import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Chip from '@material-ui/core/Chip';
 
+import { colors, color_numbers } from './utils/getTagColor'
+
 const styles = {
   tag_no_value: {
     paddingRight: 6,
@@ -32,37 +34,51 @@ function splitNameValueString(string) {
   return { tag_name, tag_value }
 }
 
-const TagNoValue = (props) => (
-  <Chip
-    label={props.tag_name}
-    color={ props.color || 'primary' }
-    classes={props.classes} // TODO: root: props.style ?
-    clickable
-    onClick={props.onClick}
-    style={props.style}
-    variant={props.variant}
-  />
-)
+const rand_color = ()  => colors[Math.floor(Math.random()*colors.length)]
 
-const TagWithValue = (props) => (
-  <div style={{...props.style, display: 'inline-flex'}}>
+const TagNoValue = (props) => {
+  const color = rand_color()[500]
+  return (
     <Chip
       label={props.tag_name}
-      color={ props.color || 'primary' }
-      classes={props.name_classes}
+      classes={props.classes} // TODO: root: props.style ?
       clickable
       onClick={props.onClick}
-      //style={props.name_style}
+      variant={props.variant}
+      style={{
+        ...props.style, 
+        color: props.variant === 'outlined' ? 
+          color : 'rgba(0,0,0,.67)',
+        border: `1px solid ${color}`,
+        textShadow: props.variant === 'outlined' ? 
+          '0px 0px 20px' : 'none',
+        backgroundColor: props.variant === 'outlined' ?
+          'white' : color,
+      }}
     />
-    <Chip
-      label={props.tag_value}
-      variant='outlined'
-      color={ props.color || 'primary' }
-      classes={props.value_classes}
-      //style={props.value_style}
-    />
-  </div>
-)
+  )
+}
+
+const TagWithValue = (props) => {
+  const color = rand_color()[500]
+  return (
+    <div style={{...props.style, margin: 3, display: 'inline-flex'}}>
+      <Chip
+        label={props.tag_name}
+        classes={props.name_classes}
+        clickable
+        onClick={props.onClick}
+        style={{...props.style, color: 'rgba(0, 0, 0, .67)', backgroundColor: color}}
+        />
+      <Chip
+        label={props.tag_value}
+        variant='outlined'
+        classes={props.value_classes}
+        style={{...props.style, color, border: `1px solid ${color}`}}
+        />
+    </div>
+  )
+}
 
 const Tag = (props) => {
   let tag_name, tag_value
@@ -79,6 +95,7 @@ const Tag = (props) => {
     <TagWithValue
       tag_name={name}
       tag_value={value}
+      color={props.color}
       name_classes={{
         label: props.classes.name_label,
         root: props.classes.tag_with_value,
@@ -93,10 +110,12 @@ const Tag = (props) => {
     /> :
     <TagNoValue
       tag_name={name}
+      color={props.color}
       classes={{
         label: props.classes.tag_no_value,
         root: props.classes.tag_no_value,
       }}
+      variant={props.variant}
       onClick={props.onClick}
       style={props.style}
     />

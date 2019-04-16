@@ -4,22 +4,50 @@ import {
   CssBaseline,
   Toolbar,
 } from '@material-ui/core'
+//import Fab from '@material-ui/core/Fab'
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
 import red from '@material-ui/core/colors/red'
+import green from '@material-ui/core/colors/green'
+
 
 import DatumBar from './DatumBar'
 import DatumList from './DatumList'
 import datums from './datums'
 import logo from './datum-logo.svg'
+/*
+function get_color() {
+  let rand_color
+  fetch('http://www.colr.org/json/color/random')
+    .then(res => res.json())
+    .then(json => {
+      console.log(`#${json.colors[0].hex}`)
+      rand_color = '#' + json.colors[0].hex
+    })
+    .catch(e => {
+      rand_color = '#555'
+    })
+  return rand_color
+}
 
-const theme = createMuiTheme({
-  palette: {
-    primary: red,
-  },
-  typography: {
-    useNextVariants: true, // removes a console error
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+*/
+function get_palette() {
+  let my_palette = {
+    palette: {
+      primary: red,
+      secondary: green,
+    },
+    typography: {
+      useNextVariants: true, // removes a console error
+    }
   }
-})
+  return my_palette
+}
+
+
+const theme = createMuiTheme(get_palette())
 
 const TopBar = () => (
   <AppBar position='fixed'>
@@ -50,6 +78,7 @@ class App extends Component {
         ]
       },
       datumBarInputValue: '',//'weight',
+      datum_bar_tag_menu_open: false,
     }
     this.addDatum = this.addDatum.bind(this)
     this.deleteDatum = this.deleteDatum.bind(this)

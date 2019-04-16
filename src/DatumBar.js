@@ -4,6 +4,7 @@ import { withStyles } from '@material-ui/core/styles'
 
 import Tag from './Tag'
 import tagNames from './tagNames'
+import { colors, color_numbers } from './utils/getTagColor'
 
 const styles = {
   container: {
@@ -16,10 +17,19 @@ const styles = {
     right: 0,
     bottom: 0,
   },
+  background: {
+    position: 'fixed',
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'black',
+    opacity: 0.25,
+  },
   tag_bar: {
     backgroundColor: 'whitesmoke',
     boxShadow: '0px 2px 20px rgba(0, 0, 0, 0.2',
     padding: 8,
+    margin: 8,
+    borderRadius: 8,
     position: 'relative',
     left: 0,
     right: 0,
@@ -29,11 +39,8 @@ const styles = {
   },
   tag_bar_tag: {
     display: 'inline-flex',
-    flex: '0 1 auto',
+    flex: '1 1 auto',
     margin: 2,
-    backgroundColor: 'unset',
-    color: 'red',
-    border: '1px solid red',
   },
   datum_bar: {
     backgroundColor: 'whitesmoke',
@@ -42,14 +49,11 @@ const styles = {
     left: 0,
     right: 0,
     padding: 6,
-    //paddingTop: 10,
-    //paddingBottom: 4,
-    //paddingLeft: 6,
-    //paddingRight: 6,
     boxShadow: '0px 2px 20px rgba(0, 0, 0, 0.2',
   },
   datum_bar_input: {
     display: 'inline-flex',
+    flex: 'unset',
     paddingLeft: 12,
     paddingTop: 2,
     paddingRight: 12,
@@ -71,18 +75,23 @@ const styles = {
   }
 }
 
+const rand_color = ()  => colors[Math.floor(Math.random()*colors.length)]
+
 const TagBar = props => {
   const filtered_tags = tagNames.filter(tag => (
     tag.indexOf(props.filter) >= 0
-  )).map((tag, i) => (
-    <Tag
-      onClick={() => props.onSelectTag(tag)}
-      key={i}
-      name={tag}
-      variant='outlined'
-      style={styles.tag_bar_tag}
-    />
-  ))
+  )).map((tag, i) => {
+    const color = rand_color()[500]
+    return (
+      <Tag
+        onClick={() => props.onSelectTag(tag)}
+        key={i}
+        name={tag}
+        variant='outlined'
+        style={{...styles.tag_bar_tag}}
+      />
+    )
+  })
   return (
     <div style={{
       display: props.open && filtered_tags.length ? 'flex' : 'none',
@@ -105,7 +114,11 @@ class DatumBar extends Component {
       min_input_width: 32,
     }
     this.selectTag = this.selectTag.bind(this)
+    this.onAddDatum = this.onAddDatum.bind(this)
+    this.onAdd = this.onAdd.bind(this)
+    this.onInputChange = this.onInputChange.bind(this)
     this.render_chip = this.render_chip.bind(this)
+    this.close_tag_menu_on_submit = this.close_tag_menu_on_submit.bind(this)
   }
   componentDidMount() {
     this.setState({
@@ -116,7 +129,7 @@ class DatumBar extends Component {
     if (
       this.state.input_width !== Math.max(this.span.current.offsetWidth, this.state.min_input_width)
     ) {
-      this.setState({
+    this.setState({
         input_width: Math.max(this.span.current.offsetWidth, this.state.min_input_width)
       })
     }
@@ -128,13 +141,38 @@ class DatumBar extends Component {
       this.state !== nextState
     ) return true
 		return false
-	}*/
+  }*/
 
   selectTag(tag) {
     this.props.onAddTag(tag)
-    this.setState({
-      tagMenuOpen: false,
-    })
+  }
+
+  onAddDatum(e) {
+    console.log('add datum!')
+    if (e.target.value == '') this.setState({tagMenuOpen: false})
+  }
+
+  onAdd(input_value) {
+    console.log(input_value)
+    if (!input_value) console.log('nothing!')
+    this.props.onAddTag(input_value)
+  }
+
+  onInputChange(e) {
+    this.props.InputProps.onChange(e)
+  }
+
+  close_tag_menu_on_submit(e) {
+    console.log(e.key)
+    console.log(this.props.InputProps.value)
+    if (
+      e.key === 'Enter'
+      && this.props.InputProps.value === ''
+    ) this.setState({tagMenuOpen: false})
+    if (
+      e.key !== 'Enter' &&
+      this.props.InputProps.value === ''
+    ) this.setState({tagMenuOpen: true})
   }
 
   render_chip(
@@ -158,26 +196,36 @@ class DatumBar extends Component {
 
   render() {
     const { classes } = this.props
+
     return (
-      <div style={styles.container}>
+      <div 
+        style={styles.container}
+        onFocus={() => {this.setState({tagMenuOpen: true})}}
+      >
         <span style={styles.hidden_span} ref={this.span}>{this.props.InputProps.value}</span>
-        <TagBar 
+        <div 
+          style={{...styles.background, display: this.state.tagMenuOpen ? 'flex' : 'none'}} 
+          onClick={() => this.setState({tagMenuOpen: false})}
+        />
+        <TagBar
           open={this.state.tagMenuOpen}
           filter={this.props.InputProps.value}
           onSelectTag={this.selectTag}
         />
         <ChipInput
-          onFocus={() => this.setState({tagMenuOpen: true})}
           value={this.props.value}
-          onAdd={this.props.onAddTag}
+          onAdd={this.onAdd}
           onDelete={this.props.onDeleteTag}
           disableUnderline
           fullWidth
           chipRenderer={this.render_chip}
           style={styles.datum_bar}
           classes={{chipContainer: classes.test}}
+          onUpdateInput={() => console.log('update input!')}
           InputProps={{
             ...this.props.InputProps,
+            onKeyPress: this.close_tag_menu_on_submit,
+            onChange: this.onInputChange,
             //classes: {root: classes.datum_bar_input},
             style: {
               ...styles.datum_bar_input,

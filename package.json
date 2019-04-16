@@ -10,7 +10,7 @@
     "react": "^16.6.3",
     "react-autosuggest": "^9.4.2",
     "react-dom": "^16.6.3",
-    "react-scripts": "2.1.1",
+    "react-scripts": "^2.1.8",
     "react-select": "^2.1.1",
     "why-did-you-update": "^1.0.6"
   },

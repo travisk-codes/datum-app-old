@@ -78,7 +78,7 @@ class DatumList extends Component {
 							<Tag
 								name={tag.name}
 								value={tag.value}
-								style={{margin: '3px 0'}}
+								style={{margin: 0}}
 							/>
 							<TagSpacer />
 						</Fragment>
