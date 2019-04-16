@@ -116,16 +116,11 @@ class DatumBar extends Component {
     this.hidden_span = React.createRef()
 
     this.state = {
-      is_tag_menu_open: false,
       //is_tag_value_menu_open: false,
       //active_tag: null,
       input_width: undefined,
     }
 
-    this.select_tag_menu_tag = this.select_tag_menu_tag.bind(this)
-    this.onAddDatum = this.onAddDatum.bind(this)
-    this.onAdd = this.onAdd.bind(this)
-    this.onInputChange = this.onInputChange.bind(this)
     this.render_chip = this.render_chip.bind(this)
     this.close_tag_menu_on_submit = this.close_tag_menu_on_submit.bind(this)
   }
@@ -152,31 +147,10 @@ class DatumBar extends Component {
 		return false
   }*/
 
-  select_tag_menu_tag(tag) {
-    this.props.onAddTag(tag)
-  }
-
-  onAddDatum(e) {
-    console.log('add datum!')
-    if (e.target.value == '') this.setState({is_tag_menu_open: false})
-  }
-
-  onAdd(input_value) {
-    console.log(input_value)
-    if (!input_value) console.log('nothing!')
-    this.props.onAddTag(input_value)
-  }
-
-  onInputChange(e) {
-    this.props.InputProps.onChange(e)
-  }
-
   close_tag_menu_on_submit(e) {
-    console.log(e.key)
-    console.log(this.props.InputProps.value)
     if (
-      e.key === 'Enter'
-      && this.props.InputProps.value === ''
+      e.key === 'Enter' && 
+      this.props.InputProps.value === ''
     ) this.setState({is_tag_menu_open: false})
     if (
       e.key !== 'Enter' &&
@@ -185,11 +159,7 @@ class DatumBar extends Component {
   }
 
   render_chip(
-    {
-      isFocused,
-      handleClick,
-      value,
-    }, 
+    { isFocused, handleClick, value }, 
     key
   ) {
     return (
@@ -204,13 +174,13 @@ class DatumBar extends Component {
   }
 
   render() {
-    const is_background_dimmed = this.state.is_tag_menu_open ? 
+    const is_background_dimmed = this.props.is_tag_menu_open ? 
       'flex' : 'none'
 
     return (
       <div 
         style={styles.container}
-        onFocus={() => this.setState({is_tag_menu_open: true})}
+        onFocus={this.props.on_focus}
       >
 
         <span 
@@ -219,7 +189,7 @@ class DatumBar extends Component {
         >{this.props.InputProps.value}</span>
 
         <div 
-          onClick={() => this.setState({is_tag_menu_open: false})}
+          onClick={this.props.on_blur}
           style={{
             ...styles.dimmed_background, 
             display: is_background_dimmed,
@@ -227,14 +197,14 @@ class DatumBar extends Component {
         />
 
         <TagBar
-          is_open={this.state.is_tag_menu_open}
+          is_open={this.props.is_tag_menu_open}
           filter={this.props.InputProps.value}
           onClick={this.props.onAddTag}
         />
 
         <ChipInput
           value={this.props.value}
-          onAdd={this.onAdd}
+          onAdd={this.props.onAddTag}
           onDelete={this.props.onDeleteTag}
           chipRenderer={this.render_chip}
           InputProps={{

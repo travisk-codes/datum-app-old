@@ -4,10 +4,11 @@ import {
   CssBaseline,
   Toolbar,
 } from '@material-ui/core'
-//import Fab from '@material-ui/core/Fab'
+import Fab from '@material-ui/core/Fab'
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
 import red from '@material-ui/core/colors/red'
 import green from '@material-ui/core/colors/green'
+import AddIcon from '@material-ui/icons/AddRounded'
 
 
 import DatumBar from './DatumBar'
@@ -49,6 +50,14 @@ function get_palette() {
 
 const theme = createMuiTheme(get_palette())
 
+const styles = {
+  fab: {
+    position: 'fixed',
+    right: 5,
+    bottom: 5,
+  }
+}
+
 const TopBar = () => (
   <AppBar position='fixed'>
     <Toolbar>
@@ -78,7 +87,7 @@ class App extends Component {
         ]
       },
       datumBarInputValue: '',//'weight',
-      datum_bar_tag_menu_open: false,
+      is_datum_bar_tag_menu_open: false,
     }
     this.addDatum = this.addDatum.bind(this)
     this.deleteDatum = this.deleteDatum.bind(this)
@@ -123,6 +132,7 @@ class App extends Component {
       stashedDatum,
       activeDatum,
       datumBarInputValue: '',
+      is_datum_bar_tag_menu_open: false,
     })
 
     // scroll to new datum at end of list
@@ -200,12 +210,23 @@ class App extends Component {
             value={this.state.activeDatum.tags.map(tag => `${tag.name}:${tag.value}`)}
             onAddTag={this.addTag}
             onDeleteTag={this.deleteTag}
+            is_tag_menu_open={this.state.is_datum_bar_tag_menu_open}
+            on_focus={() => this.setState({is_datum_bar_tag_menu_open: true})}
+            on_blur={() => this.setState({is_datum_bar_tag_menu_open: false})}
             InputProps={{
               onChange: this.updateDatumBarInput,
               value: this.state.datumBarInputValue,
             }}
           />
         </form>
+        <Fab 
+          onClick={this.addDatum}
+          color='primary' 
+          size='small' 
+          style={styles.fab}
+        >
+          <AddIcon />
+        </Fab>
       </MuiThemeProvider>
     );
   }
