@@ -84,3 +84,7 @@ export const color_numbers = [
   'A400',
   'A700',
 ]
+
+export function rand_color() {
+  return colors[Math.floor( Math.random() * colors.length )]
+}
