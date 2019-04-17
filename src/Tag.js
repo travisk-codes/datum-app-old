@@ -28,7 +28,7 @@ const styles = {
 
 function splitNameValueString(string) {
   const split = string.indexOf(':')
-  if (split < 0) return { tag_name: string, tag_value: null }
+  if (split < 0) return { tag_name: string, tag_value: '' }
   const tag_name = string.substring(0, split)
   const tag_value = string.substring(split + 1)
   return { tag_name, tag_value }
