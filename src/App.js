@@ -221,7 +221,7 @@ class App extends Component {
       tagValue = tag.substring(split + 1)
     } else {
       tagName = tag
-      tagValue = null
+      tagValue = ''
     }
     this.setState(state => ({
       activeDatum: {
