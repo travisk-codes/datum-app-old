@@ -25,7 +25,7 @@ import logo from './datum-logo.svg'
 //QueryChangeDetector.enableDebugging()
 RxDB.plugin(require('pouchdb-adapter-idb'))
 RxDB.plugin(require('pouchdb-adapter-http'))
-const sync_url = 'http://getdatum.app/datums/' 
+const sync_url = secret.db_url
 const db_name = 'datums'
 
 function get_palette() {
