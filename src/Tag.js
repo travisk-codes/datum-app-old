@@ -2,7 +2,7 @@ import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Chip from '@material-ui/core/Chip';
 
-import { colors, color_numbers } from './utils/getTagColor'
+import { colors, /*color_numbers*/ } from './utils/getTagColor'
 
 const styles = {
   tag_no_value: {

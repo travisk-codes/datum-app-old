@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import ChipInput from 'material-ui-chip-input'
-import { withStyles } from '@material-ui/core/styles'
+//import { withStyles } from '@material-ui/core/styles'
 
 import Tag from './Tag'
 import tag_names from './tagNames'

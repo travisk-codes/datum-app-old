@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import * as RxDB from 'rxdb'
-import { QueryChangeDetector } from 'rxdb'
+import uuid from 'uuid/v4'
+//import { QueryChangeDetector } from 'rxdb'
 import { datum_schema } from './schema'
 import secret from './secret'
 
@@ -18,13 +19,15 @@ import AddIcon from '@material-ui/icons/AddRounded'
 
 import DatumBar from './DatumBar'
 import DatumList from './DatumList'
-import datums from './datums'
+//import datums from './datums'
 import logo from './datum-logo.svg'
 
 //QueryChangeDetector.enable()
 //QueryChangeDetector.enableDebugging()
 RxDB.plugin(require('pouchdb-adapter-idb'))
 RxDB.plugin(require('pouchdb-adapter-http'))
+RxDB.plugin(require('pouchdb-authentication'))
+
 const sync_url = secret.db_url
 const db_name = 'datums'
 
@@ -70,7 +73,7 @@ class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      datums,
+      datums: [],
       stashedDatum: null,
       activeDatum: {
         id: null,
@@ -160,11 +163,10 @@ class App extends Component {
         datum.id === activeDatum.id ? activeDatum : datum
       ))
     } else {
-      activeDatum.id = datums.length + 1
+      activeDatum.id = uuid()
       activeDatum.time = Date.now()
       datums = datums.concat(activeDatum)
     }
-    console.dir(activeDatum)
     await this.db.datums.upsert({
       id: activeDatum.id.toString(), 
       time: Date.now().toString(), 
@@ -194,15 +196,16 @@ class App extends Component {
   }
 
   async deleteDatum(id) {
-    console.log(`datum ${id} deleted`)
     this.setState(state => ({
       datums: state.datums.filter(datum => datum.id !== id)
     }))
     const datum_to_delete = await this.db.datums
-      .find()
+      .findOne()
       .where('id')
       .eq(id)
       .exec()
+    datum_to_delete.remove()
+    console.log(`datum ${id} deleted`)
   }
 
   editDatum(id) {
