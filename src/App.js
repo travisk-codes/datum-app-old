@@ -75,7 +75,7 @@ class App extends Component {
     this.state = {
       datums: [],
       stashedDatum: null,
-      activeDatum: {
+      active_datum: {
         id: null,
         time: null,
         tags: [],
@@ -98,9 +98,15 @@ class App extends Component {
     const sub = this.db.datums
       .find()
       .sort({time: 1})
-      .$.subscribe(datums => {
-        if (!datums) return
-        this.setState({ datums })
+      .$.subscribe(docs => {
+        if (!docs) return
+        this.setState({ datums: docs.map(d => (
+          {
+            id: d.id,
+            time: d.time,
+            tags: d.tags,
+          }
+        ))})
       })
     this.subs.push(sub)
   }
@@ -124,7 +130,7 @@ class App extends Component {
     const replication_state = datumCollection.sync({ remote: sync_url + db_name + '/' })
     this.subs.push(
       replication_state.change$.subscribe(change => {
-        console.log('Replication change')
+        console.log('Replication change:')
         console.dir(change)
       })
     )
@@ -139,7 +145,7 @@ class App extends Component {
     )
     this.subs.push(
       replication_state.error$.subscribe(error => {
-        console.log('Replication Error')
+        console.log('Replication Error:')
         console.dir(error)
       })
     )
@@ -154,37 +160,37 @@ class App extends Component {
 
   async addDatum(e) {
     e.preventDefault()
-    let { datums, activeDatum, stashedDatum } = this.state
-    if (!activeDatum.tags.length) return
-    
+    let { datums, active_datum, stashedDatum } = this.state
+    if (!active_datum.tags.length) return
+    console.log(active_datum)
     // append new or replace edited datum in list
-    if (activeDatum.id) { // i.e. already exists
-      datums = datums.map(datum => (
-        datum.id === activeDatum.id ? activeDatum : datum
-      ))
+    if (active_datum.id) { // if datum exists
+      datums = datums
+        .map(d => d.id === active_datum.id ? active_datum : d)
     } else {
-      activeDatum.id = uuid()
-      activeDatum.time = Date.now()
-      datums = datums.concat(activeDatum)
+      active_datum.id = uuid()
+      active_datum.time = Date.now()
+      datums = datums.concat(active_datum)
     }
-    await this.db.datums.upsert({
-      id: activeDatum.id.toString(), 
-      time: activeDatum.time, 
-      tags: activeDatum.tags,
-    })
+    console.log(active_datum.id)
+    await this.db.datums.atomicUpsert({
+      id: active_datum.id, 
+      time: active_datum.time, 
+      tags: active_datum.tags,
+    }).then(() => console.log(`upserted ${active_datum.id}`))
       
     // load empty or stashed datum in datum bar
     if (stashedDatum) {
-      activeDatum = stashedDatum
+      active_datum = stashedDatum
       stashedDatum = null
     } else {
-      activeDatum = this.getEmptyDatum()
+      active_datum = this.getEmptyDatum()
     }
 
     this.setState({
       datums,
       stashedDatum,
-      activeDatum,
+      active_datum,
       datumBarInputValue: '',
       is_datum_bar_tag_menu_open: false,
     })
@@ -211,8 +217,8 @@ class App extends Component {
   editDatum(id) {
     console.log(`editing datum ${id}`)
     this.setState(state => ({
-      stashedDatum: state.activeDatum,
-      activeDatum: state.datums.filter(datum => datum.id === id)[0] // escape array returned from filter
+      stashedDatum: state.active_datum,
+      active_datum: state.datums.filter(d => d.id === id)[0] // escape array returned from filter
     }))
   }
 
@@ -227,9 +233,9 @@ class App extends Component {
       tagValue = ''
     }
     this.setState(state => ({
-      activeDatum: {
-        ...state.activeDatum,
-        tags: state.activeDatum.tags.concat({
+      active_datum: {
+        ...state.active_datum,
+        tags: state.active_datum.tags.concat({
           name: tagName,
           value: tagValue,
         }),
@@ -240,9 +246,9 @@ class App extends Component {
 
   deleteTag(tag, index) {
     this.setState(state => ({
-      activeDatum: {
-        ...state.activeDatum,
-        tags: state.activeDatum.tags.filter((tag, i) => (
+      active_datum: {
+        ...state.active_datum,
+        tags: state.active_datum.tags.filter((tag, i) => (
           i !== index
         ))
       }
@@ -267,7 +273,7 @@ class App extends Component {
         />
         <form onSubmit={this.addDatum}>
           <DatumBar
-            value={this.state.activeDatum.tags.map(tag => `${tag.name}:${tag.value}`)}
+            value={this.state.active_datum.tags.map(tag => `${tag.name}:${tag.value}`)}
             onAddTag={this.addTag}
             onDeleteTag={this.deleteTag}
             is_tag_menu_open={this.state.is_datum_bar_tag_menu_open}
