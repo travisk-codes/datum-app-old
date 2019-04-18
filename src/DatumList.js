@@ -11,6 +11,7 @@ import {
 import MoreIcon from '@material-ui/icons/MoreVert'
 
 import Tag from './Tag'
+import timestamp from './utils/timestamp'
 
 class DatumMenu extends Component {
 	state = {
@@ -43,6 +44,7 @@ class DatumMenu extends Component {
 				<IconButton
 					aria-owns={anchorEl ? 'list-datum-menu' : undefined}
 					aria-haspopup="true"
+					size='small'
 					onClick={this.handleClick}
 				>
 					<MoreIcon />
@@ -60,6 +62,12 @@ class DatumMenu extends Component {
 		);
 	}
 }
+
+const Timestamp = props => (
+	<span style={{fontSize: 11, color: 'grey'}}>
+		{timestamp(props.time)}
+	</span>
+)
 
 class DatumList extends Component {
 	
@@ -83,6 +91,7 @@ class DatumList extends Component {
 							<TagSpacer />
 						</Fragment>
 					))}
+					<Timestamp time={datum.time} />
 				</ListItemText>
 				<ListItemSecondaryAction>
 					<DatumMenu
@@ -93,7 +102,7 @@ class DatumList extends Component {
 			</ListItem>
 		))
 		return (
-			<List style = {{
+			<List dense style = {{
 				marginTop: 64, // TODO: set dynamically to app bar height
 				marginBottom: 43, // for datum bar
 			}}>{datums}</List >
