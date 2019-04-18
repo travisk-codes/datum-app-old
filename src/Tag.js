@@ -48,12 +48,13 @@ const TagNoValue = (props) => {
       style={{
         ...props.style, 
         color: props.variant === 'outlined' ? 
-          color : 'rgba(0,0,0,.67)',
+          color : 'white',
         border: `1px solid ${color}`,
         textShadow: props.variant === 'outlined' ? 
           '0px 0px 20px' : 'none',
         backgroundColor: props.variant === 'outlined' ?
           'white' : color,
+        margin: 3,
       }}
     />
   )
@@ -62,19 +63,19 @@ const TagNoValue = (props) => {
 const TagWithValue = (props) => {
   const color = rand_color()[500]
   return (
-    <div style={{...props.style, margin: 3, display: 'inline-flex'}}>
+    <div style={{...props.style, margin: 3, maxWidth: '100%', display: 'inline-flex'}}>
       <Chip
         label={props.tag_name}
         classes={props.name_classes}
         clickable
         onClick={props.onClick}
-        style={{...props.style, color: 'rgba(0, 0, 0, .67)', backgroundColor: color}}
+        style={{...props.style, color: 'white', backgroundColor: color}}
         />
       <Chip
         label={props.tag_value}
         variant='outlined'
         classes={props.value_classes}
-        style={{...props.style, color, border: `1px solid ${color}`}}
+        style={{...props.style, color, overflow: 'scroll', border: `1px solid ${color}`}}
         />
     </div>
   )

@@ -103,7 +103,7 @@ class DatumList extends Component {
 		))
 		return (
 			<List dense style = {{
-				marginTop: 64, // TODO: set dynamically to app bar height
+				marginTop: 60, // TODO: set dynamically to app bar height
 				marginBottom: 43, // for datum bar
 			}}>{datums}</List >
 		)
