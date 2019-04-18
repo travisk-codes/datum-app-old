@@ -97,7 +97,7 @@ class App extends Component {
     this.db = await this.create_db()
     const sub = this.db.datums
       .find()
-      .sort({id: 1})
+      .sort({time: 1})
       .$.subscribe(datums => {
         if (!datums) return
         this.setState({ datums })
@@ -111,7 +111,7 @@ class App extends Component {
 
   async create_db() {
     const db = await RxDB.create({
-      name: 'datums',
+      name: db_name,
       adapter: 'idb',
       password: secret.db_password,
       queryChangeDetection: true,
@@ -169,7 +169,7 @@ class App extends Component {
     }
     await this.db.datums.upsert({
       id: activeDatum.id.toString(), 
-      time: Date.now().toString(), 
+      time: activeDatum.time, 
       tags: activeDatum.tags,
     })
       

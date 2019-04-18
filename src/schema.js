@@ -9,7 +9,8 @@ export const datum_schema = {
 			primary: true,
 		},
 		time: {
-			type: 'string',
+			type: 'integer',
+			index: true,
 		},
 		tags: {
 			type: 'array',
