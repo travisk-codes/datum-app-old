@@ -16,7 +16,7 @@ export default function timestamp(unix_time) {
 	if (interval_in_seconds > 86400) {
 			const day = then.getDate();
 			const month = then.toDateString().match(/ [a-zA-Z]*/)[0].replace(" ","")
-			const year = then.getFullYear() == now.getFullYear() ? "" : " " + then.getFullYear()
+			const year = then.getFullYear() === now.getFullYear() ? "" : " " + then.getFullYear()
 			return day + " " + month + year
 	}
 }

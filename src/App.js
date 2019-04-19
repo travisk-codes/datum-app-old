@@ -19,6 +19,7 @@ import AddIcon from '@material-ui/icons/AddRounded'
 
 import DatumBar from './DatumBar'
 import DatumList from './DatumList'
+import Splash from './Splash'
 //import datums from './datums'
 import logo from './datum-logo.svg'
 
@@ -82,6 +83,7 @@ class App extends Component {
       },
       datumBarInputValue: '',
       is_datum_bar_tag_menu_open: false,
+      current_view: 'datum_list',
     }
     this.subs = []
     this.addDatum = this.addDatum.bind(this)
@@ -91,6 +93,7 @@ class App extends Component {
     this.deleteTag = this.deleteTag.bind(this)
     this.updateDatumBarInput = this.updateDatumBarInput.bind(this)
     this.create_db = this.create_db.bind(this)
+    this.switch_view_to_app = this.switch_view_to_app.bind(this)
   }
 
   async componentDidMount() {
@@ -193,6 +196,7 @@ class App extends Component {
       active_datum,
       datumBarInputValue: '',
       is_datum_bar_tag_menu_open: false,
+      current_view: 'datum_list',
     })
 
     // scroll to new datum at end of list
@@ -261,16 +265,31 @@ class App extends Component {
     })
   }
 
+  switch_view_to_app(e) {
+    e.preventDefault()
+    this.setState({
+      current_view: 'datum_list'
+    })
+  }
+
   render() {
-    return (
-      <MuiThemeProvider theme={theme}>
-        <CssBaseline />
-        <TopBar />
+    const views = {
+      'datum_list': (
         <DatumList
           datums={this.state.datums}
           onSelectEdit={this.editDatum}
           onSelectDelete={this.deleteDatum}
         />
+      ),
+      'splash': (
+        <Splash switch_view_to_app={this.switch_view_to_app}/>
+      ),
+    }
+    return (
+      <MuiThemeProvider theme={theme}>
+        <CssBaseline />
+        <TopBar />
+        {views[this.state.current_view]}
         <form onSubmit={this.addDatum}>
           <DatumBar
             value={this.state.active_datum.tags.map(tag => `${tag.name}:${tag.value}`)}

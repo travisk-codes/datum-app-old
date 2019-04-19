@@ -63,7 +63,7 @@ const TagNoValue = (props) => {
 const TagWithValue = (props) => {
   const color = rand_color()[500]
   return (
-    <div style={{...props.style, margin: 3, maxWidth: '100%', display: 'inline-flex'}}>
+    <div style={{...props.style, margin: 3, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '100%', display: 'inline-flex'}}>
       <Chip
         label={props.tag_name}
         classes={props.name_classes}
@@ -75,7 +75,7 @@ const TagWithValue = (props) => {
         label={props.tag_value}
         variant='outlined'
         classes={props.value_classes}
-        style={{...props.style, color, overflow: 'scroll', border: `1px solid ${color}`}}
+        style={{...props.style, color, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflowX: 'scroll', border: `1px solid ${color}`}}
         />
     </div>
   )

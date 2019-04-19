@@ -13,6 +13,15 @@ import MoreIcon from '@material-ui/icons/MoreVert'
 import Tag from './Tag'
 import timestamp from './utils/timestamp'
 
+const styles = {
+	datum_w_menu_open: {
+		transform: 'scale(1.05)',
+		boxShadow: '0 0 13px -10px black',
+		backgroundColor: 'white',
+	},
+
+}
+
 class DatumMenu extends Component {
 	state = {
 		anchorEl: null,
@@ -20,10 +29,12 @@ class DatumMenu extends Component {
 
 	handleClick = event => {
 		this.setState({ anchorEl: event.currentTarget })
+		this.props.on_menu_open(event)
 	}
 
 	handleClose = () => {
 		this.setState({ anchorEl: null })
+		this.props.on_menu_close()
 	}
 
 	handleDelete = () => {
@@ -70,37 +81,51 @@ const Timestamp = props => (
 )
 
 class DatumList extends Component {
+	state = {
+		datum_id_menu_open: null,
+	}
 	
 	shouldComponentUpdate(nextProps, nextState) {
 		if (this.props.datums !== nextProps.datums) return true
+		else if (this.state !== nextState) return true
 		return false
 	}
 
 	render() {
 		const TagSpacer = () => (<div style={{ display: 'inline-block', width: 6 }} />)
-		const datums = this.props.datums.map(datum => (
-			<ListItem divider key={datum.id}>
-				<ListItemText>
-					{datum.tags.map((tag, index) => (
-						<Fragment key={index}>
-							<Tag
-								name={tag.name}
-								value={tag.value}
-								style={{margin: 0}}
-							/>
-							<TagSpacer />
-						</Fragment>
-					))}
-					<Timestamp time={datum.time} />
-				</ListItemText>
-				<ListItemSecondaryAction>
-					<DatumMenu
-						onSelectDelete={() => this.props.onSelectDelete(datum.id)}
-						onSelectEdit={() => this.props.onSelectEdit(datum.id)}
-					/>
-				</ListItemSecondaryAction>
-			</ListItem>
-		))
+		const datums = this.props.datums.map(datum => {
+			const datum_style = this.state.datum_id_menu_open === datum.id ?
+				styles.datum_w_menu_open : {}
+			return (
+				<ListItem 
+					divider 
+					key={datum.id}
+					style={datum_style}
+				>
+					<ListItemText>
+						{datum.tags.map((tag, index) => (
+							<Fragment key={index}>
+								<Tag
+									name={tag.name}
+									value={tag.value}
+									style={{margin: 0}}
+								/>
+								<TagSpacer />
+							</Fragment>
+						))}
+						<Timestamp time={datum.time} />
+					</ListItemText>
+					<ListItemSecondaryAction>
+						<DatumMenu
+							on_menu_open={() => this.setState({datum_id_menu_open: datum.id})}
+							on_menu_close={() => this.setState({datum_id_menu_open: null})}
+							onSelectDelete={() => this.props.onSelectDelete(datum.id)}
+							onSelectEdit={() => this.props.onSelectEdit(datum.id)}
+						/>
+					</ListItemSecondaryAction>
+				</ListItem>
+			)
+		})
 		return (
 			<List dense style = {{
 				marginTop: 60, // TODO: set dynamically to app bar height
