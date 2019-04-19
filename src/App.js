@@ -83,7 +83,7 @@ class App extends Component {
       },
       datumBarInputValue: '',
       is_datum_bar_tag_menu_open: false,
-      current_view: 'datum_list',
+      current_view: 'splash',
     }
     this.subs = []
     this.addDatum = this.addDatum.bind(this)

@@ -75,7 +75,7 @@ const TagWithValue = (props) => {
         label={props.tag_value}
         variant='outlined'
         classes={props.value_classes}
-        style={{...props.style, color, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflowX: 'scroll', border: `1px solid ${color}`}}
+        style={{...props.style, color, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflowX: 'scroll', border: `1px solid ${color}`}/*TODO: remove scrollbar!*/}
         />
     </div>
   )
