@@ -22,8 +22,26 @@ const styles = {
     paddingRight: 6,
   },
   value_label: {
-    paddingLeft: 6,
+		paddingLeft: 6,
+		overflowX: 'scroll',
   },
+  tag_w_val_chip: {
+    color: 'white', 
+  },
+  tag_w_val_div: {
+		margin: 3, 
+		whiteSpace: 'nowrap', 
+		//textOverflow: 'ellipsis', 
+		//overflow: 'hidden',
+		maxWidth: '100%', 
+		display: 'inline-flex',
+	},
+	tag_w_val_2nd_chip: {
+		//whiteSpace: 'nowrap', 
+		//textOverflow: 'ellipsis',
+		overflow: 'hidden',
+		border: `1px solid`
+	},
 }
 
 function splitNameValueString(string) {
@@ -63,19 +81,27 @@ const TagNoValue = (props) => {
 const TagWithValue = (props) => {
   const color = rand_color()[500]
   return (
-    <div style={{...props.style, margin: 3, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '100%', display: 'inline-flex'}}>
+    <div style={{...props.style, ...styles.tag_w_val_div}}>
       <Chip
         label={props.tag_name}
         classes={props.name_classes}
         clickable
         onClick={props.onClick}
-        style={{...props.style, color: 'white', backgroundColor: color}}
+        style={{
+					...props.style, 
+					...styles.tag_w_val_chip,
+					backgroundColor: color,
+				}}
         />
       <Chip
         label={props.tag_value}
         variant='outlined'
         classes={props.value_classes}
-        style={{...props.style, color, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflowX: 'scroll', border: `1px solid ${color}`}/*TODO: remove scrollbar!*/}
+				style={{
+					...props.style,
+					...styles.tag_w_val_2nd_chip,
+					borderColor: color,
+				}}
         />
     </div>
   )
