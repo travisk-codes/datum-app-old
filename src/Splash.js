@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import { withStyles } from '@material-ui/core/styles'
-import {
-	Button,
-	TextField,
-} from '@material-ui/core'
+import { Button, TextField } from '@material-ui/core'
 
+import my_db from './utils/db'
+import { datum_schema, tag_schema } from './schemas'
+import secret from './secret'
 import logo from './datum-logo.svg'
 
 const styles = {
@@ -17,7 +17,7 @@ const styles = {
 		left: '0',
 		right: '0',
 		bottom: '0',
-		backgroundColor: 'red',
+		backgroundColor: '#ff2626',
 		zIndex: 999999999,
 	},
 	container_item: {
@@ -32,8 +32,8 @@ const styles = {
 	},
 	tag_line: {
 		margin: 10,
+		marginBottom: 15,
 		color: 'white',
-		marginBottom: 40,
 		cursor: 'unset',
 	},
 	input: {
@@ -43,10 +43,10 @@ const styles = {
 	},
 	input_underline: {
 		'&:after': {
-			borderBottom: `2px solid rgba(255,255,255,.7)`
+			borderBottom: `2px solid rgba(255,255,255,.7)`,
 		},
 		'&:before': {
-			borderBottom: '1px solid white'
+			borderBottom: '1px solid white',
 		},
 		'&:hover:not($disabled):before': {
 			borderBottom: `2px solid white`,
@@ -105,34 +105,55 @@ const styles = {
 	button: {
 		color: 'white',
 		borderColor: 'rgba(255,255,255,.5)',
+		marginBottom: 40,
 	},
-	button_container: {
-		marginTop: 30,
-		display: 'inline',
+	inline_container: {
+		margin: '0 auto',
+		display: 'inline-flex',
+		justifyContent: 'center',
 	},
 }
 
-/*
-logo
-tagline
-learn more
-signup
-login
-password
-go to app
-*/
-
 class Splash extends Component {
-	state = {
-		sign_up_input: '',
-		login_input: '',
-		password_input: '',
+	constructor(props) {
+		super(props)
+		this.state = {
+			sign_up_input: '',
+			login_input: '',
+			password_input: '',
+			verify_input: '',
+		}
+		this.handle_submit = this.handle_submit.bind(this)
 	}
-	
+
 	shouldComponentUpdate(nextProps, nextState) {
 		if (this.props.datums !== nextProps.datums) return true
 		if (this.state !== nextState) return true
 		return false
+	}
+
+	render_submit_button() {
+		const s = this.state
+		const { classes } = this.props
+		if (
+			(s.login_input && s.password_input) ||
+			(s.sign_up_input && s.password_input && s.verify_input)
+		) {
+			return (
+				<Button
+					variant='outlined'
+					size='large'
+					type='submit'
+					onClick={() => console.log('submit')}
+					className={`${classes.button} ${
+						classes.container_item
+						}`}
+					style={{ marginTop: 10, width: 218 }}
+				>
+					Submit
+				</Button>
+			)
+		}
 	}
 
 	render_text_field(props) {
@@ -142,18 +163,46 @@ class Splash extends Component {
 				InputProps={{
 					disableUnderline: false,
 					classes: {
-						underline: classes.underline,
-					}
+						underline: classes.input_underline,
+					},
 				}}
-				InputLabelProps={{style: { color: 'white'}}}
-				inputProps={{style: { color: 'white'}}}
+				//eslint-disable-next-line
+				inputProps={{ style: { color: 'white' } }}
+				InputLabelProps={{ style: { color: 'white' } }}
+				style={{
+					...props.style,
+					display: props.show ? 'inline-flex' : 'none',
+				}}
 				label={props.label}
 				key={props.label}
 				value={props.value}
 				onChange={props.onChange}
-				className={`${classes.container_item} ${classes.input}`}
+				className={`${classes.container_item} ${
+					classes.input
+					}`}
 			/>
 		)
+	}
+
+	async handle_submit(e) {
+		e.preventDefault()
+		const s = this.state
+		let username, password, is_signing_up
+		if (s.login_input && s.password_input) {
+			is_signing_up = false
+		} else if (
+			s.sign_up_input && s.password_input &&
+			s.password_input === s.verify_input
+		) {
+			is_signing_up = true
+		} else {
+			console.error('login/signup error')
+		}
+		username = s.sign_up_input || s.login_input
+		password = s.password_input
+		console.log(is_signing_up)
+		this.props.on_login(username, password, is_signing_up)
+		this.props.switch_view_to('datum_list')
 	}
 
 	render() {
@@ -162,17 +211,41 @@ class Splash extends Component {
 			{
 				label: 'Sign Up',
 				value: this.state.sign_up_input,
-				onChange: (e) => this.setState({sign_up_input: e.target.value})
+				onChange: e =>
+					this.setState({ sign_up_input: e.target.value }),
+				show: Boolean(!this.state.login_input),
+				style: {
+					width: this.state.sign_up_input ? 'auto' : 104,
+				},
 			},
 			{
 				label: 'Login',
 				value: this.state.login_input,
-				onChange: (e) => this.setState({login_input: e.target.value})
+				onChange: e =>
+					this.setState({ login_input: e.target.value }),
+				show: Boolean(!this.state.sign_up_input),
+				style: {
+					width: this.state.login_input ? 'auto' : 104,
+				},
 			},
 			{
 				label: 'Password',
 				value: this.state.password_input,
-				onChange: (e) => this.setState({password_input: e.target.value})
+				onChange: e =>
+					this.setState({ password_input: e.target.value }),
+				show: Boolean(
+					this.state.sign_up_input || this.state.login_input
+				),
+			},
+			{
+				label: 'Verify Password',
+				value: this.state.verify_input,
+				onChange: e =>
+					this.setState({ verify_input: e.target.value }),
+				show: Boolean(
+					this.state.password_input &&
+					this.state.sign_up_input
+				),
 			},
 		]
 		return (
@@ -181,27 +254,52 @@ class Splash extends Component {
 					src={logo}
 					alt='logo'
 					className={classes.logo}
-      	/>
+				/>
 				<span className={classes.tag_line}>
-					{'a personal info management platform'}
+					{'a personal data management platform'}
 				</span>
 
-				{text_fields.map(tf => this.render_text_field(tf))}
-
-				<div className={classes.button_container}>
-					<Button component='span' variant='outlined' size='medium' className={`${classes.button} ${classes.container_item}`}>
+				<div className={classes.inline_container}>
+					<Button
+						component='span'
+						variant='outlined'
+						size='medium'
+						className={`${classes.button} ${
+							classes.container_item
+							}`}
+					>
 						Learn More
 					</Button>
-					<Button 
-						onClick={this.props.switch_view_to_app}
-						variant='outlined' size='medium'
+					<Button
+						onClick={() => this.props.switch_view_to('datum_list')}
+						variant='outlined'
+						size='medium'
 						component='span'
-						className={`${classes.button} ${classes.container_item}`}
+						className={`${classes.button} ${
+							classes.container_item
+							}`}
 					>
-						Go to App
+						Open App
 					</Button>
 				</div>
-			</div >
+
+				<form
+					style={{
+						display: 'flex',
+						flexDirection: 'column',
+					}}
+					onSubmit={this.handle_submit}
+				>
+					<div className={classes.inline_container}>
+						{this.render_text_field(text_fields[0])}
+						{this.render_text_field(text_fields[1])}
+					</div>
+
+					{this.render_text_field(text_fields[2])}
+					{this.render_text_field(text_fields[3])}
+					{this.render_submit_button()}
+				</form>
+			</div>
 		)
 	}
 }

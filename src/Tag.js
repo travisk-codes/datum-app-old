@@ -40,7 +40,7 @@ const styles = {
 		//whiteSpace: 'nowrap', 
 		//textOverflow: 'ellipsis',
 		overflow: 'hidden',
-		border: `1px solid`
+    border: `1px solid`
 	},
 }
 
@@ -100,7 +100,8 @@ const TagWithValue = (props) => {
 				style={{
 					...props.style,
 					...styles.tag_w_val_2nd_chip,
-					borderColor: color,
+          borderColor: color,
+          color,
 				}}
         />
     </div>
