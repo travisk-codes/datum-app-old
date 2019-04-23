@@ -2,7 +2,7 @@ import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Chip from '@material-ui/core/Chip';
 
-import { colors, /*color_numbers*/ } from './utils/getTagColor'
+import { colors, rand_color } from './utils/getTagColor'
 
 const styles = {
   tag_no_value: {
@@ -51,8 +51,6 @@ function splitNameValueString(string) {
   const tag_value = string.substring(split + 1)
   return { tag_name, tag_value }
 }
-
-const rand_color = ()  => colors[Math.floor(Math.random()*colors.length)]
 
 const TagNoValue = (props) => {
   const color = rand_color()[500]

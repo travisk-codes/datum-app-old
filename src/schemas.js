@@ -64,9 +64,18 @@ export const tag_schema = {
 			uniqueItems: false,
 			items: {
 				type: 'array',
-				final: false,
+				uniqueItems: false,
 				items: {
-					type: 'string',
+					type: 'object',
+					final: false,
+					properties: {
+						name: {
+							type: 'string',
+						},
+						value: {
+							type: 'string',
+						}
+					},
 				},
 			},
 		},

@@ -20,6 +20,7 @@ import DatumList from './DatumList'
 import Splash from './Splash'
 
 import { datum_schema, tag_schema } from './schemas'
+import { rand_color } from './utils/getTagColor'
 import secret from './secret'
 
 const log = x => console.log(x)
@@ -77,6 +78,7 @@ class App extends Component {
 		this.del_tag = this.del_tag.bind(this)
 		this.update_datum_bar_input =
 			this.update_datum_bar_input.bind(this)
+		this.update_tag_metadata = this.update_tag_metadata.bind(this)
 		this.switch_view_to = this.switch_view_to.bind(this)
 	}
 
@@ -86,14 +88,13 @@ class App extends Component {
 			adapter: 'idb',
 			queryChangeDetection: true,
 		})
-
 		this.db_datums = await db.collection({
 			name: 'datums',
 			schema: datum_schema
 		})
 		const d_sub = this.db_datums
 			.find()
-			.sort({time: 1})
+			.sort({ time: 1 })
 			.$.subscribe(docs => {
 				if (!docs) return
 				this.setState({
@@ -115,9 +116,11 @@ class App extends Component {
 				this.setState({
 					tags: docs.map(
 						({ id, name, color, instance_times,
-							 instance_peers, instance_values }) =>
-						({ id, name, color, instance_times,
-							 instance_peers, instance_values })
+							instance_peers, instance_values }) =>
+							({
+								id, name, color, instance_times,
+								instance_peers, instance_values
+							})
 					)
 				})
 			})
@@ -133,48 +136,52 @@ class App extends Component {
 		return false
 	}
 
-	update_tag_metadata(datum) {
-		datum.tags.map(t => {
-			let tag_already_exists
-			let new_data = this.state.tags.map(
-				(tag_metadata, i) => {
-					if (tag_metadata.name === t.name) {
-						tag_already_exists = true
-						new_data = tag_metadata
-						if (
-							new_data.instance_times.inlogudes(datum.time)
-						) {
-							const idx = new_data.instance_times.indexOf(
-								datum.time
-							)
-							new_data.instance_peers[idx] = datum.tags
-							new_data.instance_values[idx] = t.value
-						} else {
-							new_data.instance_times.push(datum.time)
-							new_data.instance_peers.push(datum.tags)
-							new_data.instance_values.push(t.value)
-						}
-						let new_tags = this.state.tags
-						new_tags[i] = new_data
-						this.setState({
-							tags: new_tags,
-						})
-					}
-				}
-			)
-			if (tag_already_exists === false) {
-				new_data = {
+	async update_tag_metadata(datum) {
+		const time = datum.time
+		let all_tag_data = []
+		let tag_exists = []
+		datum.tags.map(dt => {
+			const name = dt.name
+			const value = dt.value
+			let tag_data, existence
+			const existing_tag_data = this.state.tags
+				.filter(st => st.name === dt.name)
+			if (!existing_tag_data.length) {
+				existence = false
+				tag_data = {
 					id: uuid(),
-					name: t.name,
-					color: 'black', // TODO get_random_color_scheme() ?
-					instance_times: [datum.time],
+					name: name,
+					color: rand_color()[500],
+					instance_times: [time],
 					instance_peers: [datum.tags],
-					instance_values: [t.value],
+					instance_values: [value]
 				}
-				this.setState({
-					tags: [...this.state.tags, new_data],
-				})
+			} else {
+				existence = true
+				tag_data = existing_tag_data.pop()
+				tag_data.instance_times.push(time)
+				tag_data.instance_peers.push(datum.tags)
+				tag_data.instance_values.push(value)
 			}
+			all_tag_data.push(tag_data)
+			tag_exists.push(existence)
+		})
+		const old_state = this.state.tags
+		let new_state = []
+		for (let i = 0; i < all_tag_data.length; i++) {
+			let data = all_tag_data[i]
+			await this.db_tags.upsert(data)
+			if (tag_exists[i]) {
+				new_state = old_state.map(t =>
+					t.name === data.name ?
+						data : t
+				)
+			} else {
+				new_state.push(data)
+			}
+		}
+		this.setState({
+			tags: new_state
 		})
 	}
 
@@ -287,32 +294,32 @@ class App extends Component {
 	render() {
 		const splash = (
 			<Splash
-			switch_view_to={this.switch_view_to}
-			on_login={this.load_db}
-		/>
+				switch_view_to={this.switch_view_to}
+				on_login={this.load_db}
+			/>
 
 		)
 		const datum_bar = (
 			<form onSubmit={this.add_datum}>
-			<DatumBar
-				value={this.state.active_datum.tags.map(
-					tag => `${tag.name}:${tag.value}`
-				)}
-				onAddTag={this.add_tag}
-				onDeleteTag={this.del_tag}
-				is_tag_menu_open={this.state.is_datum_bar_menu_open}
-				on_focus={() => this.setState({
-					is_datum_bar_menu_open: true,
-				})}
-				on_blur={() => this.setState({
-					is_datum_bar_menu_open: false,
-				})}
-				InputProps={{
-					onChange: this.update_datum_bar_input,
-					value: this.state.datum_bar_input_val,
-				}}
-			/>
-		</form>
+				<DatumBar
+					value={this.state.active_datum.tags.map(
+						tag => `${tag.name}:${tag.value}`
+					)}
+					onAddTag={this.add_tag}
+					onDeleteTag={this.del_tag}
+					is_tag_menu_open={this.state.is_datum_bar_menu_open}
+					on_focus={() => this.setState({
+						is_datum_bar_menu_open: true,
+					})}
+					on_blur={() => this.setState({
+						is_datum_bar_menu_open: false,
+					})}
+					InputProps={{
+						onChange: this.update_datum_bar_input,
+						value: this.state.datum_bar_input_val,
+					}}
+				/>
+			</form>
 		)
 		const { classes } = this.props
 		return (
