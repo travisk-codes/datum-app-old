@@ -23,7 +23,7 @@ const styles = {
   },
   value_label: {
 		paddingLeft: 6,
-		overflowX: 'scroll',
+		//overflowX: 'scroll',
   },
   tag_w_val_chip: {
     color: 'white', 

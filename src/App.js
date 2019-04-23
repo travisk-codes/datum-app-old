@@ -11,6 +11,7 @@ import {
 import {
 	MuiThemeProvider,
 	createMuiTheme,
+	withStyles,
 } from '@material-ui/core/styles'
 import AddIcon from '@material-ui/icons/AddRounded'
 
@@ -18,7 +19,6 @@ import DatumBar from './DatumBar'
 import DatumList from './DatumList'
 import Splash from './Splash'
 
-import init_datums from './datums'
 import { datum_schema, tag_schema } from './schemas'
 import secret from './secret'
 
@@ -27,7 +27,6 @@ const empty_datum = () => ({ id: null, time: null, tags: [] })
 
 RxDB.plugin(idb)
 RxDB.plugin(http)
-RxDB.plugin(auth)
 
 const theme = createMuiTheme({
 	palette: {
@@ -87,21 +86,51 @@ class App extends Component {
 			adapter: 'idb',
 			queryChangeDetection: true,
 		})
-		const db_datums = await db.collection({
+
+		this.db_datums = await db.collection({
 			name: 'datums',
 			schema: datum_schema
 		})
-		const db_tags = await db.collection({
+		const d_sub = this.db_datums
+			.find()
+			.sort({time: 1})
+			.$.subscribe(docs => {
+				if (!docs) return
+				this.setState({
+					datums: docs.map(
+						({ id, time, tags }) => ({ id, time, tags })
+					)
+				})
+			})
+		this.subs.push(d_sub)
+
+		this.db_tags = await db.collection({
 			name: 'tags',
 			schema: tag_schema,
 		})
-		this.subs
-			.push(db_datums.$.subscribe(e => log(e)))
-			.push(db_tags.$.subscribe(e => log(e)))
+		const t_sub = this.db_tags
+			.find()
+			.$.subscribe(docs => {
+				if (!docs) return
+				this.setState({
+					tags: docs.map(
+						({ id, name, color, instance_times,
+							 instance_peers, instance_values }) =>
+						({ id, name, color, instance_times,
+							 instance_peers, instance_values })
+					)
+				})
+			})
+		this.subs.push(t_sub)
 	}
 
 	componentWillUnmount() {
 		this.subs.forEach(sub => sub.unsubscribe())
+	}
+
+	shouldComponentUpdate(nextProps, nextState) {
+		if (this.state !== nextState) return true
+		return false
 	}
 
 	update_tag_metadata(datum) {
@@ -163,6 +192,8 @@ class App extends Component {
 			active_datum.time = Date.now()
 			datums.push(active_datum)
 		}
+
+		await this.db_datums.upsert(active_datum)
 		this.update_tag_metadata(active_datum)
 
 		// load empty or stashed datum in datum bar
@@ -196,7 +227,7 @@ class App extends Component {
 		this.setState(state => ({
 			datums: state.datums.filter(datum => datum.id !== id),
 		}))
-		const datum_to_delete = await this.db.datums
+		const datum_to_delete = await this.db_datums
 			.findOne()
 			.where('id')
 			.eq(id)
@@ -253,23 +284,16 @@ class App extends Component {
 		current_view: view,
 	})
 
-	render_splash = () => (
-		<Splash
+	render() {
+		const splash = (
+			<Splash
 			switch_view_to={this.switch_view_to}
 			on_login={this.load_db}
 		/>
-	)
 
-	render_datum_list = () => (
-		<DatumList
-			datums={this.state.datums}
-			onSelectEdit={this.edit_datum}
-			onSelectDelete={this.del_datum}
-		/>
-	)
-
-	render_datum_bar = () => (
-		<form onSubmit={this.add_datum}>
+		)
+		const datum_bar = (
+			<form onSubmit={this.add_datum}>
 			<DatumBar
 				value={this.state.active_datum.tags.map(
 					tag => `${tag.name}:${tag.value}`
@@ -289,15 +313,18 @@ class App extends Component {
 				}}
 			/>
 		</form>
-	)
-
-	render() {
+		)
+		const { classes } = this.props
 		return (
 			<MuiThemeProvider theme={theme}>
 				<CssBaseline />
 
-				{this.render_datum_list()}
-				{this.render_datum_bar()}
+				<DatumList
+					datums={this.state.datums}
+					onSelectEdit={this.edit_datum}
+					onSelectDelete={this.del_datum}
+				/>
+				{datum_bar}
 
 				<Fab
 					onClick={this.add_datum}
