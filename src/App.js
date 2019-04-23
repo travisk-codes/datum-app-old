@@ -1,12 +1,8 @@
 import React, { Component } from 'react'
-import * as RxDB from 'rxdb'
-import PouchDB from 'pouchdb'
-import auth from 'pouchdb-authentication'
+import RxDB from 'rxdb'
 import idb from 'pouchdb-adapter-idb'
 import http from 'pouchdb-adapter-http'
 import uuid from 'uuid/v4'
-
-import DB from './utils/db'
 
 import {
 	AppBar,
@@ -24,23 +20,16 @@ import DatumBar from './DatumBar'
 import DatumList from './DatumList'
 import Splash from './Splash'
 
-//import datums from './datums'
-import logo from './datum-logo.svg'
+import init_datums from './datums'
 import { datum_schema, tag_schema } from './schemas'
 import secret from './secret'
+import logo from './datum-logo.svg'
 
-const cl = x => console.log(x)
+const log = x => console.log(x)
 
-PouchDB.plugin(auth)
-PouchDB.plugin(idb)
-PouchDB.plugin(http)
-
-RxDB.plugin(require('pouchdb-adapter-idb'))
-RxDB.plugin(require('pouchdb-adapter-http'))
+RxDB.plugin(idb)
+RxDB.plugin(http)
 RxDB.plugin(auth)
-
-const sync_url = secret.db_url
-const db_name = 'datums'
 
 const theme = createMuiTheme({
 	palette: {
@@ -67,51 +56,33 @@ const styles = {
 	},
 }
 
-const TopBar = () => (
-	<AppBar position='fixed'>
-		<Toolbar>
-			<img
-				src={logo}
-				alt='logo'
-				style={{
-					height: 34,
-				}}
-			/>
-		</Toolbar>
-	</AppBar>
-)
-
 class App extends Component {
 	constructor(props) {
 		super(props)
 		this.state = {
 			datums: [],
 			tags: [],
-			stashedDatum: null,
+			stashed_datum: null,
 			active_datum: {
 				id: null,
 				time: null,
 				tags: [],
 			},
-			datumBarInputValue: '',
-			is_datum_bar_tag_menu_open: false,
-			current_view: 'splash',
+			datum_bar_input_val: '',
+			is_datum_bar_menu_open: false,
+			current_view: 'datum_list',
 		}
 		this.subs = []
-		this.addDatum = this.addDatum.bind(this)
-		this.deleteDatum = this.deleteDatum.bind(this)
-		this.editDatum = this.editDatum.bind(this)
-		this.addTag = this.addTag.bind(this)
-		this.deleteTag = this.deleteTag.bind(this)
-		this.updateDatumBarInput = this.updateDatumBarInput.bind(
-			this
-		)
-		this.create_collections_and_sync = this.create_collections_and_sync.bind(
-			this
-		)
-		this.switch_view_to = this.switch_view_to.bind(
-			this
-		)
+		this.add_datum = this.add_datum.bind(this)
+		this.del_datum = this.del_datum.bind(this)
+		this.edit_datum = this.edit_datum.bind(this)
+		this.add_tag = this.add_tag.bind(this)
+		this.del_tag = this.del_tag.bind(this)
+		this.update_datum_bar_input = 
+			this.update_datum_bar_input.bind(this)
+		this.create_collections_and_sync = 
+			this.create_collections_and_sync.bind(this)
+		this.switch_view_to = this.switch_view_to.bind(this)
 		this.handle_sign_up = this.handle_sign_up.bind(this)
 		this.handle_login = this.handle_login.bind(this)
 		this.load_db = this.load_db.bind(this)
@@ -125,35 +96,6 @@ class App extends Component {
 				{ name: 'tags', schema: tag_schema },
 			]
 		)
-		//this.db = await this.create_db()
-		/*const d_sub = this.db.datums
-			.find()
-			.sort({ time: 1 })
-			.$.subscribe(docs => {
-				if (!docs) return
-				this.setState({
-					datums: docs.map(d => ({
-						id: d.id,
-						time: d.time,
-						tags: d.tags,
-					})),
-				})
-			})
-		const t_sub = this.db.tags.find().$.subscribe(docs => {
-			if (!docs) return
-			this.setState({
-				tags: docs.map(t => ({
-					id: t.id,
-					name: t.name,
-					color: t.color,
-					times: t.instance_times,
-					peers: t.instance_peers,
-					values: t.instance.values,
-				})),
-			})
-		})
-		this.subs.push(d_sub)
-		this.subs.push(t_sub)*/
 	}
 
 	async componentWillUnmount() {
@@ -165,7 +107,7 @@ class App extends Component {
 		await this.db.logout()
 		if (is_signing_up) await this.db.signup(username, password)
 		await this.db.login(username, password)
-		await this.db.load(username)
+		await this.db.local_load(username)
 		const cb = (docs) => {
 			this.setState({
 				datums: docs.map(d => ({
@@ -176,32 +118,6 @@ class App extends Component {
 			})
 		}
 		await this.db.get_all_docs(cb)
-		/*this.setState({
-			tags: tags ? tags.map(({
-				id,
-				name,
-				color,
-				instance_peers,
-				instance_times,
-				instance_values,
-			}) => ({
-				id,
-				name,
-				color,
-				instance_peers,
-				instance_times,
-				instance_values,
-			})) : [],
-			datums: datums ? datums.map(({
-				id,
-				time,
-				tags,
-			}) => ({
-				id,
-				time,
-				tags,
-			})) : [],
-		})*/
 	}
 
 	async create_collections_and_sync(url, db_name) {
@@ -305,7 +221,7 @@ class App extends Component {
 			'https://db.getdatum.app/' + user,
 			{
 				fetch(url, opts) {
-					opts.credentials = 'include'
+					opts.credentials = 'inlogude'
 					return PouchDB.fetch(url, opts)
 				},
 				auth: {
@@ -343,7 +259,7 @@ class App extends Component {
 			// https://github.com/pouchdb-community/pouchdb-authentication/issues/239#issuecomment-403506880
 			let db = new PouchDB(db_url, {
 				fetch(url, opts) {
-					opts.credentials = 'include'
+					opts.credentials = 'inlogude'
 					return PouchDB.fetch(url, opts)
 				},
 			})
@@ -370,7 +286,7 @@ class App extends Component {
 						tag_already_exists = true
 						new_data = tag_metadata
 						if (
-							new_data.instance_times.includes(datum.time)
+							new_data.instance_times.inlogudes(datum.time)
 						) {
 							const idx = new_data.instance_times.indexOf(
 								datum.time
@@ -406,12 +322,11 @@ class App extends Component {
 		})
 	}
 
-	async addDatum(e) {
+	async add_datum(e) {
 		e.preventDefault()
-		let { datums, active_datum, stashedDatum } = this.state
+		let { datums, active_datum, stashed_datum } = this.state
 		if (!active_datum.tags.length) return
-		if (active_datum.id) {
-			// already exists?
+		if (active_datum.id) { // already exists
 			datums = datums.map(d =>
 				d.id === active_datum.id ? active_datum : d
 			)
@@ -433,19 +348,19 @@ class App extends Component {
 			)
 
 		// load empty or stashed datum in datum bar
-		if (stashedDatum) {
-			active_datum = stashedDatum
-			stashedDatum = null
+		if (stashed_datum) {
+			active_datum = stashed_datum
+			stashed_datum = null
 		} else {
 			active_datum = this.getEmptyDatum()
 		}
 
 		this.setState({
 			datums,
-			stashedDatum,
+			stashed_datum,
 			active_datum,
-			datumBarInputValue: '',
-			is_datum_bar_tag_menu_open: false,
+			datum_bar_input_val: '',
+			is_datum_bar_menu_open: false,
 			current_view: 'datum_list',
 		})
 
@@ -459,7 +374,7 @@ class App extends Component {
 		}, 100) // give state some time to update before scroll, janky solution :/
 	}
 
-	async deleteDatum(id) {
+	async del_datum(id) {
 		this.setState(state => ({
 			datums: state.datums.filter(datum => datum.id !== id),
 		}))
@@ -472,17 +387,17 @@ class App extends Component {
 		console.log(`datum ${id} deleted`)
 	}
 
-	editDatum(id) {
+	edit_datum(id) {
 		console.log(`editing datum ${id}`)
 		this.setState(state => ({
-			stashedDatum: state.active_datum,
+			stashed_datum: state.active_datum,
 			active_datum: state.datums.filter(
 				d => d.id === id
 			)[0], // escape array returned from filter
 		}))
 	}
 
-	addTag(tag) {
+	add_tag(tag) {
 		let tagName, tagValue
 		const split = tag.indexOf(':')
 		if (split > 0) {
@@ -500,11 +415,11 @@ class App extends Component {
 					value: tagValue,
 				}),
 			},
-			datumBarInputValue: '',
+			datum_bar_input_val: '',
 		}))
 	}
 
-	deleteTag(tag, index) {
+	del_tag(tag, index) {
 		this.setState(state => ({
 			active_datum: {
 				...state.active_datum,
@@ -515,9 +430,9 @@ class App extends Component {
 		}))
 	}
 
-	updateDatumBarInput(e) {
+	update_datum_bar_input(e) {
 		this.setState({
-			datumBarInputValue: e.target.value,
+			datum_bar_input_val: e.target.value,
 		})
 	}
 
@@ -532,8 +447,8 @@ class App extends Component {
 			datum_list: (
 				<DatumList
 					datums={this.state.datums}
-					onSelectEdit={this.editDatum}
-					onSelectDelete={this.deleteDatum}
+					onSelectEdit={this.edit_datum}
+					onSelectDelete={this.del_datum}
 				/>
 			),
 			splash: (
@@ -549,35 +464,35 @@ class App extends Component {
 
 				{views[this.state.current_view]}
 
-				<form onSubmit={this.addDatum}>
+				<form onSubmit={this.add_datum}>
 					<DatumBar
 						value={this.state.active_datum.tags.map(
 							tag => `${tag.name}:${tag.value}`
 						)}
-						onAddTag={this.addTag}
-						onDeleteTag={this.deleteTag}
+						onAddTag={this.add_tag}
+						onDeleteTag={this.del_tag}
 						is_tag_menu_open={
-							this.state.is_datum_bar_tag_menu_open
+							this.state.is_datum_bar_menu_open
 						}
 						on_focus={() =>
 							this.setState({
-								is_datum_bar_tag_menu_open: true,
+								is_datum_bar_menu_open: true,
 							})
 						}
 						on_blur={() =>
 							this.setState({
-								is_datum_bar_tag_menu_open: false,
+								is_datum_bar_menu_open: false,
 							})
 						}
 						InputProps={{
-							onChange: this.updateDatumBarInput,
-							value: this.state.datumBarInputValue,
+							onChange: this.update_datum_bar_input,
+							value: this.state.datum_bar_input_val,
 						}}
 					/>
 				</form>
 
 				<Fab
-					onClick={this.addDatum}
+					onClick={this.add_datum}
 					color='primary'
 					size='small'
 					style={styles.fab}

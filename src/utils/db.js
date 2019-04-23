@@ -36,6 +36,8 @@ export default class DB {
 		this.logout = this.logout.bind(this)
 		this.get_all_docs = this.get_all_docs.bind(this)
 		this.load = this.load.bind(this)
+		this.upsert = this.upsert.bind(this)
+		this.local_load = this.local_load.bind(this)
 	}
 
 	async signup(u, p) {
@@ -59,6 +61,16 @@ export default class DB {
 			url: `${this.url}/_session`,
 			method: 'delete',
 		})
+	}
+
+	async local_load(name) {
+		try {
+			this.db = await RxDB.create({
+				name,
+				adapter: 'idb',
+				queryChangeDetection: true,
+			})
+		} catch (e) { cl(e) }
 	}
 
 	async load(u) {
@@ -157,7 +169,25 @@ export default class DB {
 		})
 	}
 
+	async get_all_datums() {
+		try {
+			let datum_docs = []
+			const subscription = await this.db.datums
+				.find()
+				.sort({ time: 1 })
+				.$.subscribe(docs => {
+					cl('change! ' + docs)
+					datum_docs.push(docs)
+				})
+			this.subs.push(subscription)
+			return datum_docs.map(
+				({ id, name, tags }) => ({ id, name, tags })
+			)
+		} catch (e) { cl(e) }
+	}
+
 	async upsert(doc, type) {
-		return await this.db[type].insert(doc)
+		const res = await this.db[type].insert(doc)
+		return res
 	}
 }
