@@ -22,26 +22,26 @@ const styles = {
     paddingRight: 6,
   },
   value_label: {
-		paddingLeft: 6,
-		//overflowX: 'scroll',
+    paddingLeft: 6,
+    //overflowX: 'scroll',
   },
   tag_w_val_chip: {
-    color: 'white', 
+    color: 'white',
   },
   tag_w_val_div: {
-		margin: 3, 
-		whiteSpace: 'nowrap', 
-		//textOverflow: 'ellipsis', 
-		//overflow: 'hidden',
-		maxWidth: '100%', 
-		display: 'inline-flex',
-	},
-	tag_w_val_2nd_chip: {
-		//whiteSpace: 'nowrap', 
-		//textOverflow: 'ellipsis',
-		overflow: 'hidden',
+    margin: 3,
+    whiteSpace: 'nowrap',
+    //textOverflow: 'ellipsis', 
+    //overflow: 'hidden',
+    maxWidth: '100%',
+    display: 'inline-flex',
+  },
+  tag_w_val_2nd_chip: {
+    //whiteSpace: 'nowrap', 
+    //textOverflow: 'ellipsis',
+    overflow: 'hidden',
     border: `1px solid`
-	},
+  },
 }
 
 function splitNameValueString(string) {
@@ -53,7 +53,6 @@ function splitNameValueString(string) {
 }
 
 const TagNoValue = (props) => {
-  const color = rand_color()[500]
   return (
     <Chip
       label={props.tag_name}
@@ -62,14 +61,14 @@ const TagNoValue = (props) => {
       onClick={props.onClick}
       variant={props.variant}
       style={{
-        ...props.style, 
-        color: props.variant === 'outlined' ? 
-          color : 'white',
-        border: `1px solid ${color}`,
-        textShadow: props.variant === 'outlined' ? 
+        ...props.style,
+        color: props.variant === 'outlined' ?
+          props.color : 'white',
+        border: `1px solid ${props.color}`,
+        textShadow: props.variant === 'outlined' ?
           '0px 0px 20px' : 'none',
         backgroundColor: props.variant === 'outlined' ?
-          'white' : color,
+          'white' : props.color,
         margin: 3,
       }}
     />
@@ -77,31 +76,30 @@ const TagNoValue = (props) => {
 }
 
 const TagWithValue = (props) => {
-  const color = rand_color()[500]
   return (
-    <div style={{...props.style, ...styles.tag_w_val_div}}>
+    <div style={{ ...props.style, ...styles.tag_w_val_div }}>
       <Chip
         label={props.tag_name}
         classes={props.name_classes}
         clickable
         onClick={props.onClick}
         style={{
-					...props.style, 
-					...styles.tag_w_val_chip,
-					backgroundColor: color,
-				}}
-        />
+          ...props.style,
+          ...styles.tag_w_val_chip,
+          backgroundColor: props.color,
+        }}
+      />
       <Chip
         label={props.tag_value}
         variant='outlined'
         classes={props.value_classes}
-				style={{
-					...props.style,
-					...styles.tag_w_val_2nd_chip,
-          borderColor: color,
-          color,
-				}}
-        />
+        style={{
+          ...props.style,
+          ...styles.tag_w_val_2nd_chip,
+          borderColor: props.color,
+          color: props.color,
+        }}
+      />
     </div>
   )
 }
@@ -118,33 +116,33 @@ const Tag = (props) => {
   }
   const renderTag = (name, value = null) => (
     value ?
-    <TagWithValue
-      tag_name={name}
-      tag_value={value}
-      color={props.color}
-      name_classes={{
-        label: props.classes.name_label,
-        root: props.classes.tag_with_value,
-      }}
-      value_classes={{
-        label: props.classes.value_label,
-        root: props.classes.value,
-      }}
-      onClick={props.onClick}
-      //name_style={props.style}
-      value_style={props.style}
-    /> :
-    <TagNoValue
-      tag_name={name}
-      color={props.color}
-      classes={{
-        label: props.classes.tag_no_value,
-        root: props.classes.tag_no_value,
-      }}
-      variant={props.variant}
-      onClick={props.onClick}
-      style={props.style}
-    />
+      <TagWithValue
+        tag_name={name}
+        tag_value={value}
+        color={props.color}
+        name_classes={{
+          label: props.classes.name_label,
+          root: props.classes.tag_with_value,
+        }}
+        value_classes={{
+          label: props.classes.value_label,
+          root: props.classes.value,
+        }}
+        onClick={props.onClick}
+        //name_style={props.style}
+        value_style={props.style}
+      /> :
+      <TagNoValue
+        tag_name={name}
+        color={props.color}
+        classes={{
+          label: props.classes.tag_no_value,
+          root: props.classes.tag_no_value,
+        }}
+        variant={props.variant}
+        onClick={props.onClick}
+        style={props.style}
+      />
   )
   return renderTag(tag_name, tag_value)
 }

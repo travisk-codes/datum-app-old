@@ -112,6 +112,7 @@ class Datum extends Component {
 							key={t.name + t.value}
 							name={t.name}
 							value={t.value}
+							color={this.props.tag_colors[t.name]}
 						/>
 					))}
 					<Timestamp time={this.props.time} className={classes.timestamp}/>

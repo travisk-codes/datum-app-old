@@ -322,12 +322,18 @@ class App extends Component {
 			</form>
 		)
 		const { classes } = this.props
+		let tag_colors = {}
+		this.state.tags.map(
+			({ name, color }) => { tag_colors[name] = color }
+		)
+		console.log(tag_colors)
 		return (
 			<MuiThemeProvider theme={theme}>
 				<CssBaseline />
 
 				<DatumList
 					datums={this.state.datums}
+					tag_colors={tag_colors}
 					onSelectEdit={this.edit_datum}
 					onSelectDelete={this.del_datum}
 				/>
