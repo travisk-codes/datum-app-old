@@ -15,7 +15,7 @@ export default [
 		time: Date.now() + 1,
 		tags: [
 			{ name: 'habit', value: 'no snooze' },
-			{ name: 'done', value: '✓'},
+			{ name: 'done' },
 		]
 	},
 	{

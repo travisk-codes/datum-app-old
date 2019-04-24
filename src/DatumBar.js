@@ -63,7 +63,7 @@ const styles = {
     paddingRight: 12,
     margin: 3,
 
-    border: '1px dashed red',
+    border: '1px solid lightgrey',
     borderRadius: 16,
     fontSize: '0.8125rem',
   },
@@ -205,12 +205,14 @@ class DatumBar extends Component {
           onAdd={this.props.onAddTag}
           onDelete={this.props.onDeleteTag}
           chipRenderer={render_chip}
+          placeholder='new tag'
           InputProps={{
             ...this.props.InputProps,
             onKeyPress: this.close_tag_menu_on_submit,
             style: {
               ...styles.datum_bar_input,
-              width: this.state.input_width,
+              width: !this.props.InputProps.value && !this.props.value.length ?
+                72 : this.state.input_width,
             }
           }}
           disableUnderline
