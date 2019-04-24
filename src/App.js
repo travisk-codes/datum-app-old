@@ -78,7 +78,7 @@ class App extends Component {
 		this.del_tag = this.del_tag.bind(this)
 		this.update_datum_bar_input =
 			this.update_datum_bar_input.bind(this)
-		this.update_tag_metadata = this.update_tag_metadata.bind(this)
+		this.add_tag_metadata = this.add_tag_metadata.bind(this)
 		this.switch_view_to = this.switch_view_to.bind(this)
 	}
 
@@ -136,7 +136,7 @@ class App extends Component {
 		return false
 	}
 
-	async update_tag_metadata(datum) {
+	async add_tag_metadata(datum) {
 		const time = datum.time
 		let all_tag_data = []
 		let tag_exists = []
@@ -201,7 +201,7 @@ class App extends Component {
 		}
 
 		await this.db_datums.upsert(active_datum)
-		this.update_tag_metadata(active_datum)
+		this.add_tag_metadata(active_datum)
 
 		// load empty or stashed datum in datum bar
 		if (stashed_datum) {
@@ -231,6 +231,7 @@ class App extends Component {
 	}
 
 	async del_datum(id) {
+		await this.del_tag_metadata(id)
 		this.setState(state => ({
 			datums: state.datums.filter(datum => datum.id !== id),
 		}))
@@ -241,6 +242,29 @@ class App extends Component {
 			.exec()
 		datum_to_delete.remove()
 		console.log(`datum ${id} deleted`)
+	}
+
+	del_tag_metadata(datum_id) {
+		const datum_to_delete = this.state.datums
+			.filter(d => d.id === datum_id).pop()
+		const tags_to_delete = datum_to_delete.tags
+		const instance_time = datum_to_delete.time
+		let new_state = this.state.tags
+		tags_to_delete.map(async dt => {
+			let tag_data = this.state.tags
+				.filter(st => st.name === dt.name).pop()
+			const index = tag_data.instance_times
+				.findIndex(time => time === instance_time.toString())
+			console.log(index)
+			tag_data.instance_times.splice(index, 1)
+			tag_data.instance_peers.splice(index, 1)
+			tag_data.instance_values.splice(index, 1)
+			await this.db_tags.upsert(tag_data)
+			new_state = new_state.map(t => t.name === dt.name ? tag_data : t)
+		})
+		this.setState({
+			tags: new_state
+		})
 	}
 
 	edit_datum(id) {
