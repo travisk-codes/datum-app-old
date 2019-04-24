@@ -42,11 +42,11 @@ export const tag_schema = {
 	properties: {
 		name: {
 			type: 'string',
-			primary: true,
+			index: true,
 		},
 		id: {
 			type: 'string',
-			index: true,
+			primary: true,
 		},
 		color: {
 			type: 'string',
