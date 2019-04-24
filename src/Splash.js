@@ -4,7 +4,7 @@ import { Button, TextField } from '@material-ui/core'
 
 import my_db from './utils/db'
 import { datum_schema, tag_schema } from './schemas'
-import secret from './secret'
+//import secret from './secret'
 import logo from './datum-logo.svg'
 
 const styles = {

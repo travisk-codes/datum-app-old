@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import RxDB from 'rxdb'
-import memory from 'pouchdb-adapter-memory'
+import memory from 'pouchdb-adapter-idb'
 import http from 'pouchdb-adapter-http'
 import uuid from 'uuid/v4'
 
@@ -22,7 +22,7 @@ import Splash from './Splash'
 import { datum_schema, tag_schema } from './schemas'
 import { rand_color } from './utils/getTagColor'
 import init_datums from './init_datums'
-import secret from './secret'
+//import secret from './secret'
 
 const log = x => console.log(x)
 const empty_datum = () => ({ id: null, time: null, tags: [] })
@@ -86,7 +86,7 @@ class App extends Component {
 	async componentDidMount() {
 		const db = await RxDB.create({
 			name: 'datum_app',
-			adapter: 'memory',
+			adapter: 'idb',
 			queryChangeDetection: true,
 		})
 		this.db_datums = await db.collection({
@@ -261,15 +261,14 @@ class App extends Component {
 					.filter(st => st.name === dt.name)
 					.pop()
 				if (tag_data.instance_times.length === 1) {
-					console.log(tag_data)
-					console.log(this.db_tags)
+					new_state = new_state.filter(t => t.name !== dt.name)
+
 					const tag_to_remove = await this.db_tags
 						.findOne()
 						.where('name').eq(tag_data.name)
 						.exec()
 					await tag_to_remove.remove()
 
-					new_state = new_state.filter(t => t.name !== dt.name)
 				} else {
 					const index = tag_data.instance_times
 						.findIndex(time => time === instance_time.toString())
