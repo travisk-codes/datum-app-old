@@ -21,6 +21,7 @@ import Splash from './Splash'
 
 import { datum_schema, tag_schema } from './schemas'
 import { rand_color } from './utils/getTagColor'
+import init_datums from './init_datums'
 import secret from './secret'
 
 const log = x => console.log(x)
@@ -58,7 +59,7 @@ class App extends Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			datums: [],
+			datums: init_datums,
 			tags: [],
 			stashed_datum: null,
 			active_datum: {
@@ -125,6 +126,10 @@ class App extends Component {
 				})
 			})
 		this.subs.push(t_sub)
+		init_datums.map(async d => {
+			await this.db_datums.upsert(d)
+			this.add_tag_metadata(d)	
+		})
 	}
 
 	componentWillUnmount() {
