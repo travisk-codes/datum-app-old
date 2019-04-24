@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 import ChipInput from 'material-ui-chip-input'
+
+import { rand_color } from './utils/getTagColor'
 //import { withStyles } from '@material-ui/core/styles'
 
 import Tag from './Tag'
@@ -158,6 +160,9 @@ class DatumBar extends Component {
   render() {
     const render_chip = ({ isFocused, handleClick, value }, key) => {
       const name = value.slice(0, value.indexOf(':'))
+      if (!this.props.tag_colors[name]) {
+        this.props.tag_colors[name] = rand_color()[500]
+      }
       return (
         <Tag
           onClick={handleClick}
