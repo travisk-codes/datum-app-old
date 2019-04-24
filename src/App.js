@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import RxDB from 'rxdb'
-import idb from 'pouchdb-adapter-idb'
+import memory from 'pouchdb-adapter-memory'
 import http from 'pouchdb-adapter-http'
 import uuid from 'uuid/v4'
 
@@ -26,7 +26,7 @@ import secret from './secret'
 const log = x => console.log(x)
 const empty_datum = () => ({ id: null, time: null, tags: [] })
 
-RxDB.plugin(idb)
+RxDB.plugin(memory)
 RxDB.plugin(http)
 
 const theme = createMuiTheme({
@@ -85,7 +85,7 @@ class App extends Component {
 	async componentDidMount() {
 		const db = await RxDB.create({
 			name: 'datum_app',
-			adapter: 'idb',
+			adapter: 'memory',
 			queryChangeDetection: true,
 		})
 		this.db_datums = await db.collection({
@@ -251,16 +251,35 @@ class App extends Component {
 		const instance_time = datum_to_delete.time
 		let new_state = this.state.tags
 		tags_to_delete.map(async dt => {
-			let tag_data = this.state.tags
-				.filter(st => st.name === dt.name).pop()
-			const index = tag_data.instance_times
-				.findIndex(time => time === instance_time.toString())
-			console.log(index)
-			tag_data.instance_times.splice(index, 1)
-			tag_data.instance_peers.splice(index, 1)
-			tag_data.instance_values.splice(index, 1)
-			await this.db_tags.upsert(tag_data)
-			new_state = new_state.map(t => t.name === dt.name ? tag_data : t)
+			try {
+				let tag_data = this.state.tags
+					.filter(st => st.name === dt.name)
+					.pop()
+				if (tag_data.instance_times.length === 1) {
+					console.log(tag_data)
+					console.log(this.db_tags)
+					const tag_to_remove = await this.db_tags
+						.findOne()
+						.where('name').eq(tag_data.name)
+						.exec()
+					await tag_to_remove.remove()
+
+					new_state = new_state.filter(t => t.name !== dt.name)
+				} else {
+					const index = tag_data.instance_times
+						.findIndex(time => time === instance_time.toString())
+					tag_data.instance_times.splice(index, 1)
+					tag_data.instance_peers.splice(index, 1)
+					tag_data.instance_values.splice(index, 1)
+					await this.db_tags.upsert(tag_data)
+
+					new_state = new_state.map(t => t.name === dt.name ?
+						tag_data : t
+					)
+				}
+			} catch (e) {
+				console.log(e)
+			}
 		})
 		this.setState({
 			tags: new_state
