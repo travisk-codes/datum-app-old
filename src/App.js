@@ -292,6 +292,11 @@ class App extends Component {
 	})
 
 	render() {
+		const { classes } = this.props
+		let tag_colors = {}
+		this.state.tags.map(
+			({ name, color }) => { tag_colors[name] = color }
+		)
 		const splash = (
 			<Splash
 				switch_view_to={this.switch_view_to}
@@ -314,6 +319,7 @@ class App extends Component {
 					on_blur={() => this.setState({
 						is_datum_bar_menu_open: false,
 					})}
+					tag_colors={tag_colors}
 					InputProps={{
 						onChange: this.update_datum_bar_input,
 						value: this.state.datum_bar_input_val,
@@ -321,12 +327,6 @@ class App extends Component {
 				/>
 			</form>
 		)
-		const { classes } = this.props
-		let tag_colors = {}
-		this.state.tags.map(
-			({ name, color }) => { tag_colors[name] = color }
-		)
-		console.log(tag_colors)
 		return (
 			<MuiThemeProvider theme={theme}>
 				<CssBaseline />

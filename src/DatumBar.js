@@ -3,7 +3,6 @@ import ChipInput from 'material-ui-chip-input'
 //import { withStyles } from '@material-ui/core/styles'
 
 import Tag from './Tag'
-import tag_names from './tagNames'
 
 const styles = {
   container: {
@@ -81,21 +80,19 @@ const styles = {
 
 
 const TagBar = props => {
-
-  const tags_that_match = tag_names
+  const tags_that_match = props.tag_names
     .filter(t => t.indexOf(props.filter) >= 0)
     .map((t, i) => (
       <Tag
         key={i}
-        name={t} 
-        variant='outlined'
+        name={t}
         onClick={() => props.onClick(t)}
         style={styles.tag_menu_tag}
+        color={props.tag_colors[t]}
       />
     ))
   const is_menu_open = props.is_open && tags_that_match.length ?
-    'flex' :
-    'none'
+    'flex' : 'none'
 
   return (
     <div style={{
@@ -121,20 +118,20 @@ class DatumBar extends Component {
       input_width: undefined,
     }
 
-    this.render_chip = this.render_chip.bind(this)
-    this.close_tag_menu_on_submit = this.close_tag_menu_on_submit.bind(this)
+    this.close_tag_menu_on_submit =
+      this.close_tag_menu_on_submit.bind(this)
   }
 
   componentDidMount() {
     const input_width = Math.max(
-      this.hidden_span.current.offsetWidth, 
+      this.hidden_span.current.offsetWidth,
       this.MIN_INPUT_WIDTH
     )
     this.setState({ input_width })
   }
   componentDidUpdate() {
     const input_width = Math.max(
-      this.hidden_span.current.offsetWidth, 
+      this.hidden_span.current.offsetWidth,
       this.MIN_INPUT_WIDTH
     )
     if (this.state.input_width !== input_width) this.setState({ input_width })
@@ -149,64 +146,65 @@ class DatumBar extends Component {
 
   close_tag_menu_on_submit(e) {
     if (
-      e.key === 'Enter' && 
+      e.key === 'Enter' &&
       this.props.InputProps.value === ''
-    ) this.setState({is_tag_menu_open: false})
+    ) this.setState({ is_tag_menu_open: false })
     if (
       e.key !== 'Enter' &&
       this.props.InputProps.value === ''
-    ) this.setState({is_tag_menu_open: true})
-  }
-
-  render_chip(
-    { isFocused, handleClick, value }, 
-    key
-  ) {
-    return (
-      <Tag
-        onClick={handleClick}
-        nameValueString={value}
-        isActiveDatumTag
-        key={key}
-        style={{display: 'inline-flex', margin: 3}}
-      />
-    )
+    ) this.setState({ is_tag_menu_open: true })
   }
 
   render() {
-    const is_background_dimmed = this.props.is_tag_menu_open ? 
+    const render_chip = ({ isFocused, handleClick, value }, key) => {
+      const name = value.slice(0, value.indexOf(':'))
+      return (
+        <Tag
+          onClick={handleClick}
+          nameValueString={value}
+          isActiveDatumTag
+          key={key}
+          color={this.props.tag_colors[name]}
+          style={{ display: 'inline-flex', margin: 3 }}
+        />
+      )
+    }
+
+    const is_background_dimmed = this.props.is_tag_menu_open ?
       'flex' : 'none'
 
     return (
-      <div 
+      <div
         style={styles.container}
         onFocus={this.props.on_focus}
       >
 
-        <span 
+        <span
           ref={this.hidden_span}
-          style={styles.hidden_span} 
+          style={styles.hidden_span}
         >{this.props.InputProps.value}</span>
 
-        <div 
+        <div
           onClick={this.props.on_blur}
           style={{
-            ...styles.dimmed_background, 
+            ...styles.dimmed_background,
             display: is_background_dimmed,
-          }} 
+          }}
         />
 
         <TagBar
           is_open={this.props.is_tag_menu_open}
           filter={this.props.InputProps.value}
           onClick={this.props.onAddTag}
+          tag_colors={this.props.tag_colors}
+          tag_names={Object.keys(this.props.tag_colors)}
         />
 
         <ChipInput
           value={this.props.value}
           onAdd={this.props.onAddTag}
           onDelete={this.props.onDeleteTag}
-          chipRenderer={this.render_chip}
+          chipRenderer={render_chip}
           InputProps={{
             ...this.props.InputProps,
             onKeyPress: this.close_tag_menu_on_submit,
