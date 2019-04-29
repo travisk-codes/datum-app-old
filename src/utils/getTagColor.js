@@ -15,40 +15,6 @@ import amber from '@material-ui/core/colors/amber'
 import orange from '@material-ui/core/colors/orange'
 import deepOrange from '@material-ui/core/colors/deepOrange'
 
-
-const letterColors = {
-  'a': 'red',
-  'b': 'blue',
-  'c': 'orange',
-  'd': 'darkblue',
-  'e': 'orange',
-  'f': null,
-  'g': 'saddlebrown',
-  'h': 'maroon',
-  'i': null,
-  'j': 'saddlebrown',
-  'k': 'indigo',
-  'l': null,
-  'm': 'mediumvioletred',
-  'n': 'darkmagenta',
-  'o': null,
-  'p': 'hotpink',
-  'q': null,
-  'r': 'yellow',
-  's': 'yellow',
-  't': 'limegreen',
-  'u': null,
-  'v': 'indigo',
-  'w': null,
-  'x': null,
-  'y': 'yellow',
-  'z': null,
-}
-
-export default (name) => {
-  return letterColors[name[0]]
-}
-
 export const colors = [
   red,
   pink,
@@ -69,10 +35,10 @@ export const colors = [
 ]
 
 export const color_numbers = [
-  50,
-  100,
-  200,
-  300,
+  //50,
+  //100,
+  //200,
+  //300,
   400,
   500,
   600,
@@ -86,5 +52,25 @@ export const color_numbers = [
 ]
 
 export function rand_color() {
-  return colors[Math.floor( Math.random() * colors.length )]
+  const shade = color_numbers
+    [Math.floor(Math.random() * color_numbers.length)]
+  return colors
+    [Math.floor(Math.random() * colors.length)]
+    [shade]
+}
+
+/*
+export function get_tag_names()
+
+export function get_tag_colors()
+
+export function get_values(tag_name)
+*/
+
+export function objectify(tag) {
+  const split = tag.indexOf(':')
+  if (split < 0) return { name: tag, value: '' }
+  const name = tag.substring(0, split)
+  const value = tag.substring(split + 1)
+  return { name, value }
 }

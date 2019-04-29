@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import ChipInput from 'material-ui-chip-input'
 
-import { rand_color } from './utils/getTagColor'
+import { rand_color, objectify } from './utils/getTagColor'
 //import { withStyles } from '@material-ui/core/styles'
 
-import Tag from './Tag'
+import Tag from './Tag_REFACTOR'
 
 const styles = {
   container: {
@@ -23,7 +23,7 @@ const styles = {
     height: '100%',
 
     backgroundColor: 'black',
-    opacity: 0.25,
+    opacity: 0.15,
   },
   tag_menu: {
     // display: controlled
@@ -64,9 +64,33 @@ const styles = {
     paddingTop: 2,
     paddingRight: 12,
     margin: 3,
+    marginLeft: 3,
+    marginBottom: 3,
+    height: 32,
 
     border: '1px solid lightgrey',
     borderRadius: 16,
+    fontSize: '0.8125rem',
+    borderTopLeftRadius: 16,
+    borderBottomLeftRadius: 16,
+
+  },
+  value_input: {
+    display: 'inline-flex',
+    position: 'relative',
+    flex: 'unset',
+    paddingLeft: 6,
+    paddingTop: 2,
+    paddingRight: 12,
+    margin: 3,
+    marginLeft: 0,
+    marginBottom: 5, // shrug
+    height: 32,
+
+    border: '1px solid lightgrey',
+    borderRadius: 16,
+    borderTopLeftRadius: 0,
+    borderBottomLeftRadius: 0,
     fontSize: '0.8125rem',
   },
   hidden_span: { // used to calculate datum bar input width
@@ -82,26 +106,42 @@ const styles = {
 
 
 const TagBar = props => {
-  const tags_that_match = props.tag_names
-    .filter(t => t.indexOf(props.filter) >= 0)
-    .map((t, i) => (
+  let matches = []
+  try {
+    if (props.mode === 'tag_name') matches = props
+      .tag_names
+      .filter(n => n.indexOf(props.filter) >= 0)
+    if (props.mode === 'tag_value') matches = props
+      .get_tag_values_for(props.active_tag)
+      .filter(v => v.indexOf(props.filter) >= 0)
+  } catch (e) {
+    console.error(e)
+    matches = []
+  }
+  let tags = matches.map(t => {
+    let name = false, value = false
+    if (props.mode === 'tag_name') name = t
+    if (props.mode === 'tag_value') value = t
+    return (
       <Tag
-        key={i}
-        name={t}
+        key={t}
+        name={name}
+        value={value}
         onClick={() => props.onClick(t)}
-        style={styles.tag_menu_tag}
-        color={props.tag_colors[t]}
+        color={ // if no color, color is active tag's
+          props.tag_colors[t] || props.tag_colors[props.active_tag]
+        }
       />
-    ))
-  const is_menu_open = props.is_open && tags_that_match.length ?
-    'flex' : 'none'
+    )
+  })
 
   return (
     <div style={{
       ...styles.tag_menu,
-      display: is_menu_open,
+      display: props.is_open && matches.length ?
+        'flex' : 'none',
     }}>
-      {tags_that_match}
+      {tags}
     </div>
   )
 
@@ -115,13 +155,20 @@ class DatumBar extends Component {
     this.hidden_span = React.createRef()
 
     this.state = {
-      //is_tag_value_menu_open: false,
-      //active_tag: null,
+      tags: [],
+      input: '',
+      mode: 'tag_name' || 'tag_value',
+      menu_is_open: false,
+      active_tag: null,
+      //active_value: null,
       input_width: undefined,
     }
 
-    this.close_tag_menu_on_submit =
-      this.close_tag_menu_on_submit.bind(this)
+    this.update_input = this.update_input.bind(this)
+    this.on_submit_datum =
+      this.on_submit_datum.bind(this)
+    this.add_tag = this.add_tag.bind(this)
+    this.del_tag = this.del_tag.bind(this)
   }
 
   componentDidMount() {
@@ -146,51 +193,151 @@ class DatumBar extends Component {
 		return false
   }*/
 
-  close_tag_menu_on_submit(e) {
+  add_tag(tag) {
+    let tagName, tagValue, mode, submitting_tag_value, submitting_valueless_tag
+    const values = this.props.get_tag_values_for(tag)
+    const split = tag.indexOf(':')
+    if (split > 0) {
+      tagName = tag.substring(0, split)
+      tagValue = tag.substring(split + 1)
+      mode = 'tag_name'
+      submitting_valueless_tag = true
+    } else if (values && values[0]) {
+      tagName = tag
+      tagValue = ''
+      mode = 'tag_value'
+    } else {
+      tagName = tag
+      tagValue = ''
+      mode = 'tag_name'
+    }
+    debugger
+    if (this.state.mode === 'tag_value') {
+      tagName = this.state.active_tag
+      tagValue = tag
+      submitting_tag_value = true
+      mode = 'tag_name'
+    }
+    debugger
+    this.setState(state => {
+      let tags = state.tags
+      if (submitting_tag_value) {
+        tags.pop() // throw away valueless tag
+        mode = 'tag_name'
+      }
+
+      return {
+        tags: tags.concat(
+          tagName + ':' + tagValue
+        ),
+        input: '',
+        mode,
+        active_tag: mode === 'tag_value' ?
+          tagName : null,
+      }
+    })
+  }
+
+  del_tag = (tag, index) => this.setState({
+    tags: this.state.tags.filter(
+      (tag, i) => i !== index
+    ),
+  })
+
+  on_submit_datum(e) {
+    e.preventDefault()
+    let state = {}, menu_is_open
     if (
       e.key === 'Enter' &&
-      this.props.InputProps.value === ''
-    ) this.setState({ is_tag_menu_open: false })
+      this.state.input === ''
+    ) state.menu_is_open = false
     if (
       e.key !== 'Enter' &&
-      this.props.InputProps.value === ''
-    ) this.setState({ is_tag_menu_open: true })
+      this.state.input === ''
+    ) state.menu_is_open = true
+    this.props.on_add_datum(
+      this.state.tags.map(t => objectify(t))
+    )
+    this.setState({
+      menu_is_open,
+      tags: []
+    })
+  }
+
+  update_input = e => this.setState({
+    input: e.target.value,
+  })
+
+  handle_input_submit(e) {
+    let { mode, active_tag } = this.state
+    if (mode === 'tag_name') this.props
+      .on_add_tag(e.target.value)
+    if (mode === 'tag_value') this.props
+      .on_add_tag(active_tag + ':' + e.target.value)
   }
 
   render() {
-    const render_chip = ({ isFocused, handleClick, value }, key) => {
-      const name = value.slice(0, value.indexOf(':'))
+    const render_chip = ({ isFocused, handleClick, text }, key) => {
+      const { name, value } = objectify(text)
+      let whole = false, half = false
       if (!this.props.tag_colors[name]) {
-        this.props.tag_colors[name] = rand_color()[500]
+        this.props.tag_colors[name] = rand_color() // TODO fix color change on submit bug
+        whole = true
       }
+      if (
+        this.props.get_tag_values_for(this.state.active_tag)
+        && this.state.active_tag === name
+        // TODO fix disappearing tag values when dupes
+      ) {
+        half = true
+        whole = false
+      } else {
+        whole = true
+      }
+      if (name && value) {
+        whole = false
+        half = false
+      }
+      debugger
       return (
         <Tag
+          half={half}
+          whole={whole}
           onClick={handleClick}
-          nameValueString={value}
-          isActiveDatumTag
+          name={name}
+          value={value}
           key={key}
           color={this.props.tag_colors[name]}
-          style={{ display: 'inline-flex', margin: 3 }}
         />
       )
     }
-
-    const is_background_dimmed = this.props.is_tag_menu_open ?
+    const is_background_dimmed = this.state.menu_is_open ?
       'flex' : 'none'
+    const input_style = this.state.mode === 'tag_name' ?
+      styles.datum_bar_input : styles.value_input
 
     return (
       <div
         style={styles.container}
-        onFocus={this.props.on_focus}
+        onFocus={() => this.setState({
+          menu_is_open: true,
+        })}
       >
-
+        {/* use this span to calculate width of datum bar input*/}
         <span
           ref={this.hidden_span}
-          style={styles.hidden_span}
-        >{this.props.InputProps.value}</span>
+          style={{
+            ...styles.hidden_span,
+            paddingRight: this.state.mode === 'tag_value' ?
+              7 : 13
+          }}
+        >{this.state.input}</span>
 
+        {/* full screen dim when menu is open */}
         <div
-          onClick={this.props.on_blur}
+          onClick={() => this.setState({
+            menu_is_open: false,
+          })}
           style={{
             ...styles.dimmed_background,
             display: is_background_dimmed,
@@ -198,32 +345,39 @@ class DatumBar extends Component {
         />
 
         <TagBar
-          is_open={this.props.is_tag_menu_open}
-          filter={this.props.InputProps.value}
-          onClick={this.props.onAddTag}
+          is_open={this.state.menu_is_open}
+          filter={this.state.input}
+          onClick={this.add_tag}
           tag_colors={this.props.tag_colors}
           tag_names={Object.keys(this.props.tag_colors)}
+          active_tag={this.state.active_tag}
+          get_tag_values_for={this.props.get_tag_values_for}
+          mode={this.state.mode}
         />
 
-        <ChipInput
-          value={this.props.value}
-          onAdd={this.props.onAddTag}
-          onDelete={this.props.onDeleteTag}
-          chipRenderer={render_chip}
-          placeholder='new tag'
-          InputProps={{
-            ...this.props.InputProps,
-            onKeyPress: this.close_tag_menu_on_submit,
-            style: {
-              ...styles.datum_bar_input,
-              width: !this.props.InputProps.value && !this.props.value.length ?
-                72 : this.state.input_width,
-            }
-          }}
-          disableUnderline
-          fullWidth
-          style={styles.datum_bar}
-        />
+        <form onSubmit={this.on_submit_datum}>
+          <ChipInput
+            value={this.state.tags}
+            onAdd={this.add_tag}
+            onDelete={this.del_tag}
+            chipRenderer={render_chip}
+            placeholder='new tag'
+            disableUnderline
+            fullWidth
+            style={styles.datum_bar}
+            InputProps={{
+              //autoFocus: true,
+              onChange: this.update_input,
+              value: this.state.input,
+              //onKeyPress: this.on_submit_datum,
+              style: {
+                ...input_style,
+                width: !this.state.input && !this.state.tags.length ?
+                  72 : this.state.input_width,
+              },
+            }}
+          />
+        </form>
 
       </div>
     )

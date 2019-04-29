@@ -1,8 +1,6 @@
-import React from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import Chip from '@material-ui/core/Chip';
-
-import { colors, rand_color } from './utils/getTagColor'
+import React from 'react'
+import Chip from '@material-ui/core/Chip'
+import { withStyles } from '@material-ui/core/styles'
 
 const styles = {
   tag_no_value: {
@@ -42,9 +40,12 @@ const styles = {
     overflow: 'hidden',
     border: `1px solid`
   },
+  tag_name_with_hidden_val: {
+    marginRight: 0,
+  },
 }
 
-function splitNameValueString(string) {
+function split_string_pair(string) {
   const split = string.indexOf(':')
   if (split < 0) return { tag_name: string, tag_value: '' }
   const tag_name = string.substring(0, split)
@@ -52,7 +53,7 @@ function splitNameValueString(string) {
   return { tag_name, tag_value }
 }
 
-const TagNoValue = (props) => {
+const TagName = (props) => {
   return (
     <Chip
       label={props.tag_name}
@@ -75,9 +76,32 @@ const TagNoValue = (props) => {
   )
 }
 
-const TagWithValue = (props) => {
+const TagValueHalf = props => {
   return (
-    <div style={{ ...props.style, ...styles.tag_w_val_div }}>
+    <Chip
+      label={props.label}
+      variant='outlined'
+      classes={props.classes}
+      clickable
+      onClick={props.on_value_click}
+      style={{
+        ...props.style,
+        //...styles.tag_w_val_2nd_chip,
+        //borderColor: props.color,
+        //color: props.color,
+        display: props.hide_value ? 'none' : 'inline-flex',
+      }}
+    />
+  )
+}
+
+const NameValuePair = (props) => {
+  return (
+    <div style={{
+      ...props.style,
+      ...styles.tag_w_val_div,
+      marginRight: props.hide_value ? 0 : 3,
+    }}>
       <Chip
         label={props.tag_name}
         classes={props.name_classes}
@@ -89,10 +113,13 @@ const TagWithValue = (props) => {
           backgroundColor: props.color,
         }}
       />
-      <Chip
+      <TagValueHalf
         label={props.tag_value}
         variant='outlined'
         classes={props.value_classes}
+        clickable
+        onClick={props.on_value_click}
+        hide_value={props.hide_value}
         style={{
           ...props.style,
           ...styles.tag_w_val_2nd_chip,
@@ -107,16 +134,16 @@ const TagWithValue = (props) => {
 const Tag = (props) => {
   let tag_name, tag_value
   if (props.nameValueString) {
-    let results = splitNameValueString(props.nameValueString)
-    tag_name = results.tag_name
-    tag_value = results.tag_value === 'null' ? null : results.tag_value
+    ({ tag_name, tag_value } =
+      split_string_pair(props.nameValueString))
+    if (tag_value === 'null') tag_value = null
   } else {
     tag_name = props.name
     tag_value = props.value
   }
   const renderTag = (name, value = null) => (
     value ?
-      <TagWithValue
+      <NameValuePair
         tag_name={name}
         tag_value={value}
         color={props.color}
@@ -131,8 +158,9 @@ const Tag = (props) => {
         onClick={props.onClick}
         //name_style={props.style}
         value_style={props.style}
+        hide_value={props.hide_value}
       /> :
-      <TagNoValue
+      <TagName
         tag_name={name}
         color={props.color}
         classes={{

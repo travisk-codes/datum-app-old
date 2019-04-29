@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import RxDB from 'rxdb'
-import memory from 'pouchdb-adapter-idb'
+import memory from 'pouchdb-adapter-memory'
 import http from 'pouchdb-adapter-http'
 import uuid from 'uuid/v4'
 
@@ -67,26 +67,33 @@ class App extends Component {
 				time: null,
 				tags: [],
 			},
+			datum_bar: {
+				input: '',
+				mode: 'tag_name' || 'tag_value',
+				is_menu_open: false,
+				active_tag: null,
+			},
 			datum_bar_input_val: '',
+			show_tag_value_menu: null,
 			is_datum_bar_menu_open: false,
+			value_input_mode: false,
 			current_view: 'datum_list',
 		}
 		this.subs = []
 		this.add_datum = this.add_datum.bind(this)
 		this.del_datum = this.del_datum.bind(this)
 		this.edit_datum = this.edit_datum.bind(this)
-		this.add_tag = this.add_tag.bind(this)
-		this.del_tag = this.del_tag.bind(this)
 		this.update_datum_bar_input =
 			this.update_datum_bar_input.bind(this)
 		this.add_tag_metadata = this.add_tag_metadata.bind(this)
 		this.switch_view_to = this.switch_view_to.bind(this)
+		this.get_tag_values_for = this.get_tag_values_for.bind(this)
 	}
 
 	async componentDidMount() {
 		const db = await RxDB.create({
 			name: 'datum_app',
-			adapter: 'idb',
+			adapter: 'memory',
 			queryChangeDetection: true,
 		})
 		this.db_datums = await db.collection({
@@ -128,7 +135,7 @@ class App extends Component {
 		this.subs.push(t_sub)
 		init_datums.map(async d => {
 			await this.db_datums.upsert(d)
-			this.add_tag_metadata(d)	
+			this.add_tag_metadata(d)
 		})
 	}
 
@@ -156,10 +163,10 @@ class App extends Component {
 				tag_data = {
 					id: uuid(),
 					name: name,
-					color: rand_color()[500],
+					color: rand_color(),
 					instance_times: [time],
 					instance_peers: [datum.tags],
-					instance_values: [value]
+					instance_values: [value],
 				}
 			} else {
 				existence = true
@@ -190,10 +197,9 @@ class App extends Component {
 		})
 	}
 
-	async add_datum(e) {
-		e.preventDefault()
+	async add_datum(tags) {
 		let { datums, active_datum, stashed_datum } = this.state
-		if (!active_datum.tags.length) return
+		if (!tags.length) return
 
 		if (active_datum.id) { // already exists
 			datums = datums.map(d => d.id === active_datum.id ?
@@ -202,6 +208,7 @@ class App extends Component {
 		} else {
 			active_datum.id = uuid()
 			active_datum.time = Date.now()
+			active_datum.tags = tags
 			datums.push(active_datum)
 		}
 
@@ -220,9 +227,6 @@ class App extends Component {
 			datums,
 			stashed_datum,
 			active_datum,
-			datum_bar_input_val: '',
-			is_datum_bar_menu_open: false,
-			current_view: 'datum_list',
 		})
 
 		// scroll to new datum at end of list
@@ -261,22 +265,23 @@ class App extends Component {
 					.filter(st => st.name === dt.name)
 					.pop()
 				if (tag_data.instance_times.length === 1) {
-					new_state = new_state.filter(t => t.name !== dt.name)
 
+					// remove entire tag obj if one left
+					new_state = new_state.filter(t => t.name !== dt.name)
 					const tag_to_remove = await this.db_tags
 						.findOne()
 						.where('name').eq(tag_data.name)
 						.exec()
 					await tag_to_remove.remove()
-
 				} else {
+
+					// remove instances from tag obj
 					const index = tag_data.instance_times
 						.findIndex(time => time === instance_time.toString())
 					tag_data.instance_times.splice(index, 1)
 					tag_data.instance_peers.splice(index, 1)
 					tag_data.instance_values.splice(index, 1)
 					await this.db_tags.upsert(tag_data)
-
 					new_state = new_state.map(t => t.name === dt.name ?
 						tag_data : t
 					)
@@ -300,35 +305,7 @@ class App extends Component {
 		})
 	}
 
-	add_tag(tag) {
-		let tagName, tagValue
-		const split = tag.indexOf(':')
-		if (split > 0) {
-			tagName = tag.substring(0, split)
-			tagValue = tag.substring(split + 1)
-		} else {
-			tagName = tag
-			tagValue = ''
-		}
-		this.setState(state => ({
-			active_datum: {
-				...state.active_datum,
-				tags: state.active_datum.tags.concat({
-					name: tagName,
-					value: tagValue,
-				}),
-			},
-			datum_bar_input_val: '',
-		}))
-	}
 
-	del_tag = (tag, index) => this.setState({
-		active_datum: {
-			...this.state.active_datum,
-			tags: this.state.active_datum.tags
-				.filter((tag, i) => i !== index),
-		}
-	})
 
 	update_datum_bar_input = e => this.setState({
 		datum_bar_input_val: e.target.value,
@@ -337,6 +314,27 @@ class App extends Component {
 	switch_view_to = view => this.setState({
 		current_view: view,
 	})
+
+	get_tag_values_for = tag_name => {
+		//log(`get_tag_values_for(${tag_name})`)
+		/*this.setState({
+			...this.state,
+			datum_bar: {
+				...this.state.datum_bar,
+				mode: 'tag_value',
+				active_tag: tag_name,
+			}
+		})*/
+		const tag_data = this.state.tags
+			.filter(t => t.name === tag_name)
+			.pop() // always gotta pop the filter
+		if (!tag_data) return null
+		if (tag_data.instance_values) {
+			return [...new Set(tag_data.instance_values)]
+		} else {
+			return null
+		}
+	}
 
 	render() {
 		const { classes } = this.props
@@ -352,27 +350,20 @@ class App extends Component {
 
 		)
 		const datum_bar = (
-			<form onSubmit={this.add_datum}>
-				<DatumBar
-					value={this.state.active_datum.tags.map(
-						tag => `${tag.name}:${tag.value}`
-					)}
-					onAddTag={this.add_tag}
-					onDeleteTag={this.del_tag}
-					is_tag_menu_open={this.state.is_datum_bar_menu_open}
-					on_focus={() => this.setState({
-						is_datum_bar_menu_open: true,
-					})}
-					on_blur={() => this.setState({
-						is_datum_bar_menu_open: false,
-					})}
-					tag_colors={tag_colors}
-					InputProps={{
-						onChange: this.update_datum_bar_input,
-						value: this.state.datum_bar_input_val,
-					}}
-				/>
-			</form>
+			<DatumBar
+				value={this.state.active_datum.tags
+					.map(t => t.name + ':' + t.value)
+				}
+				on_add_tag={this.add_tag}
+				on_del_tag={this.del_tag}
+				on_add_datum={this.add_datum}
+				active_tag={this.state.datum_bar.active_tag}
+				is_tag_menu_open={this.state.is_datum_bar_menu_open}
+				get_tag_values_for={this.get_tag_values_for}
+				show_tag_value_menu={this.state.show_tag_value_menu}
+				value_input_mode={this.state.value_input_mode}
+				tag_colors={tag_colors}
+			/>
 		)
 		return (
 			<MuiThemeProvider theme={theme}>

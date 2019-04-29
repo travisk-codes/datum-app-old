@@ -10,7 +10,7 @@ import {
 	IconButton,
 } from '@material-ui/core'
 
-import Tag from './Tag'
+import Tag from './Tag_REFACTOR'
 import timestamp from './utils/timestamp'
 
 const styles = {
@@ -110,8 +110,7 @@ class Datum extends Component {
 					{this.props.tags.map(t => (
 						<Tag
 							key={t.name + t.value}
-							name={t.name}
-							value={t.value}
+							label={t.name + ':' + t.value}
 							color={this.props.tag_colors[t.name]}
 						/>
 					))}

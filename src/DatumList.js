@@ -18,9 +18,9 @@ const DatumList = (props) => {
 	const { classes, ...p } = props
 	return (
 		<List dense className={classes.datum_list}>
-			{p.datums.map(d => (
-				<Datum key={d.id} {...d} {...p} />
-			))}
+			{p.datums.map(
+				d => <Datum key={d.id} {...d} {...p} />
+			)}
 		</List>
 	)
 }
