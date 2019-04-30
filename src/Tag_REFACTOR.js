@@ -55,6 +55,7 @@ const WholeName = ({
   color,
   onClick,
   classes,
+  style,
 }) => {
   return (
     <Chip clickable={true}
@@ -62,6 +63,7 @@ const WholeName = ({
       onClick={onClick}
       className={classes.whole_name}
       style={{
+        ...style,
         backgroundColor: color,
         borderColor: color,
       }
@@ -75,6 +77,7 @@ const WholeValue = ({
   color,
   onClick,
   classes,
+  style,
 }) => (
     <Chip
       clickable={true}
@@ -82,6 +85,7 @@ const WholeValue = ({
       onClick={onClick}
       className={classes.whole_value}
       style={{
+        ...style,
         color,
         borderColor: color,
       }}

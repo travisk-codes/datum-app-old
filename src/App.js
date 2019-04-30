@@ -6,14 +6,12 @@ import uuid from 'uuid/v4'
 
 import {
 	CssBaseline,
-	Fab,
 } from '@material-ui/core'
 import {
 	MuiThemeProvider,
 	createMuiTheme,
 	withStyles,
 } from '@material-ui/core/styles'
-import AddIcon from '@material-ui/icons/AddRounded'
 
 import DatumBar from './DatumBar'
 import DatumList from './DatumList'
@@ -46,14 +44,6 @@ const theme = createMuiTheme({
 		useNextVariants: true,
 	},
 })
-
-const styles = {
-	fab: {
-		position: 'fixed',
-		right: 5,
-		bottom: 5,
-	},
-}
 
 class App extends Component {
 	constructor(props) {
@@ -368,16 +358,9 @@ class App extends Component {
 				/>
 				{datum_bar}
 
-				<Fab
-					onClick={this.add_datum}
-					className={classes.fab}
-					color='primary'
-					size='small'
-				><AddIcon /></Fab>
-
 			</MuiThemeProvider>
 		)
 	}
 }
 
-export default withStyles(styles)(App)
+export default App

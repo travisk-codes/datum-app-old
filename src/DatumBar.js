@@ -1,8 +1,11 @@
 import React, { Component } from 'react'
 import ChipInput from 'material-ui-chip-input'
+import { Fab } from '@material-ui/core'
+
 
 import { rand_color, objectify } from './utils/getTagColor'
-//import { withStyles } from '@material-ui/core/styles'
+import { withStyles } from '@material-ui/core/styles'
+import AddIcon from '@material-ui/icons/AddRounded'
 
 import Tag from './Tag_REFACTOR'
 
@@ -102,6 +105,11 @@ const styles = {
 
     fontSize: '0.8125rem',
   },
+  fab: {
+		position: 'fixed',
+		right: 5,
+		bottom: 5,
+	},
 }
 
 
@@ -127,9 +135,11 @@ const TagBar = props => {
         key={t}
         name={name}
         value={value}
+        style={styles.tag_menu_tag}
         onClick={() => props.onClick(t)}
         color={ // if no color, color is active tag's
-          props.tag_colors[t] || props.tag_colors[props.active_tag]
+          props.tag_colors[t] || 
+          props.tag_colors[props.active_tag]
         }
       />
     )
@@ -400,9 +410,16 @@ class DatumBar extends Component {
           />
         </form>
 
+				<Fab
+					onClick={this.on_submit_datum}
+					style={styles.fab}
+					color='primary'
+					size='small'
+				><AddIcon /></Fab>
+
       </div>
     )
   }
 }
 
-export default DatumBar
+export default withStyles(styles)(DatumBar)
