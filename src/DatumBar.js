@@ -160,6 +160,7 @@ class DatumBar extends Component {
       mode: 'tag_name' || 'tag_value',
       menu_is_open: false,
       active_tag: null,
+      active_datum_id: null,
       //active_value: null,
       input_width: undefined,
     }
@@ -183,7 +184,30 @@ class DatumBar extends Component {
       this.hidden_span.current.offsetWidth,
       this.MIN_INPUT_WIDTH
     )
-    if (this.state.input_width !== input_width) this.setState({ input_width })
+    // active datum just loaded?
+    if (
+      !this.state.active_datum_id &&
+      this.props.active_datum.id
+    ) {
+      this.setState({
+        active_datum_id: this.props.active_datum.id,
+        tags: this.props.active_datum.tags
+      })
+    }
+    // active datum just cleared?
+    if (
+      this.state.active_datum_id &&
+      !this.props.active_datum.id
+    ) {
+      this.setState({
+        active_datum_id: null,
+        tags: [],
+      })
+    }
+
+    if (this.state.input_width !== input_width) {
+      this.setState({ input_width })
+    }
   }
   /*shouldComponentUpdate(nextProps, nextState) {
 		if (
@@ -211,14 +235,12 @@ class DatumBar extends Component {
       tagValue = ''
       mode = 'tag_name'
     }
-    debugger
     if (this.state.mode === 'tag_value') {
       tagName = this.state.active_tag
       tagValue = tag
       submitting_tag_value = true
       mode = 'tag_name'
     }
-    debugger
     this.setState(state => {
       let tags = state.tags
       if (submitting_tag_value) {
@@ -260,7 +282,8 @@ class DatumBar extends Component {
     )
     this.setState({
       menu_is_open,
-      tags: []
+      tags: [],
+      active_datum_id: null
     })
   }
 
@@ -298,7 +321,6 @@ class DatumBar extends Component {
         whole = false
         half = false
       }
-      debugger
       return (
         <Tag
           half={half}
@@ -315,7 +337,6 @@ class DatumBar extends Component {
       'flex' : 'none'
     const input_style = this.state.mode === 'tag_name' ?
       styles.datum_bar_input : styles.value_input
-
     return (
       <div
         style={styles.container}
@@ -357,7 +378,7 @@ class DatumBar extends Component {
 
         <form onSubmit={this.on_submit_datum}>
           <ChipInput
-            value={this.state.tags}
+            value={this.props.active_tags || this.state.tags}
             onAdd={this.add_tag}
             onDelete={this.del_tag}
             chipRenderer={render_chip}

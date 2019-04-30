@@ -11,6 +11,7 @@ const base = {
   borderWidth: 1,
   borderStyle: 'solid',
   color: 'lightgrey',
+  //borderColor: 'lightgrey'
 }
 const styles = {
   whole_name: {
@@ -28,6 +29,7 @@ const styles = {
     borderTopRightRadius: 0,
     borderBottomRightRadius: 0,
     color: 'white',
+    borderColor: 'lightgrey'
   },
   half_name_label: { paddingRight: 6 },
   half_value: {

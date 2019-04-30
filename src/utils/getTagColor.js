@@ -53,10 +53,10 @@ export const color_numbers = [
 
 export function rand_color() {
   const shade = color_numbers
-    [Math.floor(Math.random() * color_numbers.length)]
+  [Math.floor(Math.random() * color_numbers.length)]
   return colors
-    [Math.floor(Math.random() * colors.length)]
-    [shade]
+  [Math.floor(Math.random() * colors.length)]
+  [shade]
 }
 
 /*
@@ -68,9 +68,24 @@ export function get_values(tag_name)
 */
 
 export function objectify(tag) {
+  if (typeof tag !== 'string') {
+    if (tag.name) return tag
+    console.error('tag not of format name:value or { name, value }')
+    return null
+  }
   const split = tag.indexOf(':')
   if (split < 0) return { name: tag, value: '' }
   const name = tag.substring(0, split)
   const value = tag.substring(split + 1)
   return { name, value }
+}
+
+export function stringify(tag) {
+  if (typeof tag === 'string') {
+    return tag
+  } else if (typeof tag === 'object') {
+    return `${tag.name}:${tag.value}`
+  } else {
+    console.error('stringify takes string or object, not ' + typeof tag)
+  }
 }

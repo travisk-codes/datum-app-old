@@ -61,28 +61,19 @@ class App extends Component {
 		this.state = {
 			datums: init_datums,
 			tags: [],
-			stashed_datum: null,
 			active_datum: {
 				id: null,
 				time: null,
 				tags: [],
 			},
-			datum_bar: {
-				input: '',
-				mode: 'tag_name' || 'tag_value',
-				is_menu_open: false,
-				active_tag: null,
-			},
-			datum_bar_input_val: '',
-			show_tag_value_menu: null,
-			is_datum_bar_menu_open: false,
-			value_input_mode: false,
+			stashed_datum: null,
 			current_view: 'datum_list',
 		}
 		this.subs = []
 		this.add_datum = this.add_datum.bind(this)
 		this.del_datum = this.del_datum.bind(this)
 		this.edit_datum = this.edit_datum.bind(this)
+		this.find_datum = this.find_datum.bind(this)
 		this.update_datum_bar_input =
 			this.update_datum_bar_input.bind(this)
 		this.add_tag_metadata = this.add_tag_metadata.bind(this)
@@ -198,10 +189,12 @@ class App extends Component {
 	}
 
 	async add_datum(tags) {
-		let { datums, active_datum, stashed_datum } = this.state
+		debugger
 		if (!tags.length) return
+		let { datums, active_datum, stashed_datum } = this.state
 
 		if (active_datum.id) { // already exists
+			active_datum.tags = tags
 			datums = datums.map(d => d.id === active_datum.id ?
 				active_datum : d
 			)
@@ -305,7 +298,11 @@ class App extends Component {
 		})
 	}
 
-
+	find_datum(id) {
+		return this.state.datums
+			.filter(d => d.id === id)
+			.pop()
+	}
 
 	update_datum_bar_input = e => this.setState({
 		datum_bar_input_val: e.target.value,
@@ -351,18 +348,12 @@ class App extends Component {
 		)
 		const datum_bar = (
 			<DatumBar
-				value={this.state.active_datum.tags
-					.map(t => t.name + ':' + t.value)
-				}
 				on_add_tag={this.add_tag}
 				on_del_tag={this.del_tag}
 				on_add_datum={this.add_datum}
-				active_tag={this.state.datum_bar.active_tag}
-				is_tag_menu_open={this.state.is_datum_bar_menu_open}
 				get_tag_values_for={this.get_tag_values_for}
-				show_tag_value_menu={this.state.show_tag_value_menu}
-				value_input_mode={this.state.value_input_mode}
 				tag_colors={tag_colors}
+				active_datum={this.state.active_datum}
 			/>
 		)
 		return (
