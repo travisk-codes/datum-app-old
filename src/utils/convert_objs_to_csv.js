@@ -17,7 +17,7 @@ export default function convert_objs_to_csv(arr_of_objs) {
 			if (datum_tags.includes(tag_name)) csv_string += obj[tag_name]
 			csv_string += ','
 		})
-		csv_string += '\n'
+		csv_string = csv_string.slice(0, -1) + '\n' // pop last comma
 	})
 
 	return csv_string
