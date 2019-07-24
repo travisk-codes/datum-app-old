@@ -19,6 +19,7 @@ import Splash from './Splash'
 
 import { datum_schema, tag_schema } from './schemas'
 import { rand_color } from './utils/getTagColor'
+import convert_objs_to_csv from './utils/convert_objs_to_csv'
 import init_datums from './init_datums'
 //import secret from './secret'
 
@@ -27,6 +28,18 @@ const empty_datum = () => ({ id: null, time: null, tags: [] })
 
 RxDB.plugin(memory)
 RxDB.plugin(http)
+
+const test_arr_of_objs = [
+	{
+		ayy: true,
+		bravo: 7,
+	},
+	{
+		ayy: 'text',
+		yey: '$2',
+	}
+]
+console.log(convert_objs_to_csv(test_arr_of_objs))
 
 const theme = createMuiTheme({
 	palette: {

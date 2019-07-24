@@ -19,3 +19,5 @@ A personal metrics management platform: know yourself through data
 	* export:
 		- convert datums to csv
 		- trigger browser api to download file
+
+TODO if bar empty, button opens menu, else adds datum

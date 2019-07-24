@@ -15,7 +15,12 @@ import { rand_color, objectify } from './utils/getTagColor'
 import { withStyles } from '@material-ui/core/styles'
 import AddIcon from '@material-ui/icons/AddRounded'
 import ImportExportIcon from '@material-ui/icons/ImportExportRounded'
-
+import HelpIcon from '@material-ui/icons/HelpRounded'
+import InfoIcon from '@material-ui/icons/InfoRounded'
+// CheckCircle
+// Done
+// List
+// Timeline
 import Tag from './Tag_REFACTOR'
 
 const styles = {
@@ -173,7 +178,18 @@ const SideMenu = props => {
   return (
     <Drawer anchor='right' open={props.open} onClose={props.on_close}>
       <List>
-        {['About'].map((text, i) => (
+        {['Help', 'About'].map((text, i) => (
+          <ListItem button key={text}>
+            <ListItemIcon>
+              { text === 'Help' ? <HelpIcon /> : <InfoIcon />}
+            </ListItemIcon>
+            <ListItemText primary={text} />
+          </ListItem>
+        ))}
+      </List>
+      <Divider />
+      <List>
+        {['Habits', 'List', 'Timeline', 'Stats', 'Finances', 'Todos'].map((text, i) => (
           <ListItem button key={text}>
             <ListItemIcon>
             </ListItemIcon>
