@@ -20,7 +20,6 @@ import SideMenu from './SideMenu'
 import ImportExport from './modals/ImportExport'
 import { datum_schema, tag_schema } from './schemas'
 import { rand_color } from './utils/getTagColor'
-import { datums_to_csv, csv_to_datums } from './utils/csv'
 import init_datums from './init_datums'
 //import secret from './secret'
 
@@ -29,8 +28,6 @@ const empty_datum = () => ({ id: null, time: null, tags: [] })
 
 RxDB.plugin(memory)
 RxDB.plugin(http)
-
-console.log(datums_to_csv(init_datums))
 
 const theme = createMuiTheme({
 	palette: {
@@ -382,6 +379,7 @@ class App extends Component {
 				<ImportExport
 					open={this.state.current_modal === 'import_export' ? true : false}
 					handle_close={() => this.toggle_modal(false)}
+					datums={this.state.datums}
 				/>
 			</MuiThemeProvider>
 		)
