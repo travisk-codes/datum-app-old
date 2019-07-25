@@ -2,25 +2,12 @@ import React, { Component } from 'react'
 import ChipInput from 'material-ui-chip-input'
 import { 
   Fab,
-  Divider,
-  Drawer,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
 } from '@material-ui/core'
 
 
 import { rand_color, objectify } from './utils/getTagColor'
 import { withStyles } from '@material-ui/core/styles'
 import AddIcon from '@material-ui/icons/AddRounded'
-import ImportExportIcon from '@material-ui/icons/ImportExportRounded'
-import HelpIcon from '@material-ui/icons/HelpRounded'
-import InfoIcon from '@material-ui/icons/InfoRounded'
-// CheckCircle
-// Done
-// List
-// Timeline
 import Tag from './Tag_REFACTOR'
 
 const styles = {
@@ -126,7 +113,7 @@ const styles = {
   },
   side_menu: {
     width: 250,
-  }
+  } // TODO move
 }
 
 
@@ -174,44 +161,6 @@ const TagBar = props => {
 
 }
 
-const SideMenu = props => {
-  return (
-    <Drawer anchor='right' open={props.open} onClose={props.on_close}>
-      <List>
-        {['Help', 'About'].map((text, i) => (
-          <ListItem button key={text}>
-            <ListItemIcon>
-              { text === 'Help' ? <HelpIcon /> : <InfoIcon />}
-            </ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
-      <Divider />
-      <List>
-        {['Habits', 'List', 'Timeline', 'Stats', 'Finances', 'Todos'].map((text, i) => (
-          <ListItem button key={text}>
-            <ListItemIcon>
-            </ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
-      <Divider />
-      <List>
-        {['Import/Export'].map((text, i) => (
-          <ListItem button key={text}>
-            <ListItemIcon>
-              <ImportExportIcon />
-            </ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
-    </Drawer>
-  )
-}
-
 class DatumBar extends Component {
 
   constructor(props) {
@@ -236,7 +185,6 @@ class DatumBar extends Component {
       this.on_submit_datum.bind(this)
     this.add_tag = this.add_tag.bind(this)
     this.del_tag = this.del_tag.bind(this)
-    this.toggle_side_menu = this.toggle_side_menu.bind(this)
   }
 
   componentDidMount() {
@@ -366,13 +314,6 @@ class DatumBar extends Component {
       .on_add_tag(active_tag + ':' + e.target.value)
   }
 
-  toggle_side_menu(e) {
-    e.preventDefault()
-    this.setState({
-      is_side_menu_open: !this.state.is_side_menu_open
-    })
-  }
-
   render() {
     const render_chip = ({ isFocused, handleClick, text }, key) => {
       const { name, value } = objectify(text)
@@ -476,17 +417,13 @@ class DatumBar extends Component {
 
 				<Fab
           onClick={this.on_submit_datum}
-          onContextMenu={this.toggle_side_menu} // capture long press & right click
-          onDoubleClick={this.toggle_side_menu}
+          onContextMenu={this.props.on_button_long_press} // capture long press & right click
+          onDoubleClick={this.props.on_button_long_press}
 					style={styles.fab}
 					color='primary'
 					size='small'
 				><AddIcon /></Fab>
 
-        <SideMenu 
-          open={this.state.is_side_menu_open} 
-          on_close={this.toggle_side_menu}
-        />
       </div>
     )
   }

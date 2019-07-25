@@ -16,7 +16,8 @@ import {
 import DatumBar from './DatumBar'
 import DatumList from './DatumList'
 import Splash from './Splash'
-
+import SideMenu from './SideMenu'
+import ImportExport from './modals/ImportExport'
 import { datum_schema, tag_schema } from './schemas'
 import { rand_color } from './utils/getTagColor'
 import { datums_to_csv, csv_to_datums } from './utils/csv'
@@ -61,6 +62,8 @@ class App extends Component {
 			},
 			stashed_datum: null,
 			current_view: 'datum_list',
+			is_side_menu_open: false,
+			current_modal: false,
 		}
 		this.subs = []
 		this.add_datum = this.add_datum.bind(this)
@@ -72,6 +75,8 @@ class App extends Component {
 		this.add_tag_metadata = this.add_tag_metadata.bind(this)
 		this.switch_view_to = this.switch_view_to.bind(this)
 		this.get_tag_values_for = this.get_tag_values_for.bind(this)
+		this.toggle_side_menu = this.toggle_side_menu.bind(this)
+		this.toggle_modal = this.toggle_modal.bind(this)
 	}
 
 	async componentDidMount() {
@@ -182,7 +187,7 @@ class App extends Component {
 	}
 
 	async add_datum(tags) {
-		debugger
+		//debugger
 		if (!tags.length) return
 		let { datums, active_datum, stashed_datum } = this.state
 
@@ -326,6 +331,17 @@ class App extends Component {
 		}
 	}
 
+	toggle_side_menu(e) {
+    e.preventDefault()
+    this.setState({
+      is_side_menu_open: !this.state.is_side_menu_open
+    })
+	}
+	
+	toggle_modal(modal_name) {
+		this.setState({current_modal: modal_name})
+	}
+
 	render() {
 		const { classes } = this.props
 		let tag_colors = {}
@@ -339,28 +355,34 @@ class App extends Component {
 			/>
 
 		)
-		const datum_bar = (
-			<DatumBar
-				on_add_tag={this.add_tag}
-				on_del_tag={this.del_tag}
-				on_add_datum={this.add_datum}
-				get_tag_values_for={this.get_tag_values_for}
-				tag_colors={tag_colors}
-				active_datum={this.state.active_datum}
-			/>
-		)
+
 		return (
 			<MuiThemeProvider theme={theme}>
 				<CssBaseline />
-
+        <SideMenu 
+          on_click_import_export={() => this.toggle_modal('import_export')}
+          open={this.state.is_side_menu_open} 
+          on_close={this.toggle_side_menu}
+        />
 				<DatumList
 					datums={this.state.datums}
 					tag_colors={tag_colors}
 					onSelectEdit={this.edit_datum}
 					onSelectDelete={this.del_datum}
 				/>
-				{datum_bar}
-
+				<DatumBar
+					on_add_tag={this.add_tag}
+					on_del_tag={this.del_tag}
+					on_add_datum={this.add_datum}
+					get_tag_values_for={this.get_tag_values_for}
+					tag_colors={tag_colors}
+					active_datum={this.state.active_datum}
+					on_button_long_press={this.toggle_side_menu}
+				/>
+				<ImportExport
+					open={this.state.current_modal === 'import_export' ? true : false}
+					handle_close={() => this.toggle_modal(false)}
+				/>
 			</MuiThemeProvider>
 		)
 	}
