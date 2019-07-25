@@ -1,3 +1,5 @@
+import uuid from 'uuid/v4'
+
 export function datums_to_csv(datums) {
 	let csv_string = ''
 	let csv_headers = []
@@ -31,7 +33,26 @@ export function datums_to_csv(datums) {
 }
 
 export function csv_to_datums(csv_string) {
-	
+	let datums = []
+	const rows = csv_string.split('\n')
+	rows.pop() // last row empty
+	const tag_names = rows[0].split(',')
+	for (let i = 1; i < rows.length; i++) { // skip headers
+		const row = rows[i].split(',')
+		let datum = {
+			id: row[0] || uuid(),
+			time: row[1] || Date.now(),
+			tags: []
+		}
+		for (let j = 2; j < row.length; j++) { // skip id & time
+			if (row[j].length) datum.tags.push({
+				name: tag_names[j],
+				value: row[j]
+			})
+		}
+		datums.push(datum)
+	}
+	return datums
 }
 
 /*
