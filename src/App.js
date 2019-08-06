@@ -25,8 +25,8 @@ import init_datums from './init_datums'
 const log = x => console.log(x)
 const empty_datum = () => ({ id: null, time: null, tags: [] })
 
-RxDB.plugin(memory)
-RxDB.plugin(http)
+//RxDB.plugin(memory)
+//RxDB.plugin(http)
 
 const theme = createMuiTheme({
 	palette: {
@@ -64,15 +64,14 @@ class App extends Component {
 		this.del_datum = this.del_datum.bind(this)
 		this.edit_datum = this.edit_datum.bind(this)
 		this.find_datum = this.find_datum.bind(this)
-		this.update_datum_bar_input =
-			this.update_datum_bar_input.bind(this)
+		this.update_datum_bar_input = this.update_datum_bar_input.bind(this)
 		this.add_tag_metadata = this.add_tag_metadata.bind(this)
 		this.switch_view_to = this.switch_view_to.bind(this)
 		this.get_tag_values_for = this.get_tag_values_for.bind(this)
 	}
 
-	async componentDidMount() {
-		const db = await RxDB.create({
+	componentDidMount() {
+		/*const db = await RxDB.create({
 			name: 'datum_app',
 			adapter: 'memory',
 			queryChangeDetection: true,
@@ -113,33 +112,34 @@ class App extends Component {
 					)
 				})
 			})
-		this.subs.push(t_sub)
-		init_datums.map(async d => {
-			await this.db_datums.upsert(d)
+		this.subs.push(t_sub)*/
+		init_datums.map(d => {
+			//await this.db_datums.upsert(d)
 			this.add_tag_metadata(d)
 		})
 	}
-
+/*
 	componentWillUnmount() {
 		this.subs.forEach(sub => sub.unsubscribe())
 	}
-
+*/
 	shouldComponentUpdate(nextProps, nextState) {
 		if (this.state !== nextState) return true
 		return false
 	}
 
-	async add_tag_metadata(datum) {
+	add_tag_metadata(datum) {
 		const time = datum.time
 		let all_tag_data = []
 		let tag_exists = []
 		datum.tags.map(dt => {
+			debugger
 			const name = dt.name
 			const value = dt.value
 			let tag_data, existence
 			const existing_tag_data = this.state.tags
 				.filter(st => st.name === dt.name)
-			if (!existing_tag_data.length) {
+			if (!existing_tag_data.length) { // create new entry for tag
 				existence = false
 				tag_data = {
 					id: uuid(),
@@ -149,7 +149,7 @@ class App extends Component {
 					instance_peers: [datum.tags],
 					instance_values: [value],
 				}
-			} else {
+			} else { // append to existing entry
 				existence = true
 				tag_data = existing_tag_data.pop()
 				tag_data.instance_times.push(time)
@@ -160,10 +160,10 @@ class App extends Component {
 			tag_exists.push(existence)
 		})
 		const old_state = this.state.tags
-		let new_state = []
+		let new_state = this.state.tags
 		for (let i = 0; i < all_tag_data.length; i++) {
 			let data = all_tag_data[i]
-			await this.db_tags.upsert(data)
+			//await this.db_tags.upsert(data)
 			if (tag_exists[i]) {
 				new_state = old_state.map(t =>
 					t.name === data.name ?
@@ -178,8 +178,7 @@ class App extends Component {
 		})
 	}
 
-	async add_datum(tags) {
-		debugger
+	add_datum(tags) {
 		if (!tags.length) return
 		let { datums, active_datum, stashed_datum } = this.state
 
@@ -195,7 +194,7 @@ class App extends Component {
 			datums.push(active_datum)
 		}
 
-		await this.db_datums.upsert(active_datum)
+		//await this.db_datums.upsert(active_datum)
 		this.add_tag_metadata(active_datum)
 
 		// load empty or stashed datum in datum bar
@@ -222,17 +221,17 @@ class App extends Component {
 		}, 100) // give state some time to update before scroll, janky solution :/
 	}
 
-	async del_datum(id) {
-		await this.del_tag_metadata(id)
+	del_datum(id) {
+		this.del_tag_metadata(id)
 		this.setState(state => ({
 			datums: state.datums.filter(datum => datum.id !== id),
 		}))
-		const datum_to_delete = await this.db_datums
+		/*const datum_to_delete = await this.db_datums
 			.findOne()
 			.where('id')
 			.eq(id)
 			.exec()
-		datum_to_delete.remove()
+		datum_to_delete.remove()*/
 		console.log(`datum ${id} deleted`)
 	}
 
@@ -242,7 +241,7 @@ class App extends Component {
 		const tags_to_delete = datum_to_delete.tags
 		const instance_time = datum_to_delete.time
 		let new_state = this.state.tags
-		tags_to_delete.map(async dt => {
+		tags_to_delete.map(dt => {
 			try {
 				let tag_data = this.state.tags
 					.filter(st => st.name === dt.name)
@@ -251,11 +250,11 @@ class App extends Component {
 
 					// remove entire tag obj if one left
 					new_state = new_state.filter(t => t.name !== dt.name)
-					const tag_to_remove = await this.db_tags
+					/*const tag_to_remove = await this.db_tags
 						.findOne()
 						.where('name').eq(tag_data.name)
 						.exec()
-					await tag_to_remove.remove()
+					await tag_to_remove.remove()*/
 				} else {
 
 					// remove instances from tag obj
@@ -264,7 +263,7 @@ class App extends Component {
 					tag_data.instance_times.splice(index, 1)
 					tag_data.instance_peers.splice(index, 1)
 					tag_data.instance_values.splice(index, 1)
-					await this.db_tags.upsert(tag_data)
+					//await this.db_tags.upsert(tag_data)
 					new_state = new_state.map(t => t.name === dt.name ?
 						tag_data : t
 					)
@@ -303,15 +302,6 @@ class App extends Component {
 	})
 
 	get_tag_values_for = tag_name => {
-		//log(`get_tag_values_for(${tag_name})`)
-		/*this.setState({
-			...this.state,
-			datum_bar: {
-				...this.state.datum_bar,
-				mode: 'tag_value',
-				active_tag: tag_name,
-			}
-		})*/
 		const tag_data = this.state.tags
 			.filter(t => t.name === tag_name)
 			.pop() // always gotta pop the filter
