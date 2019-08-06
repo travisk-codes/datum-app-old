@@ -16,7 +16,8 @@ import {
 import DatumBar from './DatumBar'
 import DatumList from './DatumList'
 import Splash from './Splash'
-
+import SideMenu from './SideMenu'
+import ImportExport from './modals/ImportExport'
 import { datum_schema, tag_schema } from './schemas'
 import { rand_color } from './utils/getTagColor'
 import init_datums from './init_datums'
@@ -58,9 +59,11 @@ class App extends Component {
 			},
 			stashed_datum: null,
 			current_view: 'datum_list',
+			is_side_menu_open: false,
+			current_modal: false,
 		}
 		this.subs = []
-		this.add_datum = this.add_datum.bind(this)
+		this.add_active_datum = this.add_active_datum.bind(this)
 		this.del_datum = this.del_datum.bind(this)
 		this.edit_datum = this.edit_datum.bind(this)
 		this.find_datum = this.find_datum.bind(this)
@@ -68,6 +71,9 @@ class App extends Component {
 		this.add_tag_metadata = this.add_tag_metadata.bind(this)
 		this.switch_view_to = this.switch_view_to.bind(this)
 		this.get_tag_values_for = this.get_tag_values_for.bind(this)
+		this.toggle_side_menu = this.toggle_side_menu.bind(this)
+		this.toggle_modal = this.toggle_modal.bind(this)
+		this.import_datums = this.import_datums.bind(this)
 	}
 
 	componentDidMount() {
@@ -178,7 +184,8 @@ class App extends Component {
 		})
 	}
 
-	add_datum(tags) {
+	async add_active_datum(tags) {
+		//debugger
 		if (!tags.length) return
 		let { datums, active_datum, stashed_datum } = this.state
 
@@ -221,8 +228,24 @@ class App extends Component {
 		}, 100) // give state some time to update before scroll, janky solution :/
 	}
 
-	del_datum(id) {
-		this.del_tag_metadata(id)
+	add_datums(new_datums) {
+		const new_datum_ids = new_datums.map(d => d.id)
+		let { datums } = this.state
+		// default to overwriting existing datums for now
+		datums = datums.filter(d => {
+			if (new_datum_ids.includes(d.id)) {
+				this.del_tag_metadata(d.id)
+				return false
+			}
+			return true
+		})
+		new_datums.forEach(d => this.add_tag_metadata(d))
+		datums = datums.concat(new_datums)
+		this.setState({ datums })
+	}
+
+	async del_datum(id) {
+		await this.del_tag_metadata(id)
 		this.setState(state => ({
 			datums: state.datums.filter(datum => datum.id !== id),
 		}))
@@ -233,6 +256,18 @@ class App extends Component {
 			.exec()
 		datum_to_delete.remove()*/
 		console.log(`datum ${id} deleted`)
+	}
+
+	del_datums(ids = []) {
+		if (!ids.length) {
+			this.setState({
+				datums: [],
+			})
+		} else {
+			this.setState({
+				datums: this.state.datums.filter(d => !ids.includes(d.id))
+			})
+		}
 	}
 
 	del_tag_metadata(datum_id) {
@@ -313,6 +348,27 @@ class App extends Component {
 		}
 	}
 
+	toggle_side_menu(e) {
+    e.preventDefault()
+    this.setState({
+      is_side_menu_open: !this.state.is_side_menu_open
+    })
+	}
+	
+	toggle_modal(modal_name) {
+		this.setState({current_modal: modal_name})
+	}
+
+	import_datums(datums) {
+		this.del_datums()
+		this.add_datums(datums)
+		this.setState({ datums })
+		/*this.state.datums.forEach(d => {
+			this.del_datum(d.id)
+		})
+		this.setState({ datums })*/ // TODO
+	}
+
 	render() {
 		const { classes } = this.props
 		let tag_colors = {}
@@ -326,28 +382,36 @@ class App extends Component {
 			/>
 
 		)
-		const datum_bar = (
-			<DatumBar
-				on_add_tag={this.add_tag}
-				on_del_tag={this.del_tag}
-				on_add_datum={this.add_datum}
-				get_tag_values_for={this.get_tag_values_for}
-				tag_colors={tag_colors}
-				active_datum={this.state.active_datum}
-			/>
-		)
+
 		return (
 			<MuiThemeProvider theme={theme}>
 				<CssBaseline />
-
+        <SideMenu 
+          on_click_import_export={() => this.toggle_modal('import_export')}
+          open={this.state.is_side_menu_open} 
+          on_close={this.toggle_side_menu}
+        />
 				<DatumList
 					datums={this.state.datums}
 					tag_colors={tag_colors}
 					onSelectEdit={this.edit_datum}
 					onSelectDelete={this.del_datum}
 				/>
-				{datum_bar}
-
+				<DatumBar
+					on_add_tag={this.add_tag}
+					on_del_tag={this.del_tag}
+					on_add_datum={this.add_active_datum}
+					get_tag_values_for={this.get_tag_values_for}
+					tag_colors={tag_colors}
+					active_datum={this.state.active_datum}
+					on_button_long_press={this.toggle_side_menu}
+				/>
+				<ImportExport
+					open={this.state.current_modal === 'import_export' ? true : false}
+					handle_close={() => this.toggle_modal(false)}
+					datums={this.state.datums}
+					import_datums={this.import_datums}
+				/>
 			</MuiThemeProvider>
 		)
 	}

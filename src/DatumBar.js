@@ -1,12 +1,13 @@
 import React, { Component } from 'react'
 import ChipInput from 'material-ui-chip-input'
-import { Fab } from '@material-ui/core'
+import { 
+  Fab,
+} from '@material-ui/core'
 
 
 import { rand_color, objectify } from './utils/getTagColor'
 import { withStyles } from '@material-ui/core/styles'
 import AddIcon from '@material-ui/icons/AddRounded'
-
 import Tag from './Tag_REFACTOR'
 
 const styles = {
@@ -109,7 +110,10 @@ const styles = {
 		position: 'fixed',
 		right: 5,
 		bottom: 5,
-	},
+  },
+  side_menu: {
+    width: 250,
+  } // TODO move
 }
 
 
@@ -173,6 +177,7 @@ class DatumBar extends Component {
       active_datum_id: null,
       //active_value: null,
       input_width: undefined,
+      is_side_menu_open: false,
     }
 
     this.update_input = this.update_input.bind(this)
@@ -411,7 +416,9 @@ class DatumBar extends Component {
         </form>
 
 				<Fab
-					onClick={this.on_submit_datum}
+          onClick={this.on_submit_datum}
+          onContextMenu={this.props.on_button_long_press} // capture long press & right click
+          onDoubleClick={this.props.on_button_long_press}
 					style={styles.fab}
 					color='primary'
 					size='small'
