@@ -139,7 +139,6 @@ class App extends Component {
 		let all_tag_data = []
 		let tag_exists = []
 		datum.tags.map(dt => {
-			debugger
 			const name = dt.name
 			const value = dt.value
 			let tag_data, existence
@@ -362,7 +361,6 @@ class App extends Component {
 	import_datums(datums) {
 		this.del_datums()
 		this.add_datums(datums)
-		this.setState({ datums })
 		/*this.state.datums.forEach(d => {
 			this.del_datum(d.id)
 		})
