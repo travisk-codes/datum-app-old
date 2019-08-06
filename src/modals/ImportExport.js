@@ -41,34 +41,61 @@ function ImportExport(props) {
 		}
 	}
 
+	function handle_user_selected_csv_file(e) {
+		e.preventDefault()
+		let reader = new FileReader()
+		reader.onload = (file => {
+			return e => {
+				e.preventDefault()
+				let csv_datums = e.target.result
+				if (csv_datums.substring(0,4) === 'data') { // strip any metadata
+					csv_datums = csv_datums.substring('data:text/csv;charset=utf-8,'.length) // wow
+				}
+				const datums = csv_to_datums(csv_datums)
+				console.table(datums)
+				props.import_datums(datums)
+			}
+		})(e.target.files[0])
+		reader.readAsText(e.target.files[0])
+	}
+
+	function import_csv() {
+		document.getElementById('file-input').addEventListener('change', handle_user_selected_csv_file)
+		document.getElementById('file-input').click()
+		props.handle_close()
+	}
+
 	return (
-		<Dialog
-			open={props.open}
-			onClose={props.handle_close}
-			aria-labelledby="alert-dialog-title"
-			aria-describedby="alert-dialog-description"
-		>
-			<DialogTitle id="alert-dialog-title">{'Import or export your data to .csv?'}</DialogTitle>
-			<DialogContent>
-				<DialogContentText id="alert-dialog-description">
-					{'When importing data, all current data will be lost. Filetype must be comma-separated values (.csv)'}
-				</DialogContentText>
-			</DialogContent>
-			<DialogActions>
-				<Button onClick={props.handle_close} color="secondary">
-					<ImportIcon className={classes.left_icon} />
-					Import
-				</Button>
-				<Button onClick={() => download_csv(props.datums)} color="secondary">
-					<ExportIcon className={classes.left_icon} />
-					Export
-				</Button>
-				<Button onClick={props.handle_close} color="secondary" autoFocus>
-					<CancelIcon className={classes.left_icon} />
-					Cancel
-				</Button>
-			</DialogActions>
-		</Dialog>
+		<div>
+			<Dialog
+				open={props.open}
+				onClose={props.handle_close}
+				aria-labelledby="alert-dialog-title"
+				aria-describedby="alert-dialog-description"
+			>
+				<DialogTitle id="alert-dialog-title">{'Import or export your data to .csv?'}</DialogTitle>
+				<DialogContent>
+					<DialogContentText id="alert-dialog-description">
+						{'When importing data, all current data will be lost. Filetype must be comma-separated values (.csv)'}
+					</DialogContentText>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={import_csv} color="secondary">
+						<ImportIcon className={classes.left_icon} />
+						Import
+					</Button>
+					<Button onClick={() => download_csv(props.datums)} color="secondary">
+						<ExportIcon className={classes.left_icon} />
+						Export
+					</Button>
+					<Button onClick={props.handle_close} color="secondary" autoFocus>
+						<CancelIcon className={classes.left_icon} />
+						Cancel
+					</Button>
+				</DialogActions>
+			</Dialog>
+			<input id="file-input" type="file" name="name" style={{display: 'none'}} />
+		</div>
 	)
 }
 

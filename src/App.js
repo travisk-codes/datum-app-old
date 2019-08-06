@@ -63,7 +63,7 @@ class App extends Component {
 			current_modal: false,
 		}
 		this.subs = []
-		this.add_datum = this.add_datum.bind(this)
+		this.add_active_datum = this.add_active_datum.bind(this)
 		this.del_datum = this.del_datum.bind(this)
 		this.edit_datum = this.edit_datum.bind(this)
 		this.find_datum = this.find_datum.bind(this)
@@ -74,6 +74,7 @@ class App extends Component {
 		this.get_tag_values_for = this.get_tag_values_for.bind(this)
 		this.toggle_side_menu = this.toggle_side_menu.bind(this)
 		this.toggle_modal = this.toggle_modal.bind(this)
+		this.import_datums = this.import_datums.bind(this)
 	}
 
 	async componentDidMount() {
@@ -183,7 +184,7 @@ class App extends Component {
 		})
 	}
 
-	async add_datum(tags) {
+	async add_active_datum(tags) {
 		//debugger
 		if (!tags.length) return
 		let { datums, active_datum, stashed_datum } = this.state
@@ -227,6 +228,22 @@ class App extends Component {
 		}, 100) // give state some time to update before scroll, janky solution :/
 	}
 
+	add_datums(new_datums) {
+		const new_datum_ids = new_datums.map(d => d.id)
+		let { datums } = this.state
+		// default to overwriting existing datums for now
+		datums = datums.filter(d => {
+			if (new_datum_ids.includes(d.id)) {
+				this.del_tag_metadata(d.id)
+				return false
+			}
+			return true
+		})
+		new_datums.forEach(d => this.add_tag_metadata(d))
+		datums = datums.concat(new_datums)
+		this.setState({ datums })
+	}
+
 	async del_datum(id) {
 		await this.del_tag_metadata(id)
 		this.setState(state => ({
@@ -239,6 +256,18 @@ class App extends Component {
 			.exec()
 		datum_to_delete.remove()
 		console.log(`datum ${id} deleted`)
+	}
+
+	del_datums(ids = []) {
+		if (!ids.length) {
+			this.setState({
+				datums: [],
+			})
+		} else {
+			this.setState({
+				datums: this.state.datums.filter(d => !ids.includes(d.id))
+			})
+		}
 	}
 
 	del_tag_metadata(datum_id) {
@@ -339,6 +368,16 @@ class App extends Component {
 		this.setState({current_modal: modal_name})
 	}
 
+	import_datums(datums) {
+		this.del_datums()
+		this.add_datums(datums)
+		this.setState({ datums })
+		/*this.state.datums.forEach(d => {
+			this.del_datum(d.id)
+		})
+		this.setState({ datums })*/ // TODO
+	}
+
 	render() {
 		const { classes } = this.props
 		let tag_colors = {}
@@ -370,7 +409,7 @@ class App extends Component {
 				<DatumBar
 					on_add_tag={this.add_tag}
 					on_del_tag={this.del_tag}
-					on_add_datum={this.add_datum}
+					on_add_datum={this.add_active_datum}
 					get_tag_values_for={this.get_tag_values_for}
 					tag_colors={tag_colors}
 					active_datum={this.state.active_datum}
@@ -380,6 +419,7 @@ class App extends Component {
 					open={this.state.current_modal === 'import_export' ? true : false}
 					handle_close={() => this.toggle_modal(false)}
 					datums={this.state.datums}
+					import_datums={this.import_datums}
 				/>
 			</MuiThemeProvider>
 		)

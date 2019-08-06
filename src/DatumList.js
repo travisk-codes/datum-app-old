@@ -16,6 +16,9 @@ const styles = {
 
 const DatumList = (props) => {
 	const { classes, ...p } = props
+	console.log(p.datums.length)
+	if (!p.datums.length) return <List dense></List>
+	console.log('escaped!')
 	return (
 		<List dense className={classes.datum_list}>
 			{p.datums.map(

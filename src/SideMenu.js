@@ -34,8 +34,6 @@ export default function SideMenu(props) {
       <List>
         {['Habits', 'List', 'Timeline', 'Stats', 'Finances', 'Todos'].map((text, i) => (
           <ListItem button key={text}>
-            <ListItemIcon>
-            </ListItemIcon>
             <ListItemText primary={text} />
           </ListItem>
         ))}

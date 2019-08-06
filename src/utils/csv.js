@@ -34,7 +34,8 @@ export function datums_to_csv(datums) {
 
 export function csv_to_datums(csv_string) {
 	let datums = []
-	const rows = csv_string.split('\n')
+	csv_string = csv_string.replace(/%0A/g, '\n')
+	const rows = csv_string.split('\n') // filereader encoding or something
 	rows.pop() // last row empty
 	const tag_names = rows[0].split(',')
 	for (let i = 1; i < rows.length; i++) { // skip headers
