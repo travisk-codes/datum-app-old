@@ -77,58 +77,11 @@ class App extends Component {
 	}
 
 	componentDidMount() {
-		/*const db = await RxDB.create({
-			name: 'datum_app',
-			adapter: 'memory',
-			queryChangeDetection: true,
-		})
-		this.db_datums = await db.collection({
-			name: 'datums',
-			schema: datum_schema
-		})
-		const d_sub = this.db_datums
-			.find()
-			.sort({ time: 1 })
-			.$.subscribe(docs => {
-				if (!docs) return
-				this.setState({
-					datums: docs.map(
-						({ id, time, tags }) => ({ id, time, tags })
-					)
-				})
-			})
-		this.subs.push(d_sub)
-
-		this.db_tags = await db.collection({
-			name: 'tags',
-			schema: tag_schema,
-		})
-		const t_sub = this.db_tags
-			.find()
-			.$.subscribe(docs => {
-				if (!docs) return
-				this.setState({
-					tags: docs.map(
-						({ id, name, color, instance_times,
-							instance_peers, instance_values }) =>
-							({
-								id, name, color, instance_times,
-								instance_peers, instance_values
-							})
-					)
-				})
-			})
-		this.subs.push(t_sub)*/
 		init_datums.map(d => {
-			//await this.db_datums.upsert(d)
 			this.add_tag_metadata(d)
 		})
 	}
-/*
-	componentWillUnmount() {
-		this.subs.forEach(sub => sub.unsubscribe())
-	}
-*/
+
 	shouldComponentUpdate(nextProps, nextState) {
 		if (this.state !== nextState) return true
 		return false
@@ -164,11 +117,11 @@ class App extends Component {
 			all_tag_data.push(tag_data)
 			tag_exists.push(existence)
 		})
+		// upsert the new tag data
 		const old_state = this.state.tags
 		let new_state = this.state.tags
 		for (let i = 0; i < all_tag_data.length; i++) {
 			let data = all_tag_data[i]
-			//await this.db_tags.upsert(data)
 			if (tag_exists[i]) {
 				new_state = old_state.map(t =>
 					t.name === data.name ?
@@ -183,8 +136,7 @@ class App extends Component {
 		})
 	}
 
-	async add_active_datum(tags) {
-		//debugger
+	add_active_datum(tags) {
 		if (!tags.length) return
 		let { datums, active_datum, stashed_datum } = this.state
 
@@ -200,7 +152,6 @@ class App extends Component {
 			datums.push(active_datum)
 		}
 
-		//await this.db_datums.upsert(active_datum)
 		this.add_tag_metadata(active_datum)
 
 		// load empty or stashed datum in datum bar
@@ -243,17 +194,11 @@ class App extends Component {
 		this.setState({ datums })
 	}
 
-	async del_datum(id) {
-		await this.del_tag_metadata(id)
+	del_datum(id) {
+		this.del_tag_metadata(id)
 		this.setState(state => ({
 			datums: state.datums.filter(datum => datum.id !== id),
 		}))
-		/*const datum_to_delete = await this.db_datums
-			.findOne()
-			.where('id')
-			.eq(id)
-			.exec()
-		datum_to_delete.remove()*/
 		console.log(`datum ${id} deleted`)
 	}
 
@@ -284,20 +229,13 @@ class App extends Component {
 
 					// remove entire tag obj if one left
 					new_state = new_state.filter(t => t.name !== dt.name)
-					/*const tag_to_remove = await this.db_tags
-						.findOne()
-						.where('name').eq(tag_data.name)
-						.exec()
-					await tag_to_remove.remove()*/
 				} else {
-
 					// remove instances from tag obj
 					const index = tag_data.instance_times
 						.findIndex(time => time === instance_time.toString())
 					tag_data.instance_times.splice(index, 1)
 					tag_data.instance_peers.splice(index, 1)
 					tag_data.instance_values.splice(index, 1)
-					//await this.db_tags.upsert(tag_data)
 					new_state = new_state.map(t => t.name === dt.name ?
 						tag_data : t
 					)
@@ -361,10 +299,7 @@ class App extends Component {
 	import_datums(datums) {
 		this.del_datums()
 		this.add_datums(datums)
-		/*this.state.datums.forEach(d => {
-			this.del_datum(d.id)
-		})
-		this.setState({ datums })*/ // TODO
+		// TODO remove tag data
 	}
 
 	render() {
@@ -378,9 +313,7 @@ class App extends Component {
 				switch_view_to={this.switch_view_to}
 				on_login={this.load_db}
 			/>
-
 		)
-
 		return (
 			<MuiThemeProvider theme={theme}>
 				<CssBaseline />
