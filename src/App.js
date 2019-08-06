@@ -69,8 +69,10 @@ class App extends Component {
 		this.find_datum = this.find_datum.bind(this)
 		this.update_datum_bar_input = this.update_datum_bar_input.bind(this)
 		this.add_tag_metadata = this.add_tag_metadata.bind(this)
+		this.del_tag_metadata = this.del_tag_metadata.bind(this)
 		this.switch_view_to = this.switch_view_to.bind(this)
 		this.get_tag_values_for = this.get_tag_values_for.bind(this)
+		this.get_datum_ids = this.get_datum_ids.bind(this)
 		this.toggle_side_menu = this.toggle_side_menu.bind(this)
 		this.toggle_modal = this.toggle_modal.bind(this)
 		this.import_datums = this.import_datums.bind(this)
@@ -285,6 +287,10 @@ class App extends Component {
 		}
 	}
 
+	get_datum_ids() {
+		return this.state.datums.map(d => d.id)
+	}
+
 	toggle_side_menu(e) {
     e.preventDefault()
     this.setState({
@@ -297,6 +303,7 @@ class App extends Component {
 	}
 
 	import_datums(datums) {
+		this.get_datum_ids().map(id => this.del_tag_metadata(id))
 		this.del_datums()
 		this.add_datums(datums)
 		// TODO remove tag data
