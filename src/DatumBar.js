@@ -8,6 +8,7 @@ import {
 import { rand_color, objectify } from './utils/getTagColor'
 import { withStyles } from '@material-ui/core/styles'
 import AddIcon from '@material-ui/icons/AddRounded'
+import MenuIcon from '@material-ui/icons/MoreHoriz'
 import Tag from './Tag_REFACTOR'
 
 const styles = {
@@ -185,6 +186,7 @@ class DatumBar extends Component {
       this.on_submit_datum.bind(this)
     this.add_tag = this.add_tag.bind(this)
     this.del_tag = this.del_tag.bind(this)
+    this.on_click_btn = this.on_click_btn.bind(this)
   }
 
   componentDidMount() {
@@ -194,6 +196,7 @@ class DatumBar extends Component {
     )
     this.setState({ input_width })
   }
+
   componentDidUpdate() {
     const input_width = Math.max(
       this.hidden_span.current.offsetWidth,
@@ -224,13 +227,6 @@ class DatumBar extends Component {
       this.setState({ input_width })
     }
   }
-  /*shouldComponentUpdate(nextProps, nextState) {
-		if (
-      this.props !== nextProps &&
-      this.state !== nextState
-    ) return true
-		return false
-  }*/
 
   add_tag(tag) {
     let tagName, tagValue, mode, submitting_tag_value, submitting_valueless_tag
@@ -302,6 +298,15 @@ class DatumBar extends Component {
     })
   }
 
+  on_click_btn(e) {
+    e.preventDefault()
+    if (!this.state.tags.length && !this.state.input) {
+      this.props.on_button_long_press(e)
+    } else {
+      this.on_submit_datum(e)
+    }
+  }
+
   update_input = e => this.setState({
     input: e.target.value,
   })
@@ -352,7 +357,11 @@ class DatumBar extends Component {
       'flex' : 'none'
     const input_style = this.state.mode === 'tag_name' ?
       styles.datum_bar_input : styles.value_input
+    const btn_icon = !this.state.tags.length && !this.state.input
+      ? <MenuIcon />
+      : <AddIcon />
     return (
+      <>
       <div
         style={styles.container}
         onFocus={() => this.setState({
@@ -414,17 +423,16 @@ class DatumBar extends Component {
             }}
           />
         </form>
-
-				<Fab
-          onClick={this.on_submit_datum}
-          onContextMenu={this.props.on_button_long_press} // capture long press & right click
-          onDoubleClick={this.props.on_button_long_press}
-					style={styles.fab}
-					color='primary'
-					size='small'
-				><AddIcon /></Fab>
-
       </div>
+      <Fab
+        onClick={this.on_click_btn}
+        onContextMenu={this.props.on_button_long_press} // capture long press & right click
+        onDoubleClick={this.props.on_button_long_press}
+        style={styles.fab}
+        color='primary'
+        size='small'
+        >{btn_icon}</Fab>
+      </>
     )
   }
 }

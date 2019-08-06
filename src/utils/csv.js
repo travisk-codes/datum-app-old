@@ -48,7 +48,7 @@ export function csv_to_datums(csv_string) {
 		for (let j = 2; j < row.length; j++) { // skip id & time
 			if (row[j].length) datum.tags.push({
 				name: tag_names[j],
-				value: row[j]
+				value: row[j] === 'true' ? '' : row[j]
 			})
 		}
 		datums.push(datum)
