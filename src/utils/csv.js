@@ -42,7 +42,7 @@ export function csv_to_datums(csv_string) {
 		const row = rows[i].split(',')
 		let datum = {
 			id: row[0] || uuid(),
-			time: row[1] || Date.now(),
+			time: Date.parse(row[1]) || Date.now(),
 			tags: []
 		}
 		for (let j = 2; j < row.length; j++) { // skip id & time
