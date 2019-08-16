@@ -52,7 +52,6 @@ function ImportExport(props) {
 					csv_datums = csv_datums.substring('data:text/csv;charset=utf-8,'.length) // wow
 				}
 				const datums = csv_to_datums(csv_datums)
-				console.table(datums)
 				props.import_datums(datums)
 			}
 		})(e.target.files[0])
