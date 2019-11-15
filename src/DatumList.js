@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { List, ListItem } from '@material-ui/core'
 import { withStyles } from '@material-ui/core/styles'
+import { FixedSizeList } from 'react-window'
 import Datum from './Datum'
 
 const styles = {
@@ -11,18 +12,28 @@ const styles = {
 		//position: 'fixed',
 		//width: '100%',
 		//bottom: 0,
+		'& li': {
+			listStyle: 'none',
+		}
 	},
 }
 
+function renderDatums(props) {
+	const {index, style, data, ...p } = props
+	return (
+		//<div style={style}>{data[index].id}</div>
+		<Datum style={style} key={data.datums[index].id} {...data.datums[index]} {...data} />
+	)
+}
 const DatumList = (props) => {
 	const { classes, ...p } = props
 	if (!p.datums.length) return <List dense></List>
 	return (
-		<List dense className={classes.datum_list}>
-			{p.datums.map(
-				d => <Datum key={d.id} {...d} {...p} />
-			)}
-		</List>
+		<div className={classes.datum_list}>
+			<FixedSizeList height={2000} width={document.width} itemSize={36} itemCount={p.datums.length} itemData={p}>
+				{renderDatums}
+			</FixedSizeList>
+		</div>
 	)
 }
 
