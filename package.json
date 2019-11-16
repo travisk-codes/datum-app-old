@@ -5,6 +5,7 @@
 	"dependencies": {
 		"@material-ui/core": "^3.5.1",
 		"@material-ui/icons": "^3.0.1",
+		"firebase": "^7.4.0",
 		"material-ui-chip-input": "^1.0.0-beta.8",
 		"pouchdb": "^7.0.0",
 		"pouchdb-adapter-http": "^7.0.0",

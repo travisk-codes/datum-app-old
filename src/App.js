@@ -1,7 +1,4 @@
 import React, { Component } from 'react'
-import RxDB from 'rxdb'
-import memory from 'pouchdb-adapter-memory'
-import http from 'pouchdb-adapter-http'
 import uuid from 'uuid/v4'
 
 import {
@@ -21,13 +18,11 @@ import ImportExport from './modals/ImportExport'
 import { datum_schema, tag_schema } from './schemas'
 import { rand_color } from './utils/getTagColor'
 import init_datums from './init_datums'
+import firebase from './firebase'
 //import secret from './secret'
 
 const log = x => console.log(x)
 const empty_datum = () => ({ id: null, time: null, tags: [] })
-
-//RxDB.plugin(memory)
-//RxDB.plugin(http)
 
 const theme = createMuiTheme({
 	palette: {
@@ -50,7 +45,7 @@ class App extends Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			datums: init_datums,
+			datums: [],
 			tags: [],
 			active_datum: {
 				id: null,
@@ -79,8 +74,21 @@ class App extends Component {
 	}
 
 	componentDidMount() {
-		init_datums.map(d => {
-			this.add_tag_metadata(d)
+		const datums_ref = firebase.database().ref('datums')
+		datums_ref.on('value', snapshot => {
+			let datums = snapshot.val()
+			let datums_state = []
+			for (let datum in datums) {
+				this.add_tag_metadata(datums[datum])
+				datums_state.push({
+					id: datum,
+					tags: datums[datum].tags,
+					time: datums[datum].time,
+				})
+			}
+		this.setState({
+			datums: datums_state
+		})
 		})
 	}
 
@@ -153,6 +161,8 @@ class App extends Component {
 			active_datum.tags = tags
 			datums.push(active_datum)
 		}
+		const datums_ref = firebase.database().ref('datums')
+		datums_ref.push(active_datum)
 
 		this.add_tag_metadata(active_datum)
 
@@ -191,9 +201,20 @@ class App extends Component {
 			}
 			return true
 		})
-		new_datums.forEach(d => this.add_tag_metadata(d))
 		datums = datums.concat(new_datums)
 		this.setState({ datums })
+		let updates = {}
+		new_datums.forEach(d => {
+			this.add_tag_metadata(d)
+			const new_datum_key = firebase
+				.database()
+				.ref()
+				.child('datums')
+				.push().key
+			updates['/datums/' + new_datum_key] = d
+		})
+		firebase.database().ref().update(updates)
+
 	}
 
 	del_datum(id) {
@@ -201,6 +222,9 @@ class App extends Component {
 		this.setState(state => ({
 			datums: state.datums.filter(datum => datum.id !== id),
 		}))
+		const datums_ref = firebase.database().ref('datums')
+		let datum_ref = firebase.database().ref(`/datums/${id}`)
+		datum_ref.remove()
 		console.log(`datum ${id} deleted`)
 	}
 

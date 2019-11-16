@@ -21,8 +21,13 @@ const styles = {
 function renderDatums(props) {
 	const {index, style, data, ...p } = props
 	return (
-		//<div style={style}>{data[index].id}</div>
-		<Datum style={style} key={data.datums[index].id} {...data.datums[index]} {...data} />
+		<div style={style}>
+			<Datum
+				key={data.datums[index].id}
+				{...data.datums[index]}
+				{...data}
+			/>
+		</div>
 	)
 }
 const DatumList = (props) => {
@@ -30,7 +35,7 @@ const DatumList = (props) => {
 	if (!p.datums.length) return <List dense></List>
 	return (
 		<div className={classes.datum_list}>
-			<FixedSizeList height={2000} width={document.width} itemSize={36} itemCount={p.datums.length} itemData={p}>
+			<FixedSizeList height={2000} width={document.width} itemSize={62} itemCount={p.datums.length} itemData={p}>
 				{renderDatums}
 			</FixedSizeList>
 		</div>
