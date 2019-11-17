@@ -1,5 +1,5 @@
 import * as firebase from 'firebase'
-import secret from './secret'
+//import secret from './secrets'
 import 'firebase/firestore'
 		
 const config = {
