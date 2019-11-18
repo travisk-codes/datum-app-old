@@ -1,0 +1,9 @@
+{
+	"hosting": {
+		"site": "datum-app-db",
+		"public": "public"
+	},
+	"database": {
+		"rules": "database.rules.json"
+	}
+}
