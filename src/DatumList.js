@@ -1,7 +1,7 @@
-import React, { Component } from 'react'
-import { List, ListItem } from '@material-ui/core'
+import React, { useState, useEffect, useRef } from 'react'
+import { List } from '@material-ui/core'
 import { withStyles } from '@material-ui/core/styles'
-import { FixedSizeList } from 'react-window'
+import { VariableSizeList } from 'react-window'
 import Datum from './Datum'
 
 const styles = {
@@ -14,14 +14,21 @@ const styles = {
 		//bottom: 0,
 		'& li': {
 			listStyle: 'none',
-		}
+		},
 	},
 }
 
 function renderDatums(props) {
-	const {index, style, data, ...p } = props
+	const [height, setHeight] = useState(62)
+	const ref = useRef(null)
+
+	useEffect(() => {
+		if (ref.current.clientHeight !== 62)
+			setHeight(ref.current.clientHeight)
+	})
+	const { index, style, data, ...p } = props
 	return (
-		<div style={style}>
+		<div style={style} ref={ref}>
 			<Datum
 				key={data.datums[index].id}
 				{...data.datums[index]}
@@ -30,14 +37,20 @@ function renderDatums(props) {
 		</div>
 	)
 }
-const DatumList = (props) => {
+const DatumList = props => {
 	const { classes, ...p } = props
 	if (!p.datums.length) return <List dense></List>
 	return (
 		<div className={classes.datum_list}>
-			<FixedSizeList height={2000} width={document.width} itemSize={62} itemCount={p.datums.length} itemData={p}>
+			<VariableSizeList
+				height={2000}
+				width={document.width}
+				itemSize={62}
+				itemCount={p.datums.length}
+				itemData={p}
+			>
 				{renderDatums}
-			</FixedSizeList>
+			</VariableSizeList>
 		</div>
 	)
 }
