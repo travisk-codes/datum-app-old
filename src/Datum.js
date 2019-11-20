@@ -15,10 +15,14 @@ import timestamp from './utils/timestamp'
 
 const styles = {
 	container: {
-		/*backgroundColor: '#e5e5e5',
-		borderRadius: 20,
-		margin: 3,
-		padding: 3,*/
+		'& span': {
+			display: 'inline-flex',
+			overflow: 'scroll',
+			width: '100%',
+		}
+	},
+	datum: {
+		paddingLeft: 4
 	},
 	datum_w_menu_open: {
 		transform: 'scale(1.05)',
@@ -30,13 +34,25 @@ const styles = {
 		color: 'grey',
 		whiteSpace: 'nowrap',
 		margin: 3,
+		paddingTop: 9,
+		width: 36,
+		textAlign: 'center',
+	},
+	rightScrollFade: {
+		background: 'linear-gradient(to left, #fafafa, #ffffff00)',
+		width: 40,
+		height: '100%',
+		right: '48px',
+		top: 0,
+		bottom: 0,
+		position: 'absolute'
 	}
 }
 
 const Timestamp = props => (
-	<span className={props.className}>
+	<div className={props.className}>
 		{timestamp(props.time)}
-	</span>
+	</div>
 )
 
 class DatumMenu extends Component {
@@ -105,8 +121,10 @@ class Datum extends Component {
 	render() {
 		const { classes } = this.props
 		return (
-			<ListItem divider className={(this.state.menu_open ? classes.datum_w_menu_open : '')}>
+			<ListItem divider className={(this.state.menu_open ? classes.datum_w_menu_open : classes.datum)}>
 				<ListItemText className={classes.container}>
+				<Timestamp time={this.props.time} className={classes.timestamp}/>
+
 					{this.props.tags.map(t => (
 						<Tag
 							key={t.name + t.value}
@@ -114,7 +132,7 @@ class Datum extends Component {
 							color={this.props.tag_colors[t.name]}
 						/>
 					))}
-					<Timestamp time={this.props.time} className={classes.timestamp}/>
+					<div className={classes.rightScrollFade} />
 				</ListItemText>
 				<ListItemSecondaryAction>
 					<DatumMenu

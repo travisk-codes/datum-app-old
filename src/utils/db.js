@@ -1,3 +1,4 @@
+/*
 import PouchDB from 'pouchdb'
 import RxDB from 'rxdb'
 
@@ -146,7 +147,7 @@ export default class DB {
 			this.subs.push(replication_state.change$.subscribe(
 				change => cl('change!: ' + change)
 			))
-		})*/
+		})
 		this.db = db
 		//console.log(db)
 	}
@@ -191,3 +192,4 @@ export default class DB {
 		return res
 	}
 }
+*/
