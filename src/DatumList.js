@@ -28,21 +28,28 @@ function renderDatums(props) {
 }
 const DatumList = props => {
 	const { classes, ...p } = props
-	const [height, setHeight] = useState(62)
+	const [height, setHeight] = useState(500)
 	const ref = useRef(null)
 
 	if (!p.datums.length) return <List dense></List>
 	const getItemSize = index => 62
-	useEffect(() => {
-		setHeight(
+	/*useEffect(() => {
+		if (
+			height !=
 			document.getElementById('datum-bar').offsetTop
-		)
-	})
+		) {
+			setHeight(
+				document.getElementById('datum-bar').offsetTop // get height from pos of datum-bar
+			)
+		}
+	})*/
 
 	return (
 		<div className={classes.datum_list} ref={ref}>
 			<VariableSizeList
-				height={height}
+				height={
+					document.getElementById('datum-bar').offsetTop
+				}
 				width={document.width}
 				itemSize={getItemSize}
 				itemCount={p.datums.length}
