@@ -17,7 +17,7 @@ const styles = {
 	container: {
 		'& span': {
 			display: 'inline-flex',
-			overflow: 'scroll',
+			overflow: 'auto',
 			width: '100%',
 		}
 	},
