@@ -1,9 +1,7 @@
 import React, { Component } from 'react'
 import uuid from 'uuid/v4'
 
-import {
-	CssBaseline,
-} from '@material-ui/core'
+import { CssBaseline } from '@material-ui/core'
 import {
 	MuiThemeProvider,
 	createMuiTheme,
@@ -22,7 +20,11 @@ import firebase from './firebase'
 //import secret from './secret'
 
 const log = x => console.log(x)
-const empty_datum = () => ({ id: null, time: null, tags: [] })
+const empty_datum = () => ({
+	id: null,
+	time: null,
+	tags: [],
+})
 
 const theme = createMuiTheme({
 	palette: {
@@ -53,7 +55,7 @@ class App extends Component {
 				tags: [],
 			},
 			stashed_datum: null,
-			current_view: 'datum_list',
+			current_view: 'splash',
 			is_side_menu_open: false,
 			current_modal: false,
 		}
@@ -62,11 +64,15 @@ class App extends Component {
 		this.del_datum = this.del_datum.bind(this)
 		this.edit_datum = this.edit_datum.bind(this)
 		this.find_datum = this.find_datum.bind(this)
-		this.update_datum_bar_input = this.update_datum_bar_input.bind(this)
+		this.update_datum_bar_input = this.update_datum_bar_input.bind(
+			this
+		)
 		this.add_tag_metadata = this.add_tag_metadata.bind(this)
 		this.del_tag_metadata = this.del_tag_metadata.bind(this)
 		this.switch_view_to = this.switch_view_to.bind(this)
-		this.get_tag_values_for = this.get_tag_values_for.bind(this)
+		this.get_tag_values_for = this.get_tag_values_for.bind(
+			this
+		)
 		this.get_datum_ids = this.get_datum_ids.bind(this)
 		this.toggle_side_menu = this.toggle_side_menu.bind(this)
 		this.toggle_modal = this.toggle_modal.bind(this)
@@ -86,9 +92,9 @@ class App extends Component {
 					time: datums[datum].time,
 				})
 			}
-		this.setState({
-			datums: datums_state
-		})
+			this.setState({
+				datums: datums_state,
+			})
 		})
 	}
 
@@ -105,9 +111,11 @@ class App extends Component {
 			const name = dt.name
 			const value = dt.value
 			let tag_data, existence
-			const existing_tag_data = this.state.tags
-				.filter(st => st.name === dt.name)
-			if (!existing_tag_data.length) { // create new entry for tag
+			const existing_tag_data = this.state.tags.filter(
+				st => st.name === dt.name
+			)
+			if (!existing_tag_data.length) {
+				// create new entry for tag
 				existence = false
 				tag_data = {
 					id: uuid(),
@@ -117,7 +125,8 @@ class App extends Component {
 					instance_peers: [datum.tags],
 					instance_values: [value],
 				}
-			} else { // append to existing entry
+			} else {
+				// append to existing entry
 				existence = true
 				tag_data = existing_tag_data.pop()
 				tag_data.instance_times.push(time)
@@ -134,15 +143,14 @@ class App extends Component {
 			let data = all_tag_data[i]
 			if (tag_exists[i]) {
 				new_state = old_state.map(t =>
-					t.name === data.name ?
-						data : t
+					t.name === data.name ? data : t
 				)
 			} else {
 				new_state.push(data)
 			}
 		}
 		this.setState({
-			tags: new_state
+			tags: new_state,
 		})
 	}
 
@@ -150,10 +158,11 @@ class App extends Component {
 		if (!tags.length) return
 		let { datums, active_datum, stashed_datum } = this.state
 
-		if (active_datum.id) { // already exists
+		if (active_datum.id) {
+			// already exists
 			active_datum.tags = tags
-			datums = datums.map(d => d.id === active_datum.id ?
-				active_datum : d
+			datums = datums.map(d =>
+				d.id === active_datum.id ? active_datum : d
 			)
 		} else {
 			active_datum.id = uuid()
@@ -213,8 +222,10 @@ class App extends Component {
 				.push().key
 			updates['/datums/' + new_datum_key] = d
 		})
-		firebase.database().ref().update(updates)
-
+		firebase
+			.database()
+			.ref()
+			.update(updates)
 	}
 
 	del_datum(id) {
@@ -235,14 +246,17 @@ class App extends Component {
 			})
 		} else {
 			this.setState({
-				datums: this.state.datums.filter(d => !ids.includes(d.id))
+				datums: this.state.datums.filter(
+					d => !ids.includes(d.id)
+				),
 			})
 		}
 	}
 
 	del_tag_metadata(datum_id) {
 		const datum_to_delete = this.state.datums
-			.filter(d => d.id === datum_id).pop()
+			.filter(d => d.id === datum_id)
+			.pop()
 		const tags_to_delete = datum_to_delete.tags
 		const instance_time = datum_to_delete.time
 		let new_state = this.state.tags
@@ -252,18 +266,20 @@ class App extends Component {
 					.filter(st => st.name === dt.name)
 					.pop()
 				if (tag_data.instance_times.length === 1) {
-
 					// remove entire tag obj if one left
-					new_state = new_state.filter(t => t.name !== dt.name)
+					new_state = new_state.filter(
+						t => t.name !== dt.name
+					)
 				} else {
 					// remove instances from tag obj
-					const index = tag_data.instance_times
-						.findIndex(time => time === instance_time.toString())
+					const index = tag_data.instance_times.findIndex(
+						time => time === instance_time.toString()
+					)
 					tag_data.instance_times.splice(index, 1)
 					tag_data.instance_peers.splice(index, 1)
 					tag_data.instance_values.splice(index, 1)
-					new_state = new_state.map(t => t.name === dt.name ?
-						tag_data : t
+					new_state = new_state.map(t =>
+						t.name === dt.name ? tag_data : t
 					)
 				}
 			} catch (e) {
@@ -271,7 +287,7 @@ class App extends Component {
 			}
 		})
 		this.setState({
-			tags: new_state
+			tags: new_state,
 		})
 	}
 
@@ -286,18 +302,18 @@ class App extends Component {
 	}
 
 	find_datum(id) {
-		return this.state.datums
-			.filter(d => d.id === id)
-			.pop()
+		return this.state.datums.filter(d => d.id === id).pop()
 	}
 
-	update_datum_bar_input = e => this.setState({
-		datum_bar_input_val: e.target.value,
-	})
+	update_datum_bar_input = e =>
+		this.setState({
+			datum_bar_input_val: e.target.value,
+		})
 
-	switch_view_to = view => this.setState({
-		current_view: view,
-	})
+	switch_view_to = view =>
+		this.setState({
+			current_view: view,
+		})
 
 	get_tag_values_for = tag_name => {
 		const tag_data = this.state.tags
@@ -316,18 +332,20 @@ class App extends Component {
 	}
 
 	toggle_side_menu(e) {
-    e.preventDefault()
-    this.setState({
-      is_side_menu_open: !this.state.is_side_menu_open
-    })
+		e.preventDefault()
+		this.setState({
+			is_side_menu_open: !this.state.is_side_menu_open,
+		})
 	}
-	
+
 	toggle_modal(modal_name) {
-		this.setState({current_modal: modal_name})
+		this.setState({ current_modal: modal_name })
 	}
 
 	import_datums(datums) {
-		this.get_datum_ids().map(id => this.del_tag_metadata(id))
+		this.get_datum_ids().map(id =>
+			this.del_tag_metadata(id)
+		)
 		this.del_datums()
 		this.add_datums(datums)
 		// TODO remove tag data
@@ -336,44 +354,57 @@ class App extends Component {
 	render() {
 		const { classes } = this.props
 		let tag_colors = {}
-		this.state.tags.map(
-			({ name, color }) => { tag_colors[name] = color }
-		)
-		const splash = (
-			<Splash
-				switch_view_to={this.switch_view_to}
-				on_login={this.load_db}
-			/>
-		)
+		this.state.tags.map(({ name, color }) => {
+			tag_colors[name] = color
+		})
+		const views = {
+			splash: (
+				<Splash
+					switch_view_to={this.switch_view_to}
+					on_login={this.load_db}
+				/>
+			),
+			datum_list: (
+				<>
+					<SideMenu
+						on_click_import_export={() =>
+							this.toggle_modal('import_export')
+						}
+						open={this.state.is_side_menu_open}
+						on_close={this.toggle_side_menu}
+					/>
+					<DatumList
+						datums={this.state.datums}
+						tag_colors={tag_colors}
+						onSelectEdit={this.edit_datum}
+						onSelectDelete={this.del_datum}
+					/>
+					<DatumBar
+						on_add_tag={this.add_tag}
+						on_del_tag={this.del_tag}
+						on_add_datum={this.add_active_datum}
+						get_tag_values_for={this.get_tag_values_for}
+						tag_colors={tag_colors}
+						active_datum={this.state.active_datum}
+						on_button_long_press={this.toggle_side_menu}
+					/>
+					<ImportExport
+						open={
+							this.state.current_modal === 'import_export'
+								? true
+								: false
+						}
+						handle_close={() => this.toggle_modal(false)}
+						datums={this.state.datums}
+						import_datums={this.import_datums}
+					/>
+				</>
+			),
+		}
 		return (
 			<MuiThemeProvider theme={theme}>
 				<CssBaseline />
-        <SideMenu 
-          on_click_import_export={() => this.toggle_modal('import_export')}
-          open={this.state.is_side_menu_open} 
-          on_close={this.toggle_side_menu}
-        />
-				<DatumList
-					datums={this.state.datums}
-					tag_colors={tag_colors}
-					onSelectEdit={this.edit_datum}
-					onSelectDelete={this.del_datum}
-				/>
-				<DatumBar
-					on_add_tag={this.add_tag}
-					on_del_tag={this.del_tag}
-					on_add_datum={this.add_active_datum}
-					get_tag_values_for={this.get_tag_values_for}
-					tag_colors={tag_colors}
-					active_datum={this.state.active_datum}
-					on_button_long_press={this.toggle_side_menu}
-				/>
-				<ImportExport
-					open={this.state.current_modal === 'import_export' ? true : false}
-					handle_close={() => this.toggle_modal(false)}
-					datums={this.state.datums}
-					import_datums={this.import_datums}
-				/>
+				{views[this.state.current_view]}
 			</MuiThemeProvider>
 		)
 	}
