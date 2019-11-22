@@ -2,11 +2,16 @@ import React, { useState, useEffect, useRef } from 'react'
 import { List } from '@material-ui/core'
 import { withStyles } from '@material-ui/core/styles'
 import { VariableSizeList } from 'react-window'
+import AutoSizer from 'react-virtualized-auto-sizer'
 import Datum from './Datum'
 
 const styles = {
 	datum_list: {
-		marginBottom: 46, // for datum bar
+		position: 'fixed',
+		top: 0,
+		left: 0,
+		right: 0,
+		bottom: 46, // for datum bar
 		overflow: 'hidden', // for scaling datums with open menus
 		'& li': {
 			listStyle: 'none',
@@ -46,17 +51,19 @@ const DatumList = props => {
 
 	return (
 		<div className={classes.datum_list} ref={ref}>
-			<VariableSizeList
-				height={
-					document.getElementById('datum-bar').offsetTop
-				}
-				width={document.width}
-				itemSize={getItemSize}
-				itemCount={p.datums.length}
-				itemData={p}
-			>
-				{renderDatums}
-			</VariableSizeList>
+			<AutoSizer>
+				{({ width, height }) => (
+					<VariableSizeList
+						height={height}
+						width={width}
+						itemSize={getItemSize}
+						itemCount={p.datums.length}
+						itemData={p}
+					>
+						{renderDatums}
+					</VariableSizeList>
+				)}
+			</AutoSizer>
 		</div>
 	)
 }
