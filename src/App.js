@@ -17,6 +17,7 @@ import { datum_schema, tag_schema } from './schemas'
 import { rand_color } from './utils/getTagColor'
 import init_datums from './init_datums'
 import firebase from './firebase'
+import { db } from './utils/db'
 //import secret from './secret'
 
 const log = x => console.log(x)
@@ -87,22 +88,7 @@ class App extends Component {
 	}
 
 	componentDidMount() {
-		const datums_ref = firebase.database().ref('datums')
-		datums_ref.on('value', snapshot => {
-			let datums = snapshot.val()
-			let datums_state = []
-			for (let datum in datums) {
-				this.add_tag_metadata(datums[datum])
-				datums_state.push({
-					id: datum,
-					tags: datums[datum].tags,
-					time: datums[datum].time,
-				})
-			}
-			this.setState({
-				datums: datums_state,
-			})
-		})
+		db.load(this)
 	}
 
 	shouldComponentUpdate(nextProps, nextState) {
@@ -177,9 +163,7 @@ class App extends Component {
 			active_datum.tags = tags
 			datums.push(active_datum)
 		}
-		const datums_ref = firebase.database().ref('datums')
-		datums_ref.push(active_datum)
-
+		db.add(active_datum)
 		this.add_tag_metadata(active_datum)
 
 		// load empty or stashed datum in datum bar
@@ -240,9 +224,7 @@ class App extends Component {
 		this.setState(state => ({
 			datums: state.datums.filter(datum => datum.id !== id),
 		}))
-		const datums_ref = firebase.database().ref('datums')
-		let datum_ref = firebase.database().ref(`/datums/${id}`)
-		datum_ref.remove()
+		db.del(id)
 		console.log(`datum ${id} deleted`)
 	}
 
