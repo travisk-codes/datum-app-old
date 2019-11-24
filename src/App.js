@@ -77,6 +77,13 @@ class App extends Component {
 		this.toggle_side_menu = this.toggle_side_menu.bind(this)
 		this.toggle_modal = this.toggle_modal.bind(this)
 		this.import_datums = this.import_datums.bind(this)
+		this.get_tag_names = this.get_tag_names.bind(this)
+		this.get_tag_count_for = this.get_tag_count_for.bind(
+			this
+		)
+		this.get_last_added_for = this.get_last_added_for.bind(
+			this
+		)
 	}
 
 	componentDidMount() {
@@ -327,6 +334,24 @@ class App extends Component {
 		}
 	}
 
+	get_tag_names = () => {
+		return this.state.tags.map(t => t.name)
+	}
+
+	get_tag_count_for = tag => {
+		return this.state.tags.filter(t => t.name === tag)[0]
+			.instance_times.length
+	}
+
+	get_last_added_for = tag => {
+		const tag_metadata = this.state.tags.filter(
+			t => t.name === tag
+		)[0]
+		return tag_metadata.instance_times[
+			tag_metadata.instance_times.length - 1
+		]
+	}
+
 	get_datum_ids() {
 		return this.state.datums.map(d => d.id)
 	}
@@ -385,6 +410,9 @@ class App extends Component {
 						on_add_datum={this.add_active_datum}
 						get_tag_values_for={this.get_tag_values_for}
 						tag_colors={tag_colors}
+						get_tag_names={this.get_tag_names}
+						get_tag_count_for={this.get_tag_count_for}
+						get_last_added_for={this.get_last_added_for}
 						active_datum={this.state.active_datum}
 						on_button_long_press={this.toggle_side_menu}
 					/>

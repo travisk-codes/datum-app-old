@@ -30,7 +30,7 @@ const styles = {
 	tag_menu: {
 		// display: controlled
 		position: 'relative',
-		flexWrap: 'wrap',
+		flexWrap: 'wrap-reverse',
 		justifyContent: 'center',
 		padding: 8,
 		margin: 8,
@@ -131,15 +131,26 @@ const TagBar = props => {
 	}
 	let tags = matches.map(t => {
 		let name = false,
-			value = false
-		if (props.mode === 'tag_name') name = t
-		if (props.mode === 'tag_value') value = t
+			value = false,
+			tag
+		if (props.mode === 'tag_name') {
+			name = t
+		}
+		if (props.mode === 'tag_value') {
+			value = t
+		}
 		return (
 			<Tag
 				key={t}
 				name={name}
 				value={value}
-				style={styles.tag_menu_tag}
+				style={{
+					...styles.tag_menu_tag,
+					flexGrow:
+						props.mode === 'tag_name'
+							? props.get_tag_count_for(name) * 10
+							: 1,
+				}}
 				onClick={() => props.onClick(t)}
 				color={
 					// if no color, color is active tag's
@@ -371,6 +382,22 @@ class DatumBar extends Component {
 			) : (
 				<AddIcon />
 			)
+		let tag_names = this.props
+			.get_tag_names()
+			.sort((a, b) => {
+				if (
+					this.props.get_last_added_for(a) <
+					this.props.get_last_added_for(b)
+				)
+					return 1
+				if (
+					this.props.get_last_added_for(a) >
+					this.props.get_last_added_for(b)
+				)
+					return -1
+				return 0
+			})
+		console.log(tag_names)
 		return (
 			<>
 				<div
@@ -412,12 +439,14 @@ class DatumBar extends Component {
 						filter={this.state.input}
 						onClick={this.add_tag}
 						tag_colors={this.props.tag_colors}
-						tag_names={Object.keys(this.props.tag_colors)}
+						tag_names={tag_names}
 						active_tag={this.state.active_tag}
 						get_tag_values_for={
 							this.props.get_tag_values_for
 						}
+						get_tag_count_for={this.props.get_tag_count_for}
 						mode={this.state.mode}
+						sorted_tags={this.props.sorted_tags}
 					/>
 
 					<form onSubmit={this.on_submit_datum}>
