@@ -397,7 +397,6 @@ class DatumBar extends Component {
 					return -1
 				return 0
 			})
-		console.log(tag_names)
 		return (
 			<>
 				<div

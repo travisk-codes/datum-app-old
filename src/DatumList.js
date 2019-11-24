@@ -1,4 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, {
+	useState,
+	useEffect,
+	useRef,
+	useCallback,
+} from 'react'
 import { List } from '@material-ui/core'
 import { withStyles } from '@material-ui/core/styles'
 import { VariableSizeList } from 'react-window'
@@ -38,19 +43,12 @@ const DatumList = props => {
 
 	if (!p.datums.length) return <List dense></List>
 	const getItemSize = index => 62
-	/*useEffect(() => {
-		if (
-			height !=
-			document.getElementById('datum-bar').offsetTop
-		) {
-			setHeight(
-				document.getElementById('datum-bar').offsetTop // get height from pos of datum-bar
-			)
-		}
-	})*/
+	const listRef = useCallback(node => {
+		if (node !== null) node.scrollToItem(p.datums.length)
+	})
 
 	return (
-		<div className={classes.datum_list} ref={ref}>
+		<div className={classes.datum_list}>
 			<AutoSizer>
 				{({ width, height }) => (
 					<VariableSizeList
@@ -59,6 +57,7 @@ const DatumList = props => {
 						itemSize={getItemSize}
 						itemCount={p.datums.length}
 						itemData={p}
+						ref={listRef}
 					>
 						{renderDatums}
 					</VariableSizeList>
