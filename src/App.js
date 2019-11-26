@@ -1,4 +1,7 @@
 import React, { Component } from 'react'
+import * as firebase from 'firebase'
+import withFirebaseAuth from 'react-with-firebase-auth'
+
 import uuid from 'uuid/v4'
 
 import { CssBaseline } from '@material-ui/core'
@@ -16,8 +19,28 @@ import ImportExport from './modals/ImportExport'
 import { datum_schema, tag_schema } from './schemas'
 import { rand_color } from './utils/getTagColor'
 import init_datums from './init_datums'
-import firebase from './firebase'
+import 'firebase/database'
+//import 'firebase/firestore'
+import 'firebase/auth'
+import secret from './utils/secret'
 import { db } from './utils/db'
+
+const config = secret || {
+	apiKey: process.env.FB_API_KEY,
+	authDomain: process.env.FB_AUTH_DOMAIN,
+	databaseURL: process.env.FB_DATABASE_URL,
+	projectId: process.env.FB_PROJECT_ID,
+	storageBucket: process.env.FB_STORAGE_BUCKET,
+	messagingSenderId: process.env.FB_MESSAGE_SENDER_ID,
+	appId: process.env.FB_APP_ID,
+}
+
+firebase.initializeApp(config)
+/*import {
+	signIn,
+	signOut,
+	onAuthStateChanged,
+} from './utils/auth'*/
 //import secret from './secret'
 
 const log = x => console.log(x)
@@ -85,15 +108,25 @@ class App extends Component {
 		this.get_last_added_for = this.get_last_added_for.bind(
 			this
 		)
+		this.userSignOut = this.userSignOut.bind(this)
 	}
 
 	componentDidMount() {
 		db.load(this)
+		//firebase.auth().onAuthStateChanged(onAuthStateChanged)
 	}
 
 	shouldComponentUpdate(nextProps, nextState) {
 		if (this.state !== nextState) return true
 		return false
+	}
+
+	userSignOut() {
+		//signOut()
+		this.setState({
+			current_view: 'splash',
+			is_side_menu_open: false,
+		})
 	}
 
 	add_tag_metadata(datum) {
@@ -369,6 +402,7 @@ class App extends Component {
 				<Splash
 					switch_view_to={this.switch_view_to}
 					on_login={this.load_db}
+					signIn={this.props.signInWithGoogle}
 				/>
 			),
 			datum_list: (
@@ -379,6 +413,7 @@ class App extends Component {
 						}
 						open={this.state.is_side_menu_open}
 						on_close={this.toggle_side_menu}
+						sign_out={this.props.signOut}
 					/>
 					<DatumList
 						datums={this.state.datums}
@@ -420,4 +455,13 @@ class App extends Component {
 	}
 }
 
-export default App
+const firebaseAppAuth = firebase.auth()
+
+const providers = {
+	googleProvider: new firebase.auth.GoogleAuthProvider(),
+}
+
+export default withFirebaseAuth({
+	providers,
+	firebaseAppAuth,
+})(App)

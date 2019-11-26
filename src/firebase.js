@@ -2,7 +2,7 @@ import * as firebase from 'firebase/app'
 import 'firebase/database'
 //import 'firebase/firestore'
 import 'firebase/auth'
-import secret from './secrets'
+import secret from './utils/secrets'
 
 const config = secret || {
 	apiKey: process.env.FB_API_KEY,

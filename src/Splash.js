@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import { Button, TextField } from '@material-ui/core'
 
+import { signIn } from './utils/auth'
 import my_db from './utils/db'
 import { datum_schema, tag_schema } from './schemas'
 //import secret from './secret'
@@ -105,12 +106,14 @@ const styles = {
 	button: {
 		color: 'white',
 		borderColor: 'rgba(255,255,255,.5)',
-		marginBottom: 40,
 	},
 	inline_container: {
 		margin: '0 auto',
-		display: 'inline-flex',
+		marginTop: '1.5em',
+		display: 'flex',
 		justifyContent: 'center',
+		flexDirection: 'column',
+		width: '12em',
 	},
 }
 
@@ -137,7 +140,9 @@ class Splash extends Component {
 		const { classes } = this.props
 		if (
 			(s.login_input && s.password_input) ||
-			(s.sign_up_input && s.password_input && s.verify_input)
+			(s.sign_up_input &&
+				s.password_input &&
+				s.verify_input)
 		) {
 			return (
 				<Button
@@ -145,9 +150,7 @@ class Splash extends Component {
 					size='large'
 					type='submit'
 					onClick={() => console.log('submit')}
-					className={`${classes.button} ${
-						classes.container_item
-						}`}
+					className={`${classes.button} ${classes.container_item}`}
 					style={{ marginTop: 10, width: 218 }}
 				>
 					Submit
@@ -177,9 +180,7 @@ class Splash extends Component {
 				key={props.label}
 				value={props.value}
 				onChange={props.onChange}
-				className={`${classes.container_item} ${
-					classes.input
-					}`}
+				className={`${classes.container_item} ${classes.input}`}
 			/>
 		)
 	}
@@ -191,7 +192,8 @@ class Splash extends Component {
 		if (s.login_input && s.password_input) {
 			is_signing_up = false
 		} else if (
-			s.sign_up_input && s.password_input &&
+			s.sign_up_input &&
+			s.password_input &&
 			s.password_input === s.verify_input
 		) {
 			is_signing_up = true
@@ -244,7 +246,7 @@ class Splash extends Component {
 					this.setState({ verify_input: e.target.value }),
 				show: Boolean(
 					this.state.password_input &&
-					this.state.sign_up_input
+						this.state.sign_up_input
 				),
 			},
 		]
@@ -256,49 +258,42 @@ class Splash extends Component {
 					className={classes.logo}
 				/>
 				<span className={classes.tag_line}>
-					{'a personal data management platform'}
+					{'a personal data management platform\ntesting'}
 				</span>
 
 				<div className={classes.inline_container}>
 					<Button
-						component='span'
+						onClick={() => {
+							this.props.signIn()
+							this.props.switch_view_to('datum_list')
+						}}
 						variant='outlined'
 						size='medium'
-						className={`${classes.button} ${
-							classes.container_item
-							}`}
+						component='div'
+						className={`${classes.button} ${classes.container_item}`}
+					>
+						Online Sync
+					</Button>
+					<Button
+						onClick={() =>
+							this.props.switch_view_to('datum_list')
+						}
+						component='div'
+						variant='outlined'
+						size='medium'
+						className={`${classes.button} ${classes.container_item}`}
+					>
+						Offline Only
+					</Button>
+					<Button
+						component='div'
+						variant='outlined'
+						size='medium'
+						className={`${classes.button} ${classes.container_item}`}
 					>
 						Learn More
 					</Button>
-					<Button
-						onClick={() => this.props.switch_view_to('datum_list')}
-						variant='outlined'
-						size='medium'
-						component='span'
-						className={`${classes.button} ${
-							classes.container_item
-							}`}
-					>
-						Open App
-					</Button>
 				</div>
-
-				<form
-					style={{
-						display: 'flex',
-						flexDirection: 'column',
-					}}
-					onSubmit={this.handle_submit}
-				>
-					<div className={classes.inline_container}>
-						{this.render_text_field(text_fields[0])}
-						{this.render_text_field(text_fields[1])}
-					</div>
-
-					{this.render_text_field(text_fields[2])}
-					{this.render_text_field(text_fields[3])}
-					{this.render_submit_button()}
-				</form>
 			</div>
 		)
 	}

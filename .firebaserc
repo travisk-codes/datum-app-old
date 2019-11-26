@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "datum-app-db"
+    "default": "datum-app-db",
+    "dev": "datum-app-db"
   }
 }
