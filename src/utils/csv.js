@@ -2,14 +2,15 @@ import uuid from 'uuid/v4'
 
 export function datums_to_csv(datums) {
 	let csv_string = ''
-	let csv_headers = []
+	let csv_headers = new Set()
 
 	datums.forEach(datum => {
 		datum.tags.forEach(tag => {
-			if (!csv_headers.includes(tag.name)) csv_headers.push(tag.name)
+			if (!csv_headers.has(tag.name)) csv_headers.add(tag.name.trim())
 		})
 	})
 
+	csv_headers = [...csv_headers] // convert set to array
 	csv_headers.sort()
 	csv_headers.unshift('_id', '_time')
 	csv_string += csv_headers.toString() + '\n'
