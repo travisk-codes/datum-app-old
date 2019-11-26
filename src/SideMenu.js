@@ -28,7 +28,7 @@ export default function SideMenu(props) {
 			<List>
 				{['Help', 'About', 'Sign Out'].map((text, i) => (
 					<ListItem
-						onClick={props.signOut}
+						onClick={props.sign_out}
 						button
 						key={text}
 					>

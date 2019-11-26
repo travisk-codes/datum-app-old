@@ -122,7 +122,7 @@ class App extends Component {
 	}
 
 	userSignOut() {
-		//signOut()
+		this.props.signOut()
 		this.setState({
 			current_view: 'splash',
 			is_side_menu_open: false,
@@ -413,7 +413,7 @@ class App extends Component {
 						}
 						open={this.state.is_side_menu_open}
 						on_close={this.toggle_side_menu}
-						sign_out={this.props.signOut}
+						sign_out={this.userSignOut}
 					/>
 					<DatumList
 						datums={this.state.datums}
