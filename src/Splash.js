@@ -3,7 +3,7 @@ import { withStyles } from '@material-ui/core/styles'
 import { Button, TextField } from '@material-ui/core'
 
 import { signIn } from './utils/auth'
-import my_db from './utils/db'
+import {db} from './utils/db'
 import { datum_schema, tag_schema } from './schemas'
 //import secret from './secret'
 import logo from './datum-logo.svg'
@@ -127,6 +127,7 @@ class Splash extends Component {
 			verify_input: '',
 		}
 		this.handle_submit = this.handle_submit.bind(this)
+		this.signIn = this.signIn.bind(this)
 	}
 
 	shouldComponentUpdate(nextProps, nextState) {
@@ -207,6 +208,16 @@ class Splash extends Component {
 		this.props.switch_view_to('datum_list')
 	}
 
+	async signIn() {
+		try {
+			await this.props.signIn()
+			await this.props.load_db()
+		} catch(e) {
+			console.error(e)
+		}
+		this.props.switch_view_to('datum_list')
+	}
+
 	render() {
 		const classes = { ...this.props.classes }
 		const text_fields = [
@@ -263,10 +274,7 @@ class Splash extends Component {
 
 				<div className={classes.inline_container}>
 					<Button
-						onClick={() => {
-							this.props.signIn()
-							this.props.switch_view_to('datum_list')
-						}}
+						onClick={this.signIn}
 						variant='outlined'
 						size='medium'
 						component='div'

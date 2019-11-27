@@ -41,12 +41,15 @@ const DatumList = props => {
 	const [height, setHeight] = useState(500)
 	const ref = useRef(null)
 
-	if (!p.datums.length) return <List dense></List>
 	const getItemSize = index => 62
 	const listRef = useCallback(node => {
-		if (node !== null) node.scrollToItem(p.datums.length)
+		try {
+			if (node !== null) node.scrollToItem(p.datums.length)
+		} catch(e) {
+			console.error(e)
+		}
 	})
-
+	if (!p.datums.length) return <List ref={listRef} dense></List>
 	return (
 		<div className={classes.datum_list}>
 			<AutoSizer>

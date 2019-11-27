@@ -12,40 +12,41 @@ const config = secret || {
 	appId: process.env.FB_APP_ID,
 }
 
-const db = {
-	load(app) {
-		firebase
-			.database()
-			.ref('datums')
-			.on('value', snapshot => {
-				let datums_state = []
-
-				let datums = snapshot.val()
-				for (let datum_id in datums) {
-					datums_state.push({
-						id: datum_id,
-						tags: datums[datum_id].tags,
-						time: datums[datum_id].time,
-					})
-				}
-				datums_state.forEach(d => app.add_tag_metadata(d))
-				app.setState({
-					datums: datums_state,
+function load(app, user) {
+	console.log(user)
+	firebase
+		.database()
+		.ref(`/${user.uid}/datums`)
+		.on('value', snapshot => {
+			let datums_state = []
+			console.log(snapshot.val())
+			let datums = snapshot.val()
+			for (let datum_id in datums) {
+				datums_state.push({
+					id: datum_id,
+					tags: datums[datum_id].tags,
+					time: datums[datum_id].time,
 				})
+			}
+			datums_state.forEach(d => app.add_tag_metadata(d))
+			app.setState({
+				datums: datums_state,
 			})
-	},
-	add(datum) {
-		firebase
-			.database()
-			.ref('datums')
-			.push(datum)
-	},
-	del(id) {
-		firebase
-			.database()
-			.ref(`/datums/${id}`)
-			.remove()
-	},
+		})
 }
 
-export { db }
+function add(datum, user) {
+		firebase
+			.database()
+			.ref(`/${user.uid}/datums`)
+			.push(datum)
+}
+
+function del(id, user) {
+		firebase
+			.database()
+			.ref(`/${user.uid}/datums/${id}`)
+			.remove()
+	}
+
+export default { load, add, del }

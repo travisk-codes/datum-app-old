@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import * as firebase from 'firebase'
 import withFirebaseAuth from 'react-with-firebase-auth'
 
 import uuid from 'uuid/v4'
@@ -19,29 +18,46 @@ import ImportExport from './modals/ImportExport'
 import { datum_schema, tag_schema } from './schemas'
 import { rand_color } from './utils/getTagColor'
 import init_datums from './init_datums'
-import 'firebase/database'
-//import 'firebase/firestore'
-import 'firebase/auth'
 import secret from './utils/secret'
-import { db } from './utils/db'
+import firebase from './firebase'
 
-const config = secret || {
-	apiKey: process.env.FB_API_KEY,
-	authDomain: process.env.FB_AUTH_DOMAIN,
-	databaseURL: process.env.FB_DATABASE_URL,
-	projectId: process.env.FB_PROJECT_ID,
-	storageBucket: process.env.FB_STORAGE_BUCKET,
-	messagingSenderId: process.env.FB_MESSAGE_SENDER_ID,
-	appId: process.env.FB_APP_ID,
+import 'firebase/database'
+
+function load(app, user) {
+	firebase
+		.database()
+		.ref(`/${user.uid}/datums`)
+		.on('value', snapshot => {
+			let datums_state = []
+			console.log(snapshot.val())
+			let datums = snapshot.val()
+			for (let datum_id in datums) {
+				datums_state.push({
+					id: datum_id,
+					tags: datums[datum_id].tags,
+					time: datums[datum_id].time,
+				})
+			}
+			datums_state.forEach(d => app.add_tag_metadata(d))
+			app.setState({
+				datums: datums_state,
+			})
+		})
 }
 
-firebase.initializeApp(config)
-/*import {
-	signIn,
-	signOut,
-	onAuthStateChanged,
-} from './utils/auth'*/
-//import secret from './secret'
+function add(datum, user) {
+		firebase
+			.database()
+			.ref(`/${user.uid}/datums`)
+			.push(datum)
+}
+
+function del(id, user) {
+		firebase
+			.database()
+			.ref(`/${user.uid}/datums/${id}`)
+			.remove()
+	}
 
 const log = x => console.log(x)
 const empty_datum = () => ({
@@ -83,7 +99,6 @@ class App extends Component {
 			is_side_menu_open: false,
 			current_modal: false,
 		}
-		this.subs = []
 		this.add_active_datum = this.add_active_datum.bind(this)
 		this.del_datum = this.del_datum.bind(this)
 		this.edit_datum = this.edit_datum.bind(this)
@@ -112,12 +127,14 @@ class App extends Component {
 	}
 
 	componentDidMount() {
-		db.load(this)
-		//firebase.auth().onAuthStateChanged(onAuthStateChanged)
 	}
 
 	shouldComponentUpdate(nextProps, nextState) {
 		if (this.state !== nextState) return true
+		if (this.props !== nextProps) {
+			if (this.props.user) load(this, nextProps.user)
+			return true
+		}
 		return false
 	}
 
@@ -196,7 +213,7 @@ class App extends Component {
 			active_datum.tags = tags
 			datums.push(active_datum)
 		}
-		db.add(active_datum)
+		add(active_datum, this.props.user)
 		this.add_tag_metadata(active_datum)
 
 		// load empty or stashed datum in datum bar
@@ -208,7 +225,6 @@ class App extends Component {
 		}
 
 		this.setState({
-			datums,
 			stashed_datum,
 			active_datum,
 		})
@@ -257,7 +273,7 @@ class App extends Component {
 		this.setState(state => ({
 			datums: state.datums.filter(datum => datum.id !== id),
 		}))
-		db.del(id)
+		del(id, this.props.user)
 		console.log(`datum ${id} deleted`)
 	}
 
@@ -391,6 +407,12 @@ class App extends Component {
 		// TODO remove tag data
 	}
 
+	 loadDB() {
+			console.log(this.props.user)
+			 load(this, this.props.user)
+		console.log('loaded!')
+	}
+
 	render() {
 		const { classes } = this.props
 		let tag_colors = {}
@@ -401,8 +423,9 @@ class App extends Component {
 			splash: (
 				<Splash
 					switch_view_to={this.switch_view_to}
-					on_login={this.load_db}
+					load_db={this.loadDB}
 					signIn={this.props.signInWithGoogle}
+					user={this.props.user}
 				/>
 			),
 			datum_list: (
