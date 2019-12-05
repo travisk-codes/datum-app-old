@@ -1,6 +1,10 @@
 import React from 'react'
 import {
+<<<<<<< HEAD
 	Fab,
+=======
+	// Fab,
+>>>>>>> 905cb95... fixes errors and warnings
 	Divider,
 	Drawer,
 	List,
@@ -26,12 +30,17 @@ export default function SideMenu(props) {
 			onClose={props.on_close}
 		>
 			<List>
+<<<<<<< HEAD
 				{['Help', 'About', 'Sign Out'].map((text, i) => (
 					<ListItem
 						onClick={props.sign_out}
 						button
 						key={text}
 					>
+=======
+				{['Help', 'About'].map((text, i) => (
+					<ListItem button key={text}>
+>>>>>>> 905cb95... fixes errors and warnings
 						<ListItemIcon>
 							{text === 'Help' ? (
 								<HelpIcon />

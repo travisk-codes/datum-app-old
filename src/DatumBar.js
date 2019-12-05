@@ -30,7 +30,11 @@ const styles = {
 	tag_menu: {
 		// display: controlled
 		position: 'relative',
+<<<<<<< HEAD
 		flexWrap: 'wrap-reverse',
+=======
+		flexWrap: 'wrap',
+>>>>>>> 905cb95... fixes errors and warnings
 		justifyContent: 'center',
 		padding: 8,
 		margin: 8,
@@ -131,6 +135,7 @@ const TagBar = props => {
 	}
 	let tags = matches.map(t => {
 		let name = false,
+<<<<<<< HEAD
 			value = false,
 			tag
 		if (props.mode === 'tag_name') {
@@ -139,11 +144,17 @@ const TagBar = props => {
 		if (props.mode === 'tag_value') {
 			value = t
 		}
+=======
+			value = false
+		if (props.mode === 'tag_name') name = t
+		if (props.mode === 'tag_value') value = t
+>>>>>>> 905cb95... fixes errors and warnings
 		return (
 			<Tag
 				key={t}
 				name={name}
 				value={value}
+<<<<<<< HEAD
 				style={{
 					...styles.tag_menu_tag,
 					flexGrow:
@@ -151,6 +162,9 @@ const TagBar = props => {
 							? props.get_tag_count_for(name) * 10
 							: 1,
 				}}
+=======
+				style={styles.tag_menu_tag}
+>>>>>>> 905cb95... fixes errors and warnings
 				onClick={() => props.onClick(t)}
 				color={
 					// if no color, color is active tag's
@@ -239,18 +253,25 @@ class DatumBar extends Component {
 	}
 
 	add_tag(tag) {
+<<<<<<< HEAD
 		let tagName,
 			tagValue,
 			mode,
 			submitting_tag_value,
 			submitting_valueless_tag
+=======
+		let tagName, tagValue, mode, submitting_tag_value
+>>>>>>> 905cb95... fixes errors and warnings
 		const values = this.props.get_tag_values_for(tag)
 		const split = tag.indexOf(':')
 		if (split > 0) {
 			tagName = tag.substring(0, split)
 			tagValue = tag.substring(split + 1)
 			mode = 'tag_name'
+<<<<<<< HEAD
 			submitting_valueless_tag = true
+=======
+>>>>>>> 905cb95... fixes errors and warnings
 		} else if (values && values[0]) {
 			tagName = tag
 			tagValue = ''
@@ -382,6 +403,7 @@ class DatumBar extends Component {
 			) : (
 				<AddIcon />
 			)
+<<<<<<< HEAD
 		let tag_names = this.props
 			.get_tag_names()
 			.sort((a, b) => {
@@ -401,6 +423,11 @@ class DatumBar extends Component {
 			<>
 				<div
 					id='datum-bar'
+=======
+		return (
+			<>
+				<div
+>>>>>>> 905cb95... fixes errors and warnings
 					style={styles.container}
 					onFocus={() =>
 						this.setState({
@@ -438,14 +465,22 @@ class DatumBar extends Component {
 						filter={this.state.input}
 						onClick={this.add_tag}
 						tag_colors={this.props.tag_colors}
+<<<<<<< HEAD
 						tag_names={tag_names}
+=======
+						tag_names={Object.keys(this.props.tag_colors)}
+>>>>>>> 905cb95... fixes errors and warnings
 						active_tag={this.state.active_tag}
 						get_tag_values_for={
 							this.props.get_tag_values_for
 						}
+<<<<<<< HEAD
 						get_tag_count_for={this.props.get_tag_count_for}
 						mode={this.state.mode}
 						sorted_tags={this.props.sorted_tags}
+=======
+						mode={this.state.mode}
+>>>>>>> 905cb95... fixes errors and warnings
 					/>
 
 					<form onSubmit={this.on_submit_datum}>

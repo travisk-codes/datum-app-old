@@ -1,9 +1,13 @@
+<<<<<<< HEAD
 import React, {
 	useState,
 	useEffect,
 	useRef,
 	useCallback,
 } from 'react'
+=======
+import React from 'react'
+>>>>>>> 905cb95... fixes errors and warnings
 import { List } from '@material-ui/core'
 import { withStyles } from '@material-ui/core/styles'
 import { VariableSizeList } from 'react-window'
@@ -25,6 +29,7 @@ const styles = {
 }
 
 function renderDatums(props) {
+<<<<<<< HEAD
 	const { index, style, data, ...p } = props
 	return (
 		<div style={style}>
@@ -34,6 +39,17 @@ function renderDatums(props) {
 				{...data}
 			/>
 		</div>
+=======
+	const { index, style, data } = props
+	return (
+		//<div style={style}>{data[index].id}</div>
+		<Datum
+			style={style}
+			key={data.datums[index].id}
+			{...data.datums[index]}
+			{...data}
+		/>
+>>>>>>> 905cb95... fixes errors and warnings
 	)
 }
 const DatumList = props => {
@@ -52,6 +68,7 @@ const DatumList = props => {
 	if (!p.datums.length) return <List ref={listRef} dense></List>
 	return (
 		<div className={classes.datum_list}>
+<<<<<<< HEAD
 			<AutoSizer>
 				{({ width, height }) => (
 					<VariableSizeList
@@ -66,6 +83,17 @@ const DatumList = props => {
 					</VariableSizeList>
 				)}
 			</AutoSizer>
+=======
+			<FixedSizeList
+				height={2000}
+				width={document.width}
+				itemSize={36}
+				itemCount={p.datums.length}
+				itemData={p}
+			>
+				{renderDatums}
+			</FixedSizeList>
+>>>>>>> 905cb95... fixes errors and warnings
 		</div>
 	)
 }

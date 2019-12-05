@@ -14,7 +14,6 @@ import { CssBaseline } from '@material-ui/core'
 import {
 	MuiThemeProvider,
 	createMuiTheme,
-	withStyles,
 } from '@material-ui/core/styles'
 
 import DatumBar from './DatumBar'
@@ -24,6 +23,7 @@ import SideMenu from './SideMenu'
 import ImportExport from './modals/ImportExport'
 import { datum_schema, tag_schema } from './schemas'
 import { rand_color } from './utils/getTagColor'
+<<<<<<< HEAD
 import init_datums from './init_datums'
 import secret from './utils/secret'
 import firebase from './firebase'
@@ -54,6 +54,12 @@ function load(app, user) {
 }
 =======
 const log = x => console.log(x)
+=======
+//import init_datums from './init_datums'
+//import secret from './secret'
+
+//const log = x => console.log(x)
+>>>>>>> 905cb95... fixes errors and warnings
 const empty_datum = () => ({
 	id: null,
 	time: null,
@@ -206,9 +212,6 @@ class App extends Component {
 				})
 			})
 		this.subs.push(t_subscription)
-
-		//console.log(this.db_tags)
-		//console.log(this.db_datums)
 	}
 
 	componentWillUnmount() {
@@ -241,7 +244,7 @@ class App extends Component {
 		const time = datum.time
 		let all_tag_data = []
 		let tag_exists = []
-		datum.tags.map(dt => {
+		datum.tags.forEach(dt => {
 			const name = dt.name
 			const value = dt.value
 			let tag_data, existence
@@ -331,13 +334,13 @@ class App extends Component {
 		})
 
 		// scroll to new datum at end of list
-		window.setTimeout(() => {
+		/*window.setTimeout(() => {
 			window.scrollTo({
 				top: document.body.scrollHeight,
 				left: 0,
 				behavior: 'smooth',
 			})
-		}, 100) // give state some time to update before scroll, janky solution :/
+		}, 100) // give state some time to update before scroll, janky solution :/*/
 	}
 
 	add_datums(new_datums) {
@@ -408,7 +411,7 @@ class App extends Component {
 		const tags_to_delete = datum_to_delete.tags
 		const instance_time = datum_to_delete.time
 		let new_state = this.state.tags
-		tags_to_delete.map(dt => {
+		tags_to_delete.forEach(dt => {
 			try {
 				let tag_data = this.state.tags
 					.filter(st => st.name === dt.name)
@@ -524,11 +527,11 @@ class App extends Component {
 	}
 
 	render() {
-		const { classes } = this.props
 		let tag_colors = {}
-		this.state.tags.map(({ name, color }) => {
+		this.state.tags.forEach(({ name, color }) => {
 			tag_colors[name] = color
 		})
+<<<<<<< HEAD
 <<<<<<< HEAD
 		const views = {
 			splash: (
@@ -585,6 +588,9 @@ class App extends Component {
 				<CssBaseline />
 				{views[this.state.current_view]}
 =======
+=======
+		// eslint-disable-next-line
+>>>>>>> 905cb95... fixes errors and warnings
 		const splash = (
 			<Splash
 				switch_view_to={this.switch_view_to}

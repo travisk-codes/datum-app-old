@@ -2,9 +2,12 @@ import React, { Component } from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import { Button, TextField } from '@material-ui/core'
 
+<<<<<<< HEAD
 import { signIn } from './utils/auth'
 import {db} from './utils/db'
 import { datum_schema, tag_schema } from './schemas'
+=======
+>>>>>>> 905cb95... fixes errors and warnings
 //import secret from './secret'
 import logo from './datum-logo.svg'
 
@@ -277,7 +280,10 @@ class Splash extends Component {
 						onClick={this.signIn}
 						variant='outlined'
 						size='medium'
+<<<<<<< HEAD
 						component='div'
+=======
+>>>>>>> 905cb95... fixes errors and warnings
 						className={`${classes.button} ${classes.container_item}`}
 					>
 						Online Sync
@@ -294,9 +300,18 @@ class Splash extends Component {
 						Offline Only
 					</Button>
 					<Button
+<<<<<<< HEAD
 						component='div'
 						variant='outlined'
 						size='medium'
+=======
+						onClick={() =>
+							this.props.switch_view_to('datum_list')
+						}
+						variant='outlined'
+						size='medium'
+						component='span'
+>>>>>>> 905cb95... fixes errors and warnings
 						className={`${classes.button} ${classes.container_item}`}
 					>
 						Learn More
