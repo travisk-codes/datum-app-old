@@ -1,6 +1,13 @@
 import React, { Component } from 'react'
+<<<<<<< HEAD
 import withFirebaseAuth from 'react-with-firebase-auth'
 
+=======
+import RxDB from 'rxdb'
+import memory from 'pouchdb-adapter-memory'
+import idb from 'pouchdb-adapter-idb'
+import http from 'pouchdb-adapter-http'
+>>>>>>> 273fe4c... gets rxdb working
 import uuid from 'uuid/v4'
 
 import { CssBaseline } from '@material-ui/core'
@@ -54,6 +61,7 @@ const empty_datum = () => ({
 })
 >>>>>>> 643eadb... prettifies
 
+<<<<<<< HEAD
 function add(datum, user) {
 		firebase
 			.database()
@@ -74,6 +82,10 @@ const empty_datum = () => ({
 	time: null,
 	tags: [],
 })
+=======
+RxDB.plugin(idb)
+RxDB.plugin(http)
+>>>>>>> 273fe4c... gets rxdb working
 
 const theme = createMuiTheme({
 	palette: {
@@ -135,7 +147,54 @@ class App extends Component {
 		this.userSignOut = this.userSignOut.bind(this)
 	}
 
+<<<<<<< HEAD
 	componentDidMount() {
+=======
+	async componentDidMount() {
+		const db = await RxDB.create({
+			name: 'datum_app',
+			adapter: 'idb',
+			queryChangeDetection: true,
+		})
+		this.db_datums = await db.collection({
+			name: 'datums',
+			schema: datum_schema,
+		})
+		const d_subscription = this.db_datums
+			.find()
+			.sort({ time: 1 })
+			.$.subscribe(docs => {
+				if (!docs) return
+				this.setState({
+					datums: docs.map(({ id, time, tags }) => ({
+						id,
+						time,
+						tags,
+					})),
+				})
+			})
+
+		this.subs.push(d_subscription)
+
+		this.db_tags = await db.collection({
+			name: 'tags',
+			schema: tag_schema,
+		})
+
+		const t_subscription = this.db_tags
+			.find()
+			.$.subscribe(docs => {
+				if (!docs) return
+				this.setState({
+					tags: docs,
+				})
+			})
+		this.subs.push(t_subscription)
+	}
+
+	componentWillUnmount() {
+		this.subs.forEach(s => s.unsubscribe())
+>>>>>>> 273fe4c... gets rxdb working
 	}
 
 	shouldComponentUpdate(nextProps, nextState) {
@@ -206,7 +265,7 @@ class App extends Component {
 		})
 	}
 
-	add_active_datum(tags) {
+	async add_active_datum(tags) {
 		if (!tags.length) return
 		let { datums, active_datum, stashed_datum } = this.state
 
@@ -222,7 +281,12 @@ class App extends Component {
 			active_datum.tags = tags
 			datums.push(active_datum)
 		}
+<<<<<<< HEAD
 		add(active_datum, this.props.user)
+=======
+
+		await this.db_datums.upsert(active_datum)
+>>>>>>> 273fe4c... gets rxdb working
 		this.add_tag_metadata(active_datum)
 
 		// load empty or stashed datum in datum bar
@@ -234,6 +298,10 @@ class App extends Component {
 		}
 
 		this.setState({
+<<<<<<< HEAD
+=======
+			//datums,
+>>>>>>> 273fe4c... gets rxdb working
 			stashed_datum,
 			active_datum,
 		})
@@ -277,12 +345,21 @@ class App extends Component {
 			.update(updates)
 	}
 
-	del_datum(id) {
+	async del_datum(id) {
 		this.del_tag_metadata(id)
 		this.setState(state => ({
 			datums: state.datums.filter(datum => datum.id !== id),
 		}))
+<<<<<<< HEAD
 		del(id, this.props.user)
+=======
+		const datum_to_delete = await this.db_datums
+			.findOne()
+			.where('id')
+			.eq(id)
+			.exec()
+		datum_to_delete.remove()
+>>>>>>> 273fe4c... gets rxdb working
 		console.log(`datum ${id} deleted`)
 	}
 
