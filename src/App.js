@@ -21,6 +21,7 @@ import init_datums from './init_datums'
 import secret from './utils/secret'
 import firebase from './firebase'
 
+<<<<<<< HEAD
 import 'firebase/database'
 
 function load(app, user) {
@@ -44,6 +45,14 @@ function load(app, user) {
 			})
 		})
 }
+=======
+const log = x => console.log(x)
+const empty_datum = () => ({
+	id: null,
+	time: null,
+	tags: [],
+})
+>>>>>>> 643eadb... prettifies
 
 function add(datum, user) {
 		firebase
@@ -419,6 +428,7 @@ class App extends Component {
 		this.state.tags.map(({ name, color }) => {
 			tag_colors[name] = color
 		})
+<<<<<<< HEAD
 		const views = {
 			splash: (
 				<Splash
@@ -473,6 +483,49 @@ class App extends Component {
 			<MuiThemeProvider theme={theme}>
 				<CssBaseline />
 				{views[this.state.current_view]}
+=======
+		const splash = (
+			<Splash
+				switch_view_to={this.switch_view_to}
+				on_login={this.load_db}
+			/>
+		)
+		return (
+			<MuiThemeProvider theme={theme}>
+				<CssBaseline />
+				<SideMenu
+					on_click_import_export={() =>
+						this.toggle_modal('import_export')
+					}
+					open={this.state.is_side_menu_open}
+					on_close={this.toggle_side_menu}
+				/>
+				<DatumList
+					datums={this.state.datums}
+					tag_colors={tag_colors}
+					onSelectEdit={this.edit_datum}
+					onSelectDelete={this.del_datum}
+				/>
+				<DatumBar
+					on_add_tag={this.add_tag}
+					on_del_tag={this.del_tag}
+					on_add_datum={this.add_active_datum}
+					get_tag_values_for={this.get_tag_values_for}
+					tag_colors={tag_colors}
+					active_datum={this.state.active_datum}
+					on_button_long_press={this.toggle_side_menu}
+				/>
+				<ImportExport
+					open={
+						this.state.current_modal === 'import_export'
+							? true
+							: false
+					}
+					handle_close={() => this.toggle_modal(false)}
+					datums={this.state.datums}
+					import_datums={this.import_datums}
+				/>
+>>>>>>> 643eadb... prettifies
 			</MuiThemeProvider>
 		)
 	}
