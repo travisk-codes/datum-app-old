@@ -24,6 +24,7 @@ import ImportExport from './modals/ImportExport'
 import { datum_schema, tag_schema } from './schemas'
 import { rand_color } from './utils/getTagColor'
 <<<<<<< HEAD
+<<<<<<< HEAD
 import init_datums from './init_datums'
 import secret from './utils/secret'
 import firebase from './firebase'
@@ -56,6 +57,9 @@ function load(app, user) {
 const log = x => console.log(x)
 =======
 //import init_datums from './init_datums'
+=======
+import init_datums from './init_datums'
+>>>>>>> f73c15d... if empty, loads default datums
 //import secret from './secret'
 
 //const log = x => console.log(x)
@@ -158,6 +162,7 @@ class App extends Component {
 	componentDidMount() {
 =======
 	async componentDidMount() {
+		let get_init_datums_tags = false
 		const db = await RxDB.create({
 			name: 'datum_app',
 			adapter: 'idb',
@@ -172,14 +177,17 @@ class App extends Component {
 			.find()
 			.sort({ time: 1 })
 			.$.subscribe(docs => {
-				if (!docs) return
-				this.setState({
-					datums: docs.map(({ id, time, tags }) => ({
-						id,
-						time,
-						tags,
-					})),
-				})
+				if (!docs.length) {
+					get_init_datums_tags = true
+				} else {
+					this.setState({
+						datums: docs.map(({ id, time, tags }) => ({
+							id,
+							time,
+							tags,
+						})),
+					})
+				}
 			})
 		this.subs.push(d_subscription)
 
@@ -212,6 +220,12 @@ class App extends Component {
 				})
 			})
 		this.subs.push(t_subscription)
+		if (get_init_datums_tags) {
+			init_datums.forEach(d => {
+				this.add_tag_metadata(d)
+			})
+			this.add_datums(init_datums)
+		}
 	}
 
 	componentWillUnmount() {
@@ -343,7 +357,7 @@ class App extends Component {
 		}, 100) // give state some time to update before scroll, janky solution :/*/
 	}
 
-	add_datums(new_datums) {
+	async add_datums(new_datums) {
 		const new_datum_ids = new_datums.map(d => d.id)
 		let { datums } = this.state
 		// default to overwriting existing datums for now
@@ -354,6 +368,13 @@ class App extends Component {
 			}
 			return true
 		})
+<<<<<<< HEAD
+=======
+		new_datums.forEach(async d => {
+			this.add_tag_metadata(d)
+			await this.db_datums.upsert(d)
+		})
+>>>>>>> f73c15d... if empty, loads default datums
 		datums = datums.concat(new_datums)
 		this.setState({ datums })
 		let updates = {}
@@ -373,6 +394,7 @@ class App extends Component {
 	}
 
 	async del_datum(id) {
+<<<<<<< HEAD
 		this.del_tag_metadata(id)
 		this.setState(state => ({
 			datums: state.datums.filter(datum => datum.id !== id),
@@ -380,13 +402,23 @@ class App extends Component {
 <<<<<<< HEAD
 		del(id, this.props.user)
 =======
+=======
+		console.log(await this.db_datums.findOne().exec())
+>>>>>>> f73c15d... if empty, loads default datums
 		const datum_to_delete = await this.db_datums
 			.findOne()
 			.where('id')
 			.eq(id)
 			.exec()
 		datum_to_delete.remove()
+<<<<<<< HEAD
 >>>>>>> 273fe4c... gets rxdb working
+=======
+		this.del_tag_metadata(id)
+		this.setState(state => ({
+			datums: state.datums.filter(datum => datum.id !== id),
+		}))
+>>>>>>> f73c15d... if empty, loads default datums
 		console.log(`datum ${id} deleted`)
 	}
 
