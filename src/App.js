@@ -84,6 +84,7 @@ const empty_datum = () => ({
 })
 =======
 RxDB.plugin(idb)
+RxDB.plugin(memory)
 RxDB.plugin(http)
 >>>>>>> 273fe4c... gets rxdb working
 
@@ -156,6 +157,7 @@ class App extends Component {
 			adapter: 'idb',
 			queryChangeDetection: true,
 		})
+
 		this.db_datums = await db.collection({
 			name: 'datums',
 			schema: datum_schema,
@@ -173,23 +175,40 @@ class App extends Component {
 					})),
 				})
 			})
-
 		this.subs.push(d_subscription)
 
 		this.db_tags = await db.collection({
-			name: 'tags',
+			name: 'tagss',
 			schema: tag_schema,
 		})
-
 		const t_subscription = this.db_tags
 			.find()
 			.$.subscribe(docs => {
 				if (!docs) return
 				this.setState({
-					tags: docs,
+					tags: docs.map(
+						({
+							id,
+							name,
+							color,
+							instance_times,
+							instance_peers,
+							instance_values,
+						}) => ({
+							id,
+							name,
+							color,
+							instance_times,
+							instance_peers,
+							instance_values,
+						})
+					),
 				})
 			})
 		this.subs.push(t_subscription)
+
+		//console.log(this.db_tags)
+		//console.log(this.db_datums)
 	}
 
 	componentWillUnmount() {
@@ -206,6 +225,7 @@ class App extends Component {
 		return false
 	}
 
+<<<<<<< HEAD
 	userSignOut() {
 		this.props.signOut()
 		this.setState({
@@ -215,6 +235,9 @@ class App extends Component {
 	}
 
 	add_tag_metadata(datum) {
+=======
+	async add_tag_metadata(datum) {
+>>>>>>> 9404929... existing tags get color when that tag is added
 		const time = datum.time
 		let all_tag_data = []
 		let tag_exists = []
@@ -252,6 +275,7 @@ class App extends Component {
 		let new_state = this.state.tags
 		for (let i = 0; i < all_tag_data.length; i++) {
 			let data = all_tag_data[i]
+			await this.db_tags.upsert(data)
 			if (tag_exists[i]) {
 				new_state = old_state.map(t =>
 					t.name === data.name ? data : t
