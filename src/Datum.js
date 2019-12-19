@@ -25,7 +25,6 @@ const styles = {
 		paddingLeft: 4
 	},
 	datum_w_menu_open: {
-		transform: 'scale(1.05)',
 		boxShadow: '0 0 13px -10px black',
 		backgroundColor: 'white',
 	},
