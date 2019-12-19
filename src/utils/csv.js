@@ -10,7 +10,11 @@ export function datums_to_csv(datums) {
 		})
 	})
 
+<<<<<<< HEAD
 	csv_headers = [...csv_headers] // convert set to array
+=======
+	csv_headers = [...csv_headers] // converts set to array
+>>>>>>> 1bbe016... fixes inexplicable csv export bug by using set instead of array
 	csv_headers.sort()
 	csv_headers.unshift('_id', '_time')
 	csv_string += csv_headers.toString() + '\n'
