@@ -18,11 +18,16 @@ const styles = {
 		'& span': {
 			display: 'inline-flex',
 			overflow: 'auto',
+<<<<<<< HEAD
 			width: '100%',
 		}
 	},
 	datum: {
 		paddingLeft: 4
+=======
+		},
+		overflow: 'scroll',
+>>>>>>> 880d239... fixes datum layout
 	},
 	datum_w_menu_open: {
 		boxShadow: '0 0 13px -10px black',
@@ -34,17 +39,29 @@ const styles = {
 		whiteSpace: 'nowrap',
 		margin: 3,
 		paddingTop: 9,
+<<<<<<< HEAD
 		width: 36,
 		textAlign: 'center',
 	},
 	rightScrollFade: {
 		background: 'linear-gradient(to left, #fafafa, #ffffff00)',
+=======
+		textAlign: 'center',
+		paddingRight: 9,
+	},
+	rightScrollFade: {
+		background: 'linear-gradient(to left, #fafafa, #ffffff00',
+>>>>>>> 880d239... fixes datum layout
 		width: 40,
 		height: '100%',
 		right: '48px',
 		top: 0,
 		bottom: 0,
+<<<<<<< HEAD
 		position: 'absolute'
+=======
+		position: 'absolute',
+>>>>>>> 880d239... fixes datum layout
 	}
 }
 
@@ -122,8 +139,12 @@ class Datum extends Component {
 		return (
 			<ListItem divider className={(this.state.menu_open ? classes.datum_w_menu_open : classes.datum)}>
 				<ListItemText className={classes.container}>
+<<<<<<< HEAD
 				<Timestamp time={this.props.time} className={classes.timestamp}/>
 
+=======
+					<Timestamp time={this.props.time} className={classes.timestamp}/>
+>>>>>>> 880d239... fixes datum layout
 					{this.props.tags.map(t => (
 						<Tag
 							key={t.name + t.value}
