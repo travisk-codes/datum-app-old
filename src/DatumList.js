@@ -1,16 +1,25 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 0edcc73... fixes virtualized window bug?
 import React, {
 	useState,
 	useEffect,
 	useRef,
 	useCallback,
 } from 'react'
+<<<<<<< HEAD
 =======
 import React from 'react'
 >>>>>>> 905cb95... fixes errors and warnings
 import { List } from '@material-ui/core'
 import { withStyles } from '@material-ui/core/styles'
 import { VariableSizeList } from 'react-window'
+=======
+import { List } from '@material-ui/core'
+import { withStyles } from '@material-ui/core/styles'
+import { FixedSizeList } from 'react-window'
+>>>>>>> 0edcc73... fixes virtualized window bug?
 import AutoSizer from 'react-virtualized-auto-sizer'
 import Datum from './Datum'
 
@@ -29,6 +38,7 @@ const styles = {
 }
 
 function renderDatums(props) {
+<<<<<<< HEAD
 <<<<<<< HEAD
 	const { index, style, data, ...p } = props
 	return (
@@ -50,6 +60,17 @@ function renderDatums(props) {
 			{...data}
 		/>
 >>>>>>> 905cb95... fixes errors and warnings
+=======
+	const { index, style, data, ...p } = props
+	return (
+		<div style={style}>
+			<Datum
+				key={data.datums[index].id}
+				{...data.datums[index]}
+				{...data}
+			/>
+		</div>
+>>>>>>> 0edcc73... fixes virtualized window bug?
 	)
 }
 const DatumList = props => {
@@ -61,6 +82,7 @@ const DatumList = props => {
 	const listRef = useCallback(node => {
 		try {
 			if (node !== null) node.scrollToItem(p.datums.length)
+<<<<<<< HEAD
 		} catch(e) {
 			console.error(e)
 		}
@@ -75,11 +97,28 @@ const DatumList = props => {
 						height={height}
 						width={width}
 						itemSize={getItemSize}
+=======
+		} catch (e) {
+			console.error(e)
+		}
+	})
+	if (!p.datums.length)
+		return <List ref={listRef} dense></List>
+	return (
+		<div className={classes.datum_list}>
+			<AutoSizer>
+				{({ width, height }) => (
+					<FixedSizeList
+						height={height}
+						width={width}
+						itemSize={62}
+>>>>>>> 0edcc73... fixes virtualized window bug?
 						itemCount={p.datums.length}
 						itemData={p}
 						ref={listRef}
 					>
 						{renderDatums}
+<<<<<<< HEAD
 					</VariableSizeList>
 				)}
 			</AutoSizer>
@@ -94,6 +133,11 @@ const DatumList = props => {
 				{renderDatums}
 			</FixedSizeList>
 >>>>>>> 905cb95... fixes errors and warnings
+=======
+					</FixedSizeList>
+				)}
+			</AutoSizer>
+>>>>>>> 0edcc73... fixes virtualized window bug?
 		</div>
 	)
 }
