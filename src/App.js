@@ -648,10 +648,32 @@ class App extends Component {
 				/>
 			),
 			'todos': (
-				<Todos />
+				<Todos 
+					todoItems={this.state.datums.filter(
+						d => {
+							let todo_found = false
+							d.tags.forEach(t => {
+								if (t.name === 'todo') todo_found = true
+							})
+							return todo_found
+						}
+					)}				
+				/>
 			)
 		}
+<<<<<<< HEAD
 >>>>>>> 579a9c1... Todos button in side menu opens Todos view
+=======
+		console.log(this.state.datums.filter(
+			d => {
+				let todo_found = false
+				d.tags.forEach(t => {
+					if (t.name === 'todo') todo_found = true
+				})
+				return todo_found
+			}
+		))
+>>>>>>> 6e982e7... loads todo texts in Todos view
 		return (
 			<MuiThemeProvider theme={theme}>
 				<CssBaseline />

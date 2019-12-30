@@ -1,66 +1,115 @@
 import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Checkbox from '@material-ui/core/Checkbox';
-import IconButton from '@material-ui/core/IconButton';
+import {
+	List,
+	ListItem,
+	ListItemIcon,
+	ListItemSecondaryAction,
+	ListItemText,
+	Menu,
+	MenuItem,
+	Checkbox,
+	IconButton,
+} from '@material-ui/core'
 import CommentIcon from '@material-ui/icons/Comment';
+import MoreIcon from '@material-ui/icons/MoreVert'
 
-const styles = {
-  root: {
-    width: '100%',
-    maxWidth: 360,
-    backgroundColor: 'red',
-  },
+function TodoItemMenu(props) {
+	const [anchor_el, setAnchorEl] = React.useState(null)
+
+	function onClick(e) {
+		setAnchorEl(e.currentTarget)
+	}
+	function onClose() {
+		setAnchorEl(null)
+	}
+	function onDelete() {
+		props.onSelectDelete()
+		onClose()
+	}
+	function onEdit() {
+		props.onSelectEdit()
+		onClose()
+	}
+
+	return (
+		<div>
+		<IconButton
+			aria-owns={anchor_el ? 'todo-item-menu' : undefined}
+			aria-haspopup="true"
+			size='small'
+			onClick={onClick}
+		>
+			<MoreIcon />
+		</IconButton>
+		<Menu
+			id="todo-item-menu"
+			anchorEl={anchor_el}
+			open={Boolean(anchor_el)}
+			onClose={onClose}
+		>
+			<MenuItem onClick={onEdit}>Edit</MenuItem>
+			<MenuItem onClick={onDelete}>Delete</MenuItem>
+		</Menu>
+	</div>
+)
 }
 
-function Todos() {
-  const classes = styles
-  const [checked, setChecked] = React.useState([0]);
+function TodoItem(props) {
+	const checkbox = (
+		<ListItemIcon>
+			<Checkbox
+				edge="start"
+				checked={props.isDone}
+				tabIndex={-1}
+				disableRipple
+				inputProps={{ 'aria-labelledby': props.id }}
+			/>
+		</ListItemIcon>
+	)
+	const name = (
+		<ListItemText
+			id={props.id}
+			primary={props.text}
+		/>
+	)
+	const menu = (
+		<ListItemSecondaryAction>
+			<TodoItemMenu
+				onSelectDelete={() => props.onSelectDelete(props.id)}
+				onSelectEdit={() => props.onSelectEdit(props.id)}
+			/>
+		</ListItemSecondaryAction>
+	)
+	return (
+		<ListItem>
+			{checkbox}
+			{name}
+			{menu}
+		</ListItem>
+	)
+}
 
-  const handleToggle = value => () => {
-    const currentIndex = checked.indexOf(value);
-    const newChecked = [...checked];
-
-    if (currentIndex === -1) {
-      newChecked.push(value);
-    } else {
-      newChecked.splice(currentIndex, 1);
-    }
-
-    setChecked(newChecked);
-  };
+function Todos(props) {
 
   return (
-    <List className={classes.root}>
-      {[0, 1, 2, 3].map(value => {
-        const labelId = `checkbox-list-label-${value}`;
-
-        return (
-          <ListItem key={value} role={undefined} dense button onClick={handleToggle(value)}>
-            <ListItemIcon>
-              <Checkbox
-                edge="start"
-                checked={checked.indexOf(value) !== -1}
-                tabIndex={-1}
-                disableRipple
-                inputProps={{ 'aria-labelledby': labelId }}
-              />
-            </ListItemIcon>
-            <ListItemText id={labelId} primary={`Line item ${value + 1}`} />
-            <ListItemSecondaryAction>
-              <IconButton edge="end" aria-label="comments">
-                <CommentIcon />
-              </IconButton>
-            </ListItemSecondaryAction>
-          </ListItem>
-        );
-      })}
+    <List>
+			{props.todoItems.map(ti => {
+				let text = ''
+				ti.tags.forEach(t => {
+					if (t.name === 'todo') text = t.value
+				})
+				return (
+				<TodoItem
+					id={ti.id}
+					text={text}
+					isDone={Object.keys(ti.tags).includes('done')}
+					onSelectDelete={() => props.onSelectDelete(ti.id)}
+					onSelectEdit={() => props.onSelectEdit(ti.id)}
+				/>
+				)})}
     </List>
   );
 }
 
-export default withStyles(styles)(Todos)
+export default Todos
