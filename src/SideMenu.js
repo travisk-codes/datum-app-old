@@ -20,7 +20,11 @@ import InfoIcon from '@material-ui/icons/InfoRounded'
 
 =======
 import DoneIcon from '@material-ui/icons/DoneAllRounded'
+<<<<<<< HEAD
 >>>>>>> 579a9c1... Todos button in side menu opens Todos view
+=======
+import ListIcon from '@material-ui/icons/ListRounded'
+>>>>>>> 5d7e841... Adds icon and action to Side Menu item list
 // CheckCircle
 // Done
 // List
@@ -60,7 +64,6 @@ export default function SideMenu(props) {
 			<List>
 				{[
 					'Habits',
-					'List',
 					'Timeline',
 					'Stats',
 					'Finances',
@@ -69,6 +72,15 @@ export default function SideMenu(props) {
 						<ListItemText primary={text} />
 					</ListItem>
 				))}
+				<ListItem
+					button
+					onClick={props.onClickList}
+				>
+					<ListItemIcon>
+						<ListIcon />
+					</ListItemIcon>
+					<ListItemText primary='List' />
+				</ListItem>
 				<ListItem
 					button
 					onClick={props.onClickTodos}

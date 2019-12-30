@@ -682,6 +682,7 @@ class App extends Component {
 						this.toggle_modal('import_export')
 					}
 					onClickTodos={() => this.switch_view_to('todos')}
+					onClickList={() => this.switch_view_to('datum_list')}
 					open={this.state.is_side_menu_open}
 					on_close={this.toggle_side_menu}
 				/>
