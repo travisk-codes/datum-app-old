@@ -19,6 +19,7 @@ import {
 import DatumBar from './DatumBar'
 import DatumList from './DatumList'
 import Splash from './Splash'
+import Todos from './Todos'
 import SideMenu from './SideMenu'
 import ImportExport from './modals/ImportExport'
 import { datum_schema, tag_schema } from './schemas'
@@ -622,6 +623,7 @@ class App extends Component {
 =======
 =======
 		// eslint-disable-next-line
+<<<<<<< HEAD
 >>>>>>> 905cb95... fixes errors and warnings
 		const splash = (
 			<Splash
@@ -629,6 +631,27 @@ class App extends Component {
 				on_login={this.load_db}
 			/>
 		)
+=======
+		const views = {
+			'splash': (
+				<Splash
+					switch_view_to={this.switch_view_to}
+					on_login={this.load_db}
+				/>
+			),
+			'datum_list': (
+				<DatumList
+					datums={this.state.datums}
+					tag_colors={tag_colors}
+					onSelectEdit={this.edit_datum}
+					onSelectDelete={this.del_datum}
+				/>
+			),
+			'todos': (
+				<Todos />
+			)
+		}
+>>>>>>> 579a9c1... Todos button in side menu opens Todos view
 		return (
 			<MuiThemeProvider theme={theme}>
 				<CssBaseline />
@@ -636,15 +659,11 @@ class App extends Component {
 					on_click_import_export={() =>
 						this.toggle_modal('import_export')
 					}
+					onClickTodos={() => this.switch_view_to('todos')}
 					open={this.state.is_side_menu_open}
 					on_close={this.toggle_side_menu}
 				/>
-				<DatumList
-					datums={this.state.datums}
-					tag_colors={tag_colors}
-					onSelectEdit={this.edit_datum}
-					onSelectDelete={this.del_datum}
-				/>
+				{views[this.state.current_view]}
 				<DatumBar
 					on_add_tag={this.add_tag}
 					on_del_tag={this.del_tag}

@@ -16,7 +16,11 @@ import {
 import ImportExportIcon from '@material-ui/icons/ImportExportRounded'
 import HelpIcon from '@material-ui/icons/HelpRounded'
 import InfoIcon from '@material-ui/icons/InfoRounded'
+<<<<<<< HEAD
 
+=======
+import DoneIcon from '@material-ui/icons/DoneAllRounded'
+>>>>>>> 579a9c1... Todos button in side menu opens Todos view
 // CheckCircle
 // Done
 // List
@@ -60,12 +64,21 @@ export default function SideMenu(props) {
 					'Timeline',
 					'Stats',
 					'Finances',
-					'Todos',
 				].map((text, i) => (
 					<ListItem button key={text}>
 						<ListItemText primary={text} />
 					</ListItem>
 				))}
+				<ListItem
+					button
+					onClick={props.onClickTodos}
+					key='todos'
+				>
+					<ListItemIcon>
+						<DoneIcon />
+					</ListItemIcon>
+					<ListItemText primary='Todos' />
+				</ListItem>
 			</List>
 			<Divider />
 			<List>
