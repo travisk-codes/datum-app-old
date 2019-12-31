@@ -182,11 +182,7 @@ class App extends Component {
 					get_init_datums_tags = true
 				} else {
 					this.setState({
-						datums: docs.map(({ id, time, tags }) => ({
-							id,
-							time,
-							tags,
-						})),
+						datums: docs.map(({ id, time, tags }) => (new Datum(id, time, tags))),
 					})
 				}
 			})
