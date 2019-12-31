@@ -59,22 +59,33 @@ function TodoItemMenu(props) {
 
 function TodoItem(props) {
 
+	function onClick(todo_item) {
+		console.log(todo_item)
+		if (todo_item.hasTag('done')) {
+			todo_item.removeTag('done')
+		} else {
+			todo_item.addTag('done')
+		}
+		console.log(todo_item)
+		props.onToggle(todo_item)
+}
+
 	const TodoCheckbox = () => (
 		<ListItemIcon>
 			<Checkbox
 				edge="start"
-				checked={props.isDone}
+				checked={props.todo.hasTag('done')}
 				tabIndex={-1}
 				disableRipple
-				inputProps={{ 'aria-labelledby': props.id }}
+				inputProps={{ 'aria-labelledby': props.todo.getId()}}
 			/>
 		</ListItemIcon>
 	)
 
 	const TodoName = () => (
 		<ListItemText
-			id={props.id}
-			primary={props.text}
+			id={props.todo.getId()}
+			primary={props.todo.getValue('todo')}
 		/>
 	)
 
@@ -88,7 +99,10 @@ function TodoItem(props) {
 	)
 
 	return (
-		<ListItem>
+		<ListItem 
+		button 
+		onClick={() => onClick(props.todo)}
+	>
 			<TodoCheckbox />
 			<TodoName />
 			<TodoMenu />
@@ -99,24 +113,17 @@ function TodoItem(props) {
 
 function Todos(props) {
 
+
+
 	const list_items = props.todoItems.map(ti => {
-
-		// catch the tag with name 'todo'
-		let text = ''
-		ti.tags.forEach(t => {
-			if (t.name === 'todo') text = t.value
-		})
-
 		return (
 			<TodoItem
-				id={ti.id}
-				text={text}
-				isDone={ti.hasTag('done')}
+				todo={ti}
 				onSelectDelete={() => props.onSelectDelete(ti.id)}
 				onSelectEdit={() => props.onSelectEdit(ti.id)}
+				onToggle={() => props.onToggleTodo(ti)}
 			/>
 		)
-
 	})
 
   return (

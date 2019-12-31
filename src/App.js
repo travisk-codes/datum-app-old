@@ -149,6 +149,7 @@ class App extends Component {
 		this.toggle_side_menu = this.toggle_side_menu.bind(this)
 		this.toggle_modal = this.toggle_modal.bind(this)
 		this.import_datums = this.import_datums.bind(this)
+<<<<<<< HEAD
 		this.get_tag_names = this.get_tag_names.bind(this)
 		this.get_tag_count_for = this.get_tag_count_for.bind(
 			this
@@ -157,6 +158,9 @@ class App extends Component {
 			this
 		)
 		this.userSignOut = this.userSignOut.bind(this)
+=======
+		this.upsertDatum = this.upsertDatum.bind(this)
+>>>>>>> a35d481... toggles todos on click checkbox
 	}
 
 <<<<<<< HEAD
@@ -302,6 +306,26 @@ class App extends Component {
 			tags: new_state,
 		})
 	}
+
+	async upsertDatum(datum) { try {
+		let { datums } = this.state
+		if (datum.getId()) {
+			datums = datums.map(
+				d => d.id === datum.id ? datum : d
+			)
+		} else {
+			datums.concat(datum)
+		}
+		
+		await this.db_datums.upsert(datum)
+		await this.add_tag_metadata(datum)
+
+		this.setState({
+			datums
+		})
+	} catch(e) {
+		throw new Error(e)
+	}}
 
 	async add_active_datum(tags) {
 		if (!tags.length) return
@@ -647,7 +671,8 @@ class App extends Component {
 				<Todos 
 					todoItems={this.state.datums.filter(
 						d => d.hasTag('todo')
-					)}				
+					)}
+					onToggleTodo={this.upsertDatum}
 				/>
 			)
 		}

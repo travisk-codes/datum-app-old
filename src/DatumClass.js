@@ -30,6 +30,14 @@ export default class Datum {
 		this.tags = tags
 	}
 
+	getValue(tag_name) {
+		let value
+		this.tags.forEach(t => {
+			if (t.name === tag_name) value = t.value
+		})
+		return value
+	}
+
 	hasTag(tag) {
 		let hasTag = false
 		this.tags.forEach(t => {
@@ -39,7 +47,9 @@ export default class Datum {
 	}
 
 	addTag(name, value = '') { 
-		this.tags.concat({ name, value })
+		console.log(this.tags)
+		this.tags.push({ name, value })
+		console.log(this.tags)
 	}
 	
 	addStringPair(pair) {
@@ -54,7 +64,7 @@ export default class Datum {
 	}
 
 	removeTag(name) {
-		this.tags.filter(t => t.name !== name)
+		this.tags = this.tags.filter(t => t.name !== name)
 	}
 
 }
