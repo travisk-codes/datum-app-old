@@ -3,11 +3,17 @@
 	"version": "0.1.0",
 	"private": true,
 	"dependencies": {
+<<<<<<< HEAD
 		"@material-ui/core": "^3.5.1",
 		"@material-ui/icons": "^3.0.1",
 		"firebase": "^7.4.0",
 		"firebase-admin": "^8.7.0",
 		"firebase-tools": "^7.8.1",
+=======
+		"@material-ui/core": "^4.0.0",
+		"@material-ui/styles": "^4.0.0",
+		"@material-ui/icons": "^4.0.0",
+>>>>>>> c2eafc4... styles done todos, enables menu options
 		"material-ui-chip-input": "^1.0.0-beta.8",
 		"npm": "^6.13.1",
 		"react": "^16.6.3",

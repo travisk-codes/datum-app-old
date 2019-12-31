@@ -128,7 +128,11 @@ class App extends Component {
 			tags: [],
 			active_datum: new Datum(),
 			stashed_datum: null,
+<<<<<<< HEAD
 			current_view: 'splash',
+=======
+			current_view: 'todos',
+>>>>>>> c2eafc4... styles done todos, enables menu options
 			is_side_menu_open: false,
 			current_modal: false,
 		}
@@ -673,6 +677,8 @@ class App extends Component {
 						d => d.hasTag('todo')
 					)}
 					onToggleTodo={this.upsertDatum}
+					onSelectEdit={this.edit_datum}
+					onSelectDelete={this.del_datum}
 				/>
 			)
 		}

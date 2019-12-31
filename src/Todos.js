@@ -1,6 +1,7 @@
 import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import {
+	Divider,
 	List,
 	ListItem,
 	ListItemIcon,
@@ -10,6 +11,7 @@ import {
 	MenuItem,
 	Checkbox,
 	IconButton,
+	Typography,
 } from '@material-ui/core'
 import MoreIcon from '@material-ui/icons/MoreVert'
 
@@ -34,25 +36,26 @@ function TodoItemMenu(props) {
 	}
 
 	return (
-		<div>
+		<>
 			<IconButton
 				aria-owns={anchor_el ? 'todo-item-menu' : undefined}
+				edge='end'
 				aria-haspopup="true"
-				size='small'
 				onClick={onClick}
 			>
 				<MoreIcon />
 			</IconButton>
 			<Menu
-				id="todo-item-menu"
-				anchorEl={anchor_el}
-				open={Boolean(anchor_el)}
-				onClose={onClose}
-			>
-				<MenuItem onClick={onEdit}>Edit</MenuItem>
-				<MenuItem onClick={onDelete}>Delete</MenuItem>
-			</Menu>
-		</div>
+					id="todo-item-menu"
+					anchorEl={anchor_el}
+					open={Boolean(anchor_el)}
+					onClose={onClose}
+				>
+					<MenuItem onClick={onEdit}>Edit</MenuItem>
+					<MenuItem onClick={onDelete}>Delete</MenuItem>
+				</Menu>
+
+		</>
 	)
 
 }
@@ -60,13 +63,11 @@ function TodoItemMenu(props) {
 function TodoItem(props) {
 
 	function onClick(todo_item) {
-		console.log(todo_item)
 		if (todo_item.hasTag('done')) {
 			todo_item.removeTag('done')
 		} else {
 			todo_item.addTag('done')
 		}
-		console.log(todo_item)
 		props.onToggle(todo_item)
 }
 
@@ -78,6 +79,7 @@ function TodoItem(props) {
 				tabIndex={-1}
 				disableRipple
 				inputProps={{ 'aria-labelledby': props.todo.getId()}}
+				onClick={() => onClick(props.todo)}
 			/>
 		</ListItemIcon>
 	)
@@ -85,7 +87,17 @@ function TodoItem(props) {
 	const TodoName = () => (
 		<ListItemText
 			id={props.todo.getId()}
-			primary={props.todo.getValue('todo')}
+			style={ props.done ? {
+				color: 'grey',
+				textDecorationLine: 'line-through'
+			} : null}
+			primary={
+				<Typography
+					variant='body1'
+				>
+					{props.todo.getValue('todo')}
+				</Typography>
+			}
 		/>
 	)
 
@@ -99,36 +111,52 @@ function TodoItem(props) {
 	)
 
 	return (
-		<ListItem 
-		button 
-		onClick={() => onClick(props.todo)}
-	>
-			<TodoCheckbox />
-			<TodoName />
-			<TodoMenu />
-		</ListItem>
+		<div>
+			<ListItem
+				role={undefined}
+				dense
+			>
+				<TodoCheckbox />
+				<TodoName />
+				<TodoMenu />
+			</ListItem>
+			<Divider variant='inset' component='li' />
+		</div>
 	)
 
 }
 
 function Todos(props) {
 
-
+	let incomplete_todos = [], complete_todos = []
 
 	const list_items = props.todoItems.map(ti => {
-		return (
-			<TodoItem
-				todo={ti}
-				onSelectDelete={() => props.onSelectDelete(ti.id)}
-				onSelectEdit={() => props.onSelectEdit(ti.id)}
-				onToggle={() => props.onToggleTodo(ti)}
-			/>
-		)
+		if (ti.hasTag('done')) {
+			complete_todos.push((
+				<TodoItem
+					todo={ti}
+					done={true}
+					onSelectDelete={() => props.onSelectDelete(ti.id)}
+					onSelectEdit={() => props.onSelectEdit(ti.id)}
+					onToggle={() => props.onToggleTodo(ti)}
+				/>
+			))
+		} else {
+			incomplete_todos.push((
+				<TodoItem
+					todo={ti}
+					onSelectDelete={() => props.onSelectDelete(ti.id)}
+					onSelectEdit={() => props.onSelectEdit(ti.id)}
+					onToggle={() => props.onToggleTodo(ti)}
+				/>
+			))
+		}
 	})
 
   return (
     <List>
-			{list_items}
+			{incomplete_todos}
+			{complete_todos}
     </List>
   );
 }
