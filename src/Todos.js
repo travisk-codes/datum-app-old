@@ -11,10 +11,10 @@ import {
 	Checkbox,
 	IconButton,
 } from '@material-ui/core'
-import CommentIcon from '@material-ui/icons/Comment';
 import MoreIcon from '@material-ui/icons/MoreVert'
 
 function TodoItemMenu(props) {
+
 	const [anchor_el, setAnchorEl] = React.useState(null)
 
 	function onClick(e) {
@@ -23,6 +23,7 @@ function TodoItemMenu(props) {
 	function onClose() {
 		setAnchorEl(null)
 	}
+
 	function onDelete() {
 		props.onSelectDelete()
 		onClose()
@@ -34,29 +35,31 @@ function TodoItemMenu(props) {
 
 	return (
 		<div>
-		<IconButton
-			aria-owns={anchor_el ? 'todo-item-menu' : undefined}
-			aria-haspopup="true"
-			size='small'
-			onClick={onClick}
-		>
-			<MoreIcon />
-		</IconButton>
-		<Menu
-			id="todo-item-menu"
-			anchorEl={anchor_el}
-			open={Boolean(anchor_el)}
-			onClose={onClose}
-		>
-			<MenuItem onClick={onEdit}>Edit</MenuItem>
-			<MenuItem onClick={onDelete}>Delete</MenuItem>
-		</Menu>
-	</div>
-)
+			<IconButton
+				aria-owns={anchor_el ? 'todo-item-menu' : undefined}
+				aria-haspopup="true"
+				size='small'
+				onClick={onClick}
+			>
+				<MoreIcon />
+			</IconButton>
+			<Menu
+				id="todo-item-menu"
+				anchorEl={anchor_el}
+				open={Boolean(anchor_el)}
+				onClose={onClose}
+			>
+				<MenuItem onClick={onEdit}>Edit</MenuItem>
+				<MenuItem onClick={onDelete}>Delete</MenuItem>
+			</Menu>
+		</div>
+	)
+
 }
 
 function TodoItem(props) {
-	const checkbox = (
+
+	const TodoCheckbox = () => (
 		<ListItemIcon>
 			<Checkbox
 				edge="start"
@@ -67,13 +70,15 @@ function TodoItem(props) {
 			/>
 		</ListItemIcon>
 	)
-	const name = (
+
+	const TodoName = () => (
 		<ListItemText
 			id={props.id}
 			primary={props.text}
 		/>
 	)
-	const menu = (
+
+	const TodoMenu = () => (
 		<ListItemSecondaryAction>
 			<TodoItemMenu
 				onSelectDelete={() => props.onSelectDelete(props.id)}
@@ -81,33 +86,42 @@ function TodoItem(props) {
 			/>
 		</ListItemSecondaryAction>
 	)
+
 	return (
 		<ListItem>
-			{checkbox}
-			{name}
-			{menu}
+			<TodoCheckbox />
+			<TodoName />
+			<TodoMenu />
 		</ListItem>
 	)
+
 }
 
 function Todos(props) {
 
+	const list_items = props.todoItems.map(ti => {
+
+		// catch the tag with name 'todo'
+		let text = ''
+		ti.tags.forEach(t => {
+			if (t.name === 'todo') text = t.value
+		})
+
+		return (
+			<TodoItem
+				id={ti.id}
+				text={text}
+				isDone={ti.hasTag('done')}
+				onSelectDelete={() => props.onSelectDelete(ti.id)}
+				onSelectEdit={() => props.onSelectEdit(ti.id)}
+			/>
+		)
+
+	})
+
   return (
     <List>
-			{props.todoItems.map(ti => {
-				let text = ''
-				ti.tags.forEach(t => {
-					if (t.name === 'todo') text = t.value
-				})
-				return (
-				<TodoItem
-					id={ti.id}
-					text={text}
-					isDone={Object.keys(ti.tags).includes('done')}
-					onSelectDelete={() => props.onSelectDelete(ti.id)}
-					onSelectEdit={() => props.onSelectEdit(ti.id)}
-				/>
-				)})}
+			{list_items}
     </List>
   );
 }

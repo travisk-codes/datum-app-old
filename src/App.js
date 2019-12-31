@@ -60,7 +60,11 @@ const log = x => console.log(x)
 //import init_datums from './init_datums'
 =======
 import init_datums from './init_datums'
+<<<<<<< HEAD
 >>>>>>> f73c15d... if empty, loads default datums
+=======
+import Datum from './DatumClass'
+>>>>>>> d58f105... checks box if datum has "done" tag
 //import secret from './secret'
 
 //const log = x => console.log(x)
@@ -122,11 +126,7 @@ class App extends Component {
 		this.state = {
 			datums: [],
 			tags: [],
-			active_datum: {
-				id: null,
-				time: null,
-				tags: [],
-			},
+			active_datum: new Datum(),
 			stashed_datum: null,
 			current_view: 'splash',
 			is_side_menu_open: false,
@@ -650,17 +650,12 @@ class App extends Component {
 			'todos': (
 				<Todos 
 					todoItems={this.state.datums.filter(
-						d => {
-							let todo_found = false
-							d.tags.forEach(t => {
-								if (t.name === 'todo') todo_found = true
-							})
-							return todo_found
-						}
+						d => d.hasTag('todo')
 					)}				
 				/>
 			)
 		}
+<<<<<<< HEAD
 <<<<<<< HEAD
 >>>>>>> 579a9c1... Todos button in side menu opens Todos view
 =======
@@ -674,6 +669,8 @@ class App extends Component {
 			}
 		))
 >>>>>>> 6e982e7... loads todo texts in Todos view
+=======
+>>>>>>> d58f105... checks box if datum has "done" tag
 		return (
 			<MuiThemeProvider theme={theme}>
 				<CssBaseline />
