@@ -1,5 +1,5 @@
 import React from 'react';
-import { withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import {
 	Divider,
 	List,
@@ -15,11 +15,18 @@ import {
 } from '@material-ui/core'
 import MoreIcon from '@material-ui/icons/MoreVert'
 
+const useStyles = makeStyles(theme  => ({
+	checkbox: {
+		paddingLeft: 10,
+	}
+}))
+
 function TodoItemMenu(props) {
 
 	const [anchor_el, setAnchorEl] = React.useState(null)
 
 	function onClick(e) {
+		e.stopPropagation()
 		setAnchorEl(e.currentTarget)
 	}
 	function onClose() {
@@ -61,6 +68,7 @@ function TodoItemMenu(props) {
 }
 
 function TodoItem(props) {
+	const classes = useStyles()
 
 	function onClick(todo_item) {
 		if (todo_item.hasTag('done')) {
@@ -72,14 +80,13 @@ function TodoItem(props) {
 }
 
 	const TodoCheckbox = () => (
-		<ListItemIcon>
+		<ListItemIcon className={classes.checkbox}>
 			<Checkbox
 				edge="start"
 				checked={props.todo.hasTag('done')}
 				tabIndex={-1}
 				disableRipple
 				inputProps={{ 'aria-labelledby': props.todo.getId()}}
-				onClick={() => onClick(props.todo)}
 			/>
 		</ListItemIcon>
 	)
@@ -115,6 +122,8 @@ function TodoItem(props) {
 			<ListItem
 				role={undefined}
 				dense
+				button
+				onClick={() => onClick(props.todo)}
 			>
 				<TodoCheckbox />
 				<TodoName />
