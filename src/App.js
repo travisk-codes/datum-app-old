@@ -68,6 +68,7 @@ import Datum from './DatumClass'
 //import secret from './secret'
 
 //const log = x => console.log(x)
+<<<<<<< HEAD
 >>>>>>> 905cb95... fixes errors and warnings
 const empty_datum = () => ({
 	id: null,
@@ -83,6 +84,9 @@ function add(datum, user) {
 			.ref(`/${user.uid}/datums`)
 			.push(datum)
 }
+=======
+const empty_datum = () => (new Datum(null, null, []))
+>>>>>>> d260815... empty_datum func returns Datum and not object
 
 function del(id, user) {
 		firebase
