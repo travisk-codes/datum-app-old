@@ -10,7 +10,7 @@ import http from 'pouchdb-adapter-http'
 >>>>>>> 273fe4c... gets rxdb working
 import uuid from 'uuid/v4'
 
-import { CssBaseline } from '@material-ui/core'
+import { CssBaseline, AppBar, Toolbar, IconButton } from '@material-ui/core'
 import {
 	MuiThemeProvider,
 	createMuiTheme,
@@ -133,15 +133,20 @@ class App extends Component {
 			active_datum: new Datum(),
 			stashed_datum: null,
 <<<<<<< HEAD
+<<<<<<< HEAD
 			current_view: 'splash',
 =======
 			current_view: 'todos',
 >>>>>>> c2eafc4... styles done todos, enables menu options
+=======
+			current_view: 'datum_list',
+>>>>>>> 22a2c59... updates functions to use new Datum class, adds clear all feature, minor cosmetic updates, fills out side menu icons, adds fab to Todos page, misc updates
 			is_side_menu_open: false,
 			current_modal: false,
 		}
 		this.add_active_datum = this.add_active_datum.bind(this)
 		this.del_datum = this.del_datum.bind(this)
+		this.del_datums = this.del_datums.bind(this)
 		this.edit_datum = this.edit_datum.bind(this)
 		this.find_datum = this.find_datum.bind(this)
 		this.update_datum_bar_input = this.update_datum_bar_input.bind(
@@ -168,6 +173,7 @@ class App extends Component {
 		this.userSignOut = this.userSignOut.bind(this)
 =======
 		this.upsertDatum = this.upsertDatum.bind(this)
+<<<<<<< HEAD
 >>>>>>> a35d481... toggles todos on click checkbox
 	}
 
@@ -175,11 +181,18 @@ class App extends Component {
 	componentDidMount() {
 =======
 	async componentDidMount() {
+=======
+		this.loadLocalDB = this.loadLocalDB.bind(this)
+	}
+
+	async loadLocalDB() {
+>>>>>>> 22a2c59... updates functions to use new Datum class, adds clear all feature, minor cosmetic updates, fills out side menu icons, adds fab to Todos page, misc updates
 		let get_init_datums_tags = false
 		const db = await RxDB.create({
 			name: 'datum_app',
 			adapter: 'idb',
 			queryChangeDetection: true,
+			ignoreDuplicate: true,
 		})
 
 		this.db_datums = await db.collection({
@@ -235,6 +248,10 @@ class App extends Component {
 			})
 			this.add_datums(init_datums)
 		}
+	}
+
+	async componentDidMount() {
+		this.loadLocalDB()
 	}
 
 	componentWillUnmount() {
@@ -355,8 +372,19 @@ class App extends Component {
 		add(active_datum, this.props.user)
 =======
 
+<<<<<<< HEAD
 		await this.db_datums.upsert(active_datum)
 >>>>>>> 273fe4c... gets rxdb working
+=======
+		let { id, time } = active_datum
+		let old_datum_format = {
+			id,
+			time,
+			tags,
+		}
+
+		await this.db_datums.upsert(old_datum_format)
+>>>>>>> 22a2c59... updates functions to use new Datum class, adds clear all feature, minor cosmetic updates, fills out side menu icons, adds fab to Todos page, misc updates
 		this.add_tag_metadata(active_datum)
 
 		// load empty or stashed datum in datum bar
@@ -424,6 +452,7 @@ class App extends Component {
 
 	async del_datum(id) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 		this.del_tag_metadata(id)
 		this.setState(state => ({
 			datums: state.datums.filter(datum => datum.id !== id),
@@ -434,6 +463,8 @@ class App extends Component {
 =======
 		console.log(await this.db_datums.findOne().exec())
 >>>>>>> f73c15d... if empty, loads default datums
+=======
+>>>>>>> 22a2c59... updates functions to use new Datum class, adds clear all feature, minor cosmetic updates, fills out side menu icons, adds fab to Todos page, misc updates
 		const datum_to_delete = await this.db_datums
 			.findOne()
 			.where('id')
@@ -451,12 +482,16 @@ class App extends Component {
 		console.log(`datum ${id} deleted`)
 	}
 
-	del_datums(ids = []) {
+	async del_datums(ids = []) {
 		if (!ids.length) {
+			await this.db_datums.find().remove()
+			await this.db_tags.find().remove()
 			this.setState({
 				datums: [],
+				tags: [],
 			})
 		} else {
+			// TODO remove its tags metadata
 			this.setState({
 				datums: this.state.datums.filter(
 					d => !ids.includes(d.id)
@@ -668,12 +703,23 @@ class App extends Component {
 				/>
 			),
 			'datum_list': (
-				<DatumList
-					datums={this.state.datums}
-					tag_colors={tag_colors}
-					onSelectEdit={this.edit_datum}
-					onSelectDelete={this.del_datum}
-				/>
+				<>
+					<DatumList
+						datums={this.state.datums}
+						tag_colors={tag_colors}
+						onSelectEdit={this.edit_datum}
+						onSelectDelete={this.del_datum}
+					/>
+					<DatumBar
+						on_add_tag={this.add_tag}
+						on_del_tag={this.del_tag}
+						on_add_datum={this.add_active_datum}
+						get_tag_values_for={this.get_tag_values_for}
+						tag_colors={tag_colors}
+						active_datum={this.state.active_datum}
+						on_button_long_press={this.toggle_side_menu}
+					/>
+				</>
 			),
 			'todos': (
 				<Todos 
@@ -683,6 +729,8 @@ class App extends Component {
 					onToggleTodo={this.upsertDatum}
 					onSelectEdit={this.edit_datum}
 					onSelectDelete={this.del_datum}
+					onButtonLongPress={this.toggle_side_menu}
+					onAddTodo={this.upsertDatum}
 				/>
 			)
 		}
@@ -705,6 +753,18 @@ class App extends Component {
 		return (
 			<MuiThemeProvider theme={theme}>
 				<CssBaseline />
+				<AppBar
+					color='secondary'
+				>
+					<Toolbar>
+						<img 
+							style={{paddingTop: 5, marginLeft: '-6px'}}
+							src="datum-logo.png" 
+							width="140px" 
+							alt="Datum logo"
+						/>
+					</Toolbar>
+				</AppBar>
 				<SideMenu
 					on_click_import_export={() =>
 						this.toggle_modal('import_export')
@@ -713,17 +773,9 @@ class App extends Component {
 					onClickList={() => this.switch_view_to('datum_list')}
 					open={this.state.is_side_menu_open}
 					on_close={this.toggle_side_menu}
+					onClickClearData={this.del_datums}
 				/>
 				{views[this.state.current_view]}
-				<DatumBar
-					on_add_tag={this.add_tag}
-					on_del_tag={this.del_tag}
-					on_add_datum={this.add_active_datum}
-					get_tag_values_for={this.get_tag_values_for}
-					tag_colors={tag_colors}
-					active_datum={this.state.active_datum}
-					on_button_long_press={this.toggle_side_menu}
-				/>
 				<ImportExport
 					open={
 						this.state.current_modal === 'import_export'

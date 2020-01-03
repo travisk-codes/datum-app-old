@@ -2,6 +2,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import {
 	Divider,
+	Fab,
 	List,
 	ListItem,
 	ListItemIcon,
@@ -14,11 +15,18 @@ import {
 	Typography,
 } from '@material-ui/core'
 import MoreIcon from '@material-ui/icons/MoreVert'
+import MenuIcon from '@material-ui/icons/MenuRounded'
+import AddIcon from '@material-ui/icons/AddRounded'
 
 const useStyles = makeStyles(theme  => ({
 	checkbox: {
 		paddingLeft: 10,
-	}
+	},
+	fab: {
+		position: 'fixed',
+		right: 5,
+		bottom: 5,
+	},
 }))
 
 function TodoItemMenu(props) {
@@ -136,15 +144,26 @@ function TodoItem(props) {
 }
 
 function Todos(props) {
+	const classes = useStyles()
+	let [ text, setText ] = React.useState('')
 
 	let incomplete_todos = [], complete_todos = []
+
+	function on_click_btn(e) {
+		e.preventDefault()
+		if (!text.length) {
+			props.onButtonLongPress(e)
+		} else {
+			props.onAddTodo(e)
+		}
+	}
 
 	const list_items = props.todoItems.map(ti => {
 		if (ti.hasTag('done')) {
 			complete_todos.push((
 				<TodoItem
 					todo={ti}
-					done={true}
+					done
 					onSelectDelete={() => props.onSelectDelete(ti.id)}
 					onSelectEdit={() => props.onSelectEdit(ti.id)}
 					onToggle={() => props.onToggleTodo(ti)}
@@ -162,11 +181,26 @@ function Todos(props) {
 		}
 	})
 
+	const btn_icon =
+	!text.length ? <MenuIcon /> : <AddIcon />
+
   return (
-    <List>
-			{incomplete_todos}
-			{complete_todos}
-    </List>
+		<>
+			<List>
+				{incomplete_todos}
+				{complete_todos}
+			</List>
+			<Fab
+				onClick={on_click_btn}
+				onContextMenu={props.onButtonLongPress} // capture long press & right click
+				onDoubleClick={props.onButtonLongPress}
+				className={classes.fab}
+				color='primary'
+				size='small'
+			>
+				{btn_icon}
+			</Fab>
+		</>
   );
 }
 

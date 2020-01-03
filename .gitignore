@@ -88,6 +88,7 @@ src/utils/secret.js
 log.txt
 =======
 src/secret.js
+src/utils/secret.js
 log.txt
 package-lock.json
 >>>>>>> 711d58f... adds autosizer package, adds package-lock to .gitignore

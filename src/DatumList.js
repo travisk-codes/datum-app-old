@@ -26,7 +26,7 @@ import Datum from './Datum'
 const styles = {
 	datum_list: {
 		position: 'fixed',
-		top: 0,
+		top: 56, // for app bar
 		left: 0,
 		right: 0,
 		bottom: 46, // for datum bar

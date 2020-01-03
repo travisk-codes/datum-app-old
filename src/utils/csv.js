@@ -1,4 +1,5 @@
 import uuid from 'uuid/v4'
+import Datum from '../DatumClass'
 
 export function datums_to_csv(datums) {
 	let csv_string = ''
@@ -45,11 +46,12 @@ export function csv_to_datums(csv_string) {
 	const tag_names = rows[0].split(',')
 	for (let i = 1; i < rows.length; i++) { // skip headers
 		const row = rows[i].split(',')
-		let datum = {
-			id: row[0] || uuid(),
-			time: Date.parse(row[1]) || Date.now(),
-			tags: []
-		}
+		let datum = new Datum(
+			row[0] || uuid(),
+			Date.parse(row[1]) || Date.now(),
+			[],
+		)
+
 		for (let j = 2; j < row.length; j++) { // skip id & time
 			// newline at end of row has length 1, catch with charcode
 			if (row[j].length && row[j].charCodeAt(0) !== 13) datum.tags.push({
