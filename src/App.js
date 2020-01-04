@@ -10,7 +10,7 @@ import http from 'pouchdb-adapter-http'
 >>>>>>> 273fe4c... gets rxdb working
 import uuid from 'uuid/v4'
 
-import { CssBaseline, AppBar, Toolbar, IconButton } from '@material-ui/core'
+import { CssBaseline, AppBar, Toolbar } from '@material-ui/core'
 import {
 	MuiThemeProvider,
 	createMuiTheme,
@@ -183,6 +183,9 @@ class App extends Component {
 	async componentDidMount() {
 =======
 		this.loadLocalDB = this.loadLocalDB.bind(this)
+		this.renderSplashView = this.renderSplashView.bind(this)
+		this.renderDatumListView = this.renderDatumListView.bind(this)
+		this.renderTodosView = this.renderTodosView.bind(this)
 	}
 
 	async loadLocalDB() {
@@ -616,6 +619,7 @@ class App extends Component {
 		// TODO remove tag data
 	}
 
+<<<<<<< HEAD
 	 loadDB() {
 			console.log(this.props.user)
 			 load(this, this.props.user)
@@ -727,12 +731,64 @@ class App extends Component {
 						d => d.hasTag('todo')
 					)}
 					onToggleTodo={this.upsertDatum}
+=======
+	renderSplashView() {
+		return (
+			<Splash
+				switch_view_to={this.switch_view_to}
+				on_login={this.load_db}
+			/>
+		)
+	}
+
+	renderDatumListView() {
+		const tag_colors = {}
+		this.state.tags.forEach(t => {
+			tag_colors[t.name] = t.color
+		})
+		return (
+			<>
+				<DatumList
+					datums={this.state.datums}
+					tag_colors={tag_colors}
+>>>>>>> cf37d74... pulls views out into own render methods
 					onSelectEdit={this.edit_datum}
 					onSelectDelete={this.del_datum}
-					onButtonLongPress={this.toggle_side_menu}
-					onAddTodo={this.upsertDatum}
 				/>
-			)
+				<DatumBar
+					on_add_tag={this.add_tag}
+					on_del_tag={this.del_tag}
+					on_add_datum={this.add_active_datum}
+					get_tag_values_for={this.get_tag_values_for}
+					tag_colors={tag_colors}
+					addTagColor={this.addTagColor}
+					active_datum={this.state.active_datum}
+					on_button_long_press={this.toggle_side_menu}
+				/>
+			</>
+		)
+	}
+
+	renderTodosView() {
+		return (
+			<Todos 
+				todoItems={this.state.datums.filter(
+					d => d.hasTag('todo')
+				)}
+				onToggleTodo={this.upsertDatum}
+				onSelectEdit={this.edit_datum}
+				onSelectDelete={this.del_datum}
+				onButtonLongPress={this.toggle_side_menu}
+				onAddTodo={this.upsertDatum}
+			/>
+		)
+	}
+
+	render() {
+		const views = {
+			'splash': this.renderSplashView,
+			'datum_list': this.renderDatumListView,
+			'todos': this.renderTodosView,
 		}
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -775,7 +831,7 @@ class App extends Component {
 					on_close={this.toggle_side_menu}
 					onClickClearData={this.del_datums}
 				/>
-				{views[this.state.current_view]}
+				{views[this.state.current_view]()}
 				<ImportExport
 					open={
 						this.state.current_modal === 'import_export'
