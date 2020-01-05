@@ -190,6 +190,7 @@ class App extends Component {
 	}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	async loadLocalDB() {
 >>>>>>> 22a2c59... updates functions to use new Datum class, adds clear all feature, minor cosmetic updates, fills out side menu icons, adds fab to Todos page, misc updates
 		let get_init_datums_tags = false
@@ -203,6 +204,9 @@ class App extends Component {
 		this.db_datums = await db.collection({
 =======
 	async loadLocalDB(load_init_datums) {
+=======
+	async loadLocalDB() {
+>>>>>>> 937f533... fixes slow add/remove datums, fixes insert conflicts
 		this.db_datums = await this.db.collection({
 >>>>>>> df0f6cc... fixes color flashing bug, finally
 			name: 'datums',
@@ -222,7 +226,7 @@ class App extends Component {
 		this.subs.push(d_subscription)
 
 		this.db_tags = await this.db.collection({
-			name: 'tagss',
+			name: 'tags',
 			schema: tag_schema,
 		})
 		const t_subscription = this.db_tags
@@ -250,9 +254,6 @@ class App extends Component {
 				})
 			})
 		this.subs.push(t_subscription)
-		if (load_init_datums) {
-			this.add_datums(init_datums)
-		}
 	}
 
 	async componentDidMount() {
@@ -261,7 +262,10 @@ class App extends Component {
 			adapter: 'idb',
 			queryChangeDetection: true,
 		})
-		this.loadLocalDB(true)
+		await this.loadLocalDB()
+		if (!this.state.datums.length) {
+			this.add_datums(init_datums)
+		}
 	}
 
 	componentWillUnmount() {
@@ -471,6 +475,7 @@ class App extends Component {
 =======
 =======
 		await this.addTagMetadataFromDatums(new_datums)
+<<<<<<< HEAD
 >>>>>>> df0f6cc... fixes color flashing bug, finally
 		new_datums.forEach(async d => {
 			await this.db_datums.upsert(d)
@@ -494,6 +499,9 @@ class App extends Component {
 			.ref()
 			.update(updates)
 =======
+=======
+		await this.db_datums.bulkInsert(new_datums)
+>>>>>>> 937f533... fixes slow add/remove datums, fixes insert conflicts
 		//datums = datums.concat(new_datums)
 		//this.setState({ datums })
 >>>>>>> df0f6cc... fixes color flashing bug, finally
@@ -535,7 +543,7 @@ class App extends Component {
 		if (!ids.length) {
 			await this.db_datums.remove()
 			await this.db_tags.remove()
-			await this.loadLocalDB(false)
+			await this.loadLocalDB()
 			this.setState({
 				datums: [],
 				tags: [],
