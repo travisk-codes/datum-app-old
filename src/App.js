@@ -186,8 +186,10 @@ class App extends Component {
 		this.renderSplashView = this.renderSplashView.bind(this)
 		this.renderDatumListView = this.renderDatumListView.bind(this)
 		this.renderTodosView = this.renderTodosView.bind(this)
+		this.addTagMetadataFromDatums = this.addTagMetadataFromDatums.bind(this)
 	}
 
+<<<<<<< HEAD
 	async loadLocalDB() {
 >>>>>>> 22a2c59... updates functions to use new Datum class, adds clear all feature, minor cosmetic updates, fills out side menu icons, adds fab to Todos page, misc updates
 		let get_init_datums_tags = false
@@ -199,6 +201,10 @@ class App extends Component {
 		})
 
 		this.db_datums = await db.collection({
+=======
+	async loadLocalDB(load_init_datums) {
+		this.db_datums = await this.db.collection({
+>>>>>>> df0f6cc... fixes color flashing bug, finally
 			name: 'datums',
 			schema: datum_schema,
 		})
@@ -207,7 +213,6 @@ class App extends Component {
 			.sort({ time: 1 })
 			.$.subscribe(docs => {
 				if (!docs.length) {
-					get_init_datums_tags = true
 				} else {
 					this.setState({
 						datums: docs.map(({ id, time, tags }) => (new Datum(id, time, tags))),
@@ -216,7 +221,7 @@ class App extends Component {
 			})
 		this.subs.push(d_subscription)
 
-		this.db_tags = await db.collection({
+		this.db_tags = await this.db.collection({
 			name: 'tagss',
 			schema: tag_schema,
 		})
@@ -245,16 +250,18 @@ class App extends Component {
 				})
 			})
 		this.subs.push(t_subscription)
-		if (get_init_datums_tags) {
-			init_datums.forEach(d => {
-				this.add_tag_metadata(d)
-			})
+		if (load_init_datums) {
 			this.add_datums(init_datums)
 		}
 	}
 
 	async componentDidMount() {
-		this.loadLocalDB()
+		this.db = await RxDB.create({
+			name: 'datum_app',
+			adapter: 'idb',
+			queryChangeDetection: true,
+		})
+		this.loadLocalDB(true)
 	}
 
 	componentWillUnmount() {
@@ -272,6 +279,7 @@ class App extends Component {
 	}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	userSignOut() {
 		this.props.signOut()
 		this.setState({
@@ -282,6 +290,36 @@ class App extends Component {
 
 	add_tag_metadata(datum) {
 =======
+=======
+	async addTagMetadataFromDatums(datums) {
+		let all_tag_metadata = []
+		datums.forEach(d => {
+			d.tags.forEach(t => {
+				let tag_data = {}
+				const tag_already_exists = all_tag_metadata
+					.filter(existing => existing.name === t.name)
+				if (tag_already_exists.length) {
+					tag_data = tag_already_exists.pop()
+					tag_data.instance_times.push(d.time)
+					tag_data.instance_peers.push(d.tags)
+					tag_data.instance_values.push(t.value)
+				} else {
+					tag_data = {
+						id: uuid(),
+						name: t.name,
+						color: rand_color(),
+						instance_times: [d.time],
+						instance_peers: [d.tags],
+						instance_values: [t.value],
+					}	
+				}
+				all_tag_metadata.push(tag_data)
+			})
+		})
+		await this.db_tags.bulkInsert(all_tag_metadata)
+	}
+
+>>>>>>> df0f6cc... fixes color flashing bug, finally
 	async add_tag_metadata(datum) {
 >>>>>>> 9404929... existing tags get color when that tag is added
 		const time = datum.time
@@ -330,9 +368,9 @@ class App extends Component {
 				new_state.push(data)
 			}
 		}
-		this.setState({
+		/*this.setState({
 			tags: new_state,
-		})
+		})*/
 	}
 
 	async upsertDatum(datum) { try {
@@ -429,11 +467,15 @@ class App extends Component {
 			return true
 		})
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+		await this.addTagMetadataFromDatums(new_datums)
+>>>>>>> df0f6cc... fixes color flashing bug, finally
 		new_datums.forEach(async d => {
-			this.add_tag_metadata(d)
 			await this.db_datums.upsert(d)
 		})
+<<<<<<< HEAD
 >>>>>>> f73c15d... if empty, loads default datums
 		datums = datums.concat(new_datums)
 		this.setState({ datums })
@@ -451,6 +493,10 @@ class App extends Component {
 			.database()
 			.ref()
 			.update(updates)
+=======
+		//datums = datums.concat(new_datums)
+		//this.setState({ datums })
+>>>>>>> df0f6cc... fixes color flashing bug, finally
 	}
 
 	async del_datum(id) {
@@ -487,8 +533,9 @@ class App extends Component {
 
 	async del_datums(ids = []) {
 		if (!ids.length) {
-			await this.db_datums.find().remove()
-			await this.db_tags.find().remove()
+			await this.db_datums.remove()
+			await this.db_tags.remove()
+			await this.loadLocalDB(false)
 			this.setState({
 				datums: [],
 				tags: [],
@@ -610,12 +657,9 @@ class App extends Component {
 		this.setState({ current_modal: modal_name })
 	}
 
-	import_datums(datums) {
-		this.get_datum_ids().map(id =>
-			this.del_tag_metadata(id)
-		)
-		this.del_datums()
-		this.add_datums(datums)
+	async import_datums(datums) {
+		await this.del_datums()
+		await this.add_datums(datums)
 		// TODO remove tag data
 	}
 

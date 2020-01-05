@@ -81,6 +81,7 @@ const DatumList = props => {
 	const getItemSize = index => 62
 	const listRef = useCallback(node => {
 		try {
+<<<<<<< HEAD
 			if (node !== null) node.scrollToItem(p.datums.length)
 <<<<<<< HEAD
 		} catch(e) {
@@ -98,6 +99,9 @@ const DatumList = props => {
 						width={width}
 						itemSize={getItemSize}
 =======
+=======
+			// if (node !== null) node.scrollToItem(p.datums.length)
+>>>>>>> df0f6cc... fixes color flashing bug, finally
 		} catch (e) {
 			console.error(e)
 		}

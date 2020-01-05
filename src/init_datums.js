@@ -9,7 +9,7 @@ export default [
 	]),
 	new Datum(uuid(), Date.now() + 1, [
 		{ name: 'todo', value: 'dry cleaning'},
-		{ name: 'done', value: '' },
+		{ name: 'done' },
 	]),
 	new Datum(uuid(), Date.now() + 2, [
 		{ name: 'habit', value: 'no snooze' },

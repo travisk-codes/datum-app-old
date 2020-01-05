@@ -359,7 +359,7 @@ class DatumBar extends Component {
 			let whole = false,
 				half = false
 			if (!this.props.tag_colors[name]) {
-				this.props.tag_colors[name] = rand_color() // TODO fix color change on submit bug
+				//this.props.tag_colors[name] = rand_color() // TODO fix color change on submit bug
 				whole = true
 			}
 			if (
