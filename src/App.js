@@ -288,6 +288,7 @@ class App extends Component {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	userSignOut() {
 		this.props.signOut()
 		this.setState({
@@ -299,6 +300,8 @@ class App extends Component {
 	add_tag_metadata(datum) {
 =======
 =======
+=======
+>>>>>>> c32acd9... fixes all merge conflicts
 	async addTagMetadataFromDatums(datums) {
 		let all_tag_metadata = []
 		datums.forEach(d => {
@@ -327,7 +330,10 @@ class App extends Component {
 		await this.db_tags.bulkInsert(all_tag_metadata)
 	}
 
+<<<<<<< HEAD
 >>>>>>> df0f6cc... fixes color flashing bug, finally
+=======
+>>>>>>> c32acd9... fixes all merge conflicts
 	async add_tag_metadata(datum) {
 >>>>>>> 9404929... existing tags get color when that tag is added
 		const time = datum.time
@@ -484,6 +490,7 @@ class App extends Component {
 		})
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 =======
 		await this.addTagMetadataFromDatums(new_datums)
@@ -517,6 +524,12 @@ class App extends Component {
 		//datums = datums.concat(new_datums)
 		//this.setState({ datums })
 >>>>>>> df0f6cc... fixes color flashing bug, finally
+=======
+		await this.addTagMetadataFromDatums(new_datums)
+		await this.db_datums.bulkInsert(new_datums)
+		//datums = datums.concat(new_datums)
+		//this.setState({ datums })
+>>>>>>> c32acd9... fixes all merge conflicts
 	}
 
 	async del_datum(id) {

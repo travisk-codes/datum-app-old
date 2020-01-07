@@ -83,6 +83,7 @@ const DatumList = props => {
 		try {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 			if (node !== null) node.scrollToItem(p.datums.length)
 <<<<<<< HEAD
 		} catch(e) {
@@ -106,6 +107,9 @@ const DatumList = props => {
 =======
 			if (node !== null && p.datums.length) node.scrollToItem(p.datums.length)
 >>>>>>> 2e961d6... minor changes/fixes/corrections
+=======
+			if (node !== null && p.datums.length) node.scrollToItem(p.datums.length)
+>>>>>>> c32acd9... fixes all merge conflicts
 		} catch (e) {
 			console.error(e)
 		}
