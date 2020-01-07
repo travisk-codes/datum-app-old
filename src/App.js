@@ -134,6 +134,7 @@ class App extends Component {
 			stashed_datum: null,
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 			current_view: 'splash',
 =======
 			current_view: 'todos',
@@ -141,6 +142,9 @@ class App extends Component {
 =======
 			current_view: 'datum_list',
 >>>>>>> 22a2c59... updates functions to use new Datum class, adds clear all feature, minor cosmetic updates, fills out side menu icons, adds fab to Todos page, misc updates
+=======
+			current_view: 'todos',
+>>>>>>> f8174ab... adds todo input/bar to Todos view, updates datum list on add
 			is_side_menu_open: false,
 			current_modal: false,
 		}
@@ -377,6 +381,14 @@ class App extends Component {
 		})*/
 	}
 
+	createNewDatum(tags) {
+		return new Datum(
+			uuid(),
+			Date.now(),
+			tags
+		)
+	}
+
 	async upsertDatum(datum) { try {
 		let { datums } = this.state
 		if (datum.getId()) {
@@ -390,9 +402,9 @@ class App extends Component {
 		await this.db_datums.upsert(datum)
 		await this.add_tag_metadata(datum)
 
-		this.setState({
+		/*this.setState({
 			datums
-		})
+		})*/
 	} catch(e) {
 		throw new Error(e)
 	}}
@@ -831,12 +843,13 @@ class App extends Component {
 				onSelectEdit={this.edit_datum}
 				onSelectDelete={this.del_datum}
 				onButtonLongPress={this.toggle_side_menu}
-				onAddTodo={this.upsertDatum}
+				onAddTodo={tags => this.upsertDatum(this.createNewDatum(tags))}
 			/>
 		)
 	}
 
 	render() {
+		debugger
 		const views = {
 			'splash': this.renderSplashView,
 			'datum_list': this.renderDatumListView,

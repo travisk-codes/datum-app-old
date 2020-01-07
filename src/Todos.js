@@ -12,21 +12,45 @@ import {
 	MenuItem,
 	Checkbox,
 	IconButton,
+	TextField,
+	Toolbar,
 	Typography,
 } from '@material-ui/core'
 import MoreIcon from '@material-ui/icons/MoreVert'
 import MenuIcon from '@material-ui/icons/MenuRounded'
 import AddIcon from '@material-ui/icons/AddRounded'
+import Datum from './DatumClass'
 
 const useStyles = makeStyles(theme  => ({
+	container: {
+		marginTop: 56, // top bar
+	},
 	checkbox: {
 		paddingLeft: 10,
 	},
+	todoBar: {
+		display: 'flex',
+		position: 'fixed',
+		flexDirection: 'column',
+		justifyContent: 'center',
+		alignItems: 'stretch',
+		left: 0,
+		right: 0,
+		bottom: 0,
+		height: 56,
+		boxShadow: '0px 2px 20px rgba(0, 0, 0, 0.2)',
+		paddingLeft: 6,
+		paddingRight: 54,
+	},
 	fab: {
 		position: 'fixed',
-		right: 5,
-		bottom: 5,
+		right: 8,
+		bottom: 8,
 	},
+	todoTextField: {
+		display: 'flex',
+		alignItems: 'stretch',
+	}
 }))
 
 function TodoItemMenu(props) {
@@ -154,11 +178,28 @@ function Todos(props) {
 		if (!text.length) {
 			props.onButtonLongPress(e)
 		} else {
-			props.onAddTodo(e)
+			props.onAddTodo([{
+				name: 'todo',
+				value: text,
+			}])
+			setText('')
 		}
 	}
 
-	const list_items = props.todoItems.map(ti => {
+	function onChangeTodoTextField(e) {
+		setText(e.target.value)
+	}
+
+	function onSubmitTodo(e) {
+		e.preventDefault()
+		props.onAddTodo([{
+			name: 'todo',
+			value: text,
+		}])
+		setText('')
+	}
+
+	props.todoItems.forEach(ti => {
 		if (ti.hasTag('done')) {
 			complete_todos.push((
 				<TodoItem
@@ -181,15 +222,28 @@ function Todos(props) {
 		}
 	})
 
-	const btn_icon =
-	!text.length ? <MenuIcon /> : <AddIcon />
+	const btn_icon = !text.length ? <MenuIcon /> : <AddIcon />
 
   return (
-		<>
+		<div className={classes.container}>
 			<List>
 				{incomplete_todos}
 				{complete_todos}
 			</List>
+			<Toolbar className={classes.todoBar}>
+				<form onSubmit={e => onSubmitTodo(e)}>
+					<TextField 
+						className={classes.todoTextField} 
+						onChange={e => onChangeTodoTextField(e)}
+						value={text}
+						label='Todo' 
+						placeholder='New Todo' 
+						variant='outlined' 
+						size='small' 
+						color='secondary'
+					/>
+				</form>
+			</Toolbar>
 			<Fab
 				onClick={on_click_btn}
 				onContextMenu={props.onButtonLongPress} // capture long press & right click
@@ -200,7 +254,7 @@ function Todos(props) {
 			>
 				{btn_icon}
 			</Fab>
-		</>
+		</div>
   );
 }
 
