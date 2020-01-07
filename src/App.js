@@ -849,7 +849,6 @@ class App extends Component {
 	}
 
 	render() {
-		debugger
 		const views = {
 			'splash': this.renderSplashView,
 			'datum_list': this.renderDatumListView,

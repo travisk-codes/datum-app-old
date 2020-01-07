@@ -82,6 +82,7 @@ const DatumList = props => {
 	const listRef = useCallback(node => {
 		try {
 <<<<<<< HEAD
+<<<<<<< HEAD
 			if (node !== null) node.scrollToItem(p.datums.length)
 <<<<<<< HEAD
 		} catch(e) {
@@ -102,6 +103,9 @@ const DatumList = props => {
 =======
 			// if (node !== null) node.scrollToItem(p.datums.length)
 >>>>>>> df0f6cc... fixes color flashing bug, finally
+=======
+			if (node !== null && p.datums.length) node.scrollToItem(p.datums.length)
+>>>>>>> 2e961d6... minor changes/fixes/corrections
 		} catch (e) {
 			console.error(e)
 		}

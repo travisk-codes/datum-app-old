@@ -42,7 +42,7 @@ const styles = {
 		right: 0,
 
 		backgroundColor: 'whitesmoke',
-		boxShadow: '0px 2px 20px rgba(0, 0, 0, 0.2',
+		boxShadow: '0px 2px 20px rgba(0, 0, 0, 0.2)',
 		borderRadius: 8,
 	},
 	tag_menu_tag: {
@@ -60,7 +60,7 @@ const styles = {
 		bottom: 0,
 
 		backgroundColor: 'whitesmoke',
-		boxShadow: '0px 2px 20px rgba(0, 0, 0, 0.2',
+		boxShadow: '0px 2px 20px rgba(0, 0, 0, 0.2)',
 	},
 	datum_bar_input: {
 		display: 'inline-flex',
@@ -359,7 +359,7 @@ class DatumBar extends Component {
 			let whole = false,
 				half = false
 			if (!this.props.tag_colors[name]) {
-				//this.props.tag_colors[name] = rand_color() // TODO fix color change on submit bug
+				this.props.tag_colors[name] = rand_color() // TODO fix color change on submit bug
 				whole = true
 			}
 			if (
