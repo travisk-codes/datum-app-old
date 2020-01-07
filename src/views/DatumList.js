@@ -21,7 +21,7 @@ import { withStyles } from '@material-ui/core/styles'
 import { FixedSizeList } from 'react-window'
 >>>>>>> 0edcc73... fixes virtualized window bug?
 import AutoSizer from 'react-virtualized-auto-sizer'
-import Datum from './Datum'
+import Datum from '../components/Datum'
 
 const styles = {
 	datum_list: {

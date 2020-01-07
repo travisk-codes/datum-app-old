@@ -2,7 +2,7 @@ import React from 'react'
 import Chip from '@material-ui/core/Chip'
 import { withStyles } from '@material-ui/core/styles'
 
-import { objectify } from './utils/getTagColor'
+import { objectify } from '../utils/getTagColor'
 
 const base = {
 	position: 'relative',

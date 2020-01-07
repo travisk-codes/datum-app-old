@@ -10,8 +10,8 @@ import {
 	IconButton,
 } from '@material-ui/core'
 
-import Tag from './Tag_REFACTOR'
-import timestamp from './utils/timestamp'
+import Tag from './Tag'
+import timestamp from '../utils/timestamp'
 
 const styles = {
 	container: {

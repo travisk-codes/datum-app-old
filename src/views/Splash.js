@@ -9,7 +9,7 @@ import { datum_schema, tag_schema } from './schemas'
 =======
 >>>>>>> 905cb95... fixes errors and warnings
 //import secret from './secret'
-import logo from './datum-logo.svg'
+import logo from '../datum-logo.svg'
 
 const styles = {
 	container: {

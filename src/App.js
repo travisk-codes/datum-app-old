@@ -16,11 +16,11 @@ import {
 	createMuiTheme,
 } from '@material-ui/core/styles'
 
-import DatumBar from './DatumBar'
-import DatumList from './DatumList'
-import Splash from './Splash'
-import Todos from './Todos'
-import SideMenu from './SideMenu'
+import DatumBar from './components/DatumBar'
+import DatumList from './views/DatumList'
+import Splash from './views/Splash'
+import Todos from './views/Todos'
+import SideMenu from './components/SideMenu'
 import ImportExport from './modals/ImportExport'
 import { datum_schema, tag_schema } from './schemas'
 import { rand_color } from './utils/getTagColor'

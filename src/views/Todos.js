@@ -19,7 +19,7 @@ import {
 import MoreIcon from '@material-ui/icons/MoreVert'
 import MenuIcon from '@material-ui/icons/MenuRounded'
 import AddIcon from '@material-ui/icons/AddRounded'
-import Datum from './DatumClass'
+import Datum from '../DatumClass'
 
 const useStyles = makeStyles(theme  => ({
 	container: {

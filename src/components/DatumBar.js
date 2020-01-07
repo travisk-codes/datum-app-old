@@ -2,11 +2,11 @@ import React, { Component } from 'react'
 import ChipInput from 'material-ui-chip-input'
 import { Fab } from '@material-ui/core'
 
-import { rand_color, objectify } from './utils/getTagColor'
+import { rand_color, objectify } from '../utils/getTagColor'
 import { withStyles } from '@material-ui/core/styles'
 import AddIcon from '@material-ui/icons/AddRounded'
 import MenuIcon from '@material-ui/icons/MenuRounded'
-import Tag from './Tag_REFACTOR'
+import Tag from './Tag'
 
 const styles = {
 	container: {
