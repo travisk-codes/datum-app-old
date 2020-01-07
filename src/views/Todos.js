@@ -203,6 +203,7 @@ function Todos(props) {
 		if (ti.hasTag('done')) {
 			complete_todos.push((
 				<TodoItem
+					key={ti.getId()}
 					todo={ti}
 					done
 					onSelectDelete={() => props.onSelectDelete(ti.id)}
@@ -213,6 +214,7 @@ function Todos(props) {
 		} else {
 			incomplete_todos.push((
 				<TodoItem
+					key={ti.getId()}
 					todo={ti}
 					onSelectDelete={() => props.onSelectDelete(ti.id)}
 					onSelectEdit={() => props.onSelectEdit(ti.id)}
