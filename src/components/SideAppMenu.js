@@ -14,6 +14,7 @@ import {
 	ListItem,
 	ListItemIcon,
 	ListItemText,
+	Typography,
 } from '@material-ui/core'
 
 import ImportExportIcon from '@material-ui/icons/ImportExportRounded'
@@ -48,6 +49,7 @@ export default function SideMenu(props) {
 			open={props.open}
 			onClose={props.on_close}
 		>
+<<<<<<< HEAD:src/components/SideMenu.js
 			<List>
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -94,6 +96,9 @@ export default function SideMenu(props) {
 				</ListItem>
 >>>>>>> 22a2c59... updates functions to use new Datum class, adds clear all feature, minor cosmetic updates, fills out side menu icons, adds fab to Todos page, misc updates
 			</List>
+=======
+			<Typography style={{fontSize: 18, padding: '1em'}}>Apps</Typography>
+>>>>>>> 811213f... splits side menu into app and settings:src/components/SideAppMenu.js
 			<Divider />
 			<List>
 				<ListItem
@@ -155,31 +160,6 @@ export default function SideMenu(props) {
 					</ListItemIcon>
 					<ListItemText primary='Todos' />
 				</ListItem>
-			</List>
-			<Divider />
-			<List>
-				{['Import/Export'].map((text, i) => (
-					<ListItem
-						button
-						onClick={props.on_click_import_export}
-						key={text}
-					>
-						<ListItemIcon>
-							<ImportExportIcon />
-						</ListItemIcon>
-						<ListItemText primary={text} />
-					</ListItem>
-				))}
-				<ListItem
-					button
-					onClick={props.onClickClearData}
-				>
-					<ListItemIcon>
-						<ClearIcon />
-					</ListItemIcon>
-					<ListItemText primary='Clear Data' />
-				</ListItem>
-
 			</List>
 		</Drawer>
 	)

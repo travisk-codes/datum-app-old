@@ -5,7 +5,7 @@ import { Fab } from '@material-ui/core'
 import { rand_color, objectify } from '../utils/getTagColor'
 import { withStyles } from '@material-ui/core/styles'
 import AddIcon from '@material-ui/icons/AddRounded'
-import MenuIcon from '@material-ui/icons/MenuRounded'
+import MenuIcon from '@material-ui/icons/AmpStoriesRounded'
 import Tag from './Tag'
 
 const styles = {

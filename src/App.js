@@ -22,7 +22,8 @@ import Todos from './views/Todos'
 
 import DatumBar from './components/DatumBar'
 import TopBar from './components/TopBar'
-import SideMenu from './components/SideMenu'
+import SideAppMenu from './components/SideAppMenu'
+import SideSettingsMenu from './components/SideSettingsMenu'
 
 import About from './modals/About'
 import ImportExport from './modals/ImportExport'
@@ -119,7 +120,7 @@ const theme = createMuiTheme({
 			contrastText: '#1a1a1a',
 		},
 		secondary: {
-			main: '#ff2626',
+			main: '#ff3030',
 			contrastText: '#fafafa',
 		},
 	},
@@ -147,6 +148,7 @@ class App extends Component {
 >>>>>>> c2eafc4... styles done todos, enables menu options
 =======
 			current_view: 'datum_list',
+<<<<<<< HEAD
 >>>>>>> 22a2c59... updates functions to use new Datum class, adds clear all feature, minor cosmetic updates, fills out side menu icons, adds fab to Todos page, misc updates
 =======
 			current_view: 'todos',
@@ -155,6 +157,9 @@ class App extends Component {
 			current_view: 'datum_list',
 >>>>>>> d928976... shows about modal on side menu item click
 			is_side_menu_open: false,
+=======
+			current_side_menu: false,
+>>>>>>> 811213f... splits side menu into app and settings
 			current_modal: 'about',
 		}
 		this.add_active_datum = this.add_active_datum.bind(this)
@@ -172,7 +177,7 @@ class App extends Component {
 			this
 		)
 		this.get_datum_ids = this.get_datum_ids.bind(this)
-		this.toggle_side_menu = this.toggle_side_menu.bind(this)
+		this.switchSideMenuTo = this.switchSideMenuTo.bind(this)
 		this.switchModalTo = this.switchModalTo.bind(this)
 		this.import_datums = this.import_datums.bind(this)
 <<<<<<< HEAD
@@ -688,10 +693,9 @@ class App extends Component {
 		return this.state.datums.map(d => d.id)
 	}
 
-	toggle_side_menu(e) {
-		e.preventDefault()
+	switchSideMenuTo(menu_name) {
 		this.setState({
-			is_side_menu_open: !this.state.is_side_menu_open,
+			current_side_menu: menu_name,
 		})
 	}
 
@@ -856,7 +860,7 @@ class App extends Component {
 					tag_colors={tag_colors}
 					addTagColor={this.addTagColor}
 					active_datum={this.state.active_datum}
-					on_button_long_press={this.toggle_side_menu}
+					on_button_long_press={() => this.switchSideMenuTo('apps')}
 				/>
 			</>
 		)
@@ -871,7 +875,7 @@ class App extends Component {
 				onToggleTodo={this.upsertDatum}
 				onSelectEdit={this.edit_datum}
 				onSelectDelete={this.del_datum}
-				onButtonLongPress={this.toggle_side_menu}
+				onButtonLongPress={() => this.switchSideMenuTo('apps')}
 				onAddTodo={tags => this.upsertDatum(this.createNewDatum(tags))}
 			/>
 		)
@@ -903,14 +907,19 @@ class App extends Component {
 		return (
 			<MuiThemeProvider theme={theme}>
 				<CssBaseline />
-				<SideMenu
-					onClickImportExport={() => this.switchModalTo('import_export')}
+				<TopBar onOpenSettingsMenu={() => this.switchSideMenuTo('settings')}/>
+				<SideAppMenu
 					onClickTodos={() => this.switchViewTo('todos')}
 					onClickList={() => this.switchViewTo('datum_list')}
-					onClickAbout={() => this.switchModalTo('about')}
-					open={this.state.is_side_menu_open}
-					on_close={this.toggle_side_menu}
+					open={this.state.current_side_menu === 'apps'}
+					on_close={() => this.switchSideMenuTo(false)}
 					onClickClearData={this.del_datums}
+				/>
+				<SideSettingsMenu
+					onClickImportExport={() => this.switchModalTo('import_export')}
+					onClickAbout={() => this.switchModalTo('about')}
+					on_close={() => this.switchSideMenuTo(false)}
+					open={this.state.current_side_menu === 'settings'}
 				/>
 				{render_view[this.state.current_view]()}
 				<About 
