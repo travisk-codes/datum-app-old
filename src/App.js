@@ -16,14 +16,17 @@ import {
 	createMuiTheme,
 } from '@material-ui/core/styles'
 
-import DatumBar from './components/DatumBar'
-import TopBar from './components/TopBar'
 import DatumList from './views/DatumList'
 import Splash from './views/Splash'
-import About from './views/About'
 import Todos from './views/Todos'
+
+import DatumBar from './components/DatumBar'
+import TopBar from './components/TopBar'
 import SideMenu from './components/SideMenu'
+
+import About from './modals/About'
 import ImportExport from './modals/ImportExport'
+
 import { datum_schema, tag_schema } from './schemas'
 import { rand_color } from './utils/getTagColor'
 <<<<<<< HEAD
@@ -137,6 +140,7 @@ class App extends Component {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 			current_view: 'splash',
 =======
 			current_view: 'todos',
@@ -147,8 +151,11 @@ class App extends Component {
 =======
 			current_view: 'todos',
 >>>>>>> f8174ab... adds todo input/bar to Todos view, updates datum list on add
+=======
+			current_view: 'datum_list',
+>>>>>>> d928976... shows about modal on side menu item click
 			is_side_menu_open: false,
-			current_modal: false,
+			current_modal: 'about',
 		}
 		this.add_active_datum = this.add_active_datum.bind(this)
 		this.del_datum = this.del_datum.bind(this)
@@ -166,7 +173,7 @@ class App extends Component {
 		)
 		this.get_datum_ids = this.get_datum_ids.bind(this)
 		this.toggle_side_menu = this.toggle_side_menu.bind(this)
-		this.toggle_modal = this.toggle_modal.bind(this)
+		this.switchModalTo = this.switchModalTo.bind(this)
 		this.import_datums = this.import_datums.bind(this)
 <<<<<<< HEAD
 		this.get_tag_names = this.get_tag_names.bind(this)
@@ -688,7 +695,7 @@ class App extends Component {
 		})
 	}
 
-	toggle_modal(modal_name) {
+	switchModalTo(modal_name) {
 		this.setState({ current_modal: modal_name })
 	}
 
@@ -897,24 +904,30 @@ class App extends Component {
 			<MuiThemeProvider theme={theme}>
 				<CssBaseline />
 				<SideMenu
-					on_click_import_export={() =>
-						this.toggle_modal('import_export')
-					}
+					onClickImportExport={() => this.switchModalTo('import_export')}
 					onClickTodos={() => this.switchViewTo('todos')}
 					onClickList={() => this.switchViewTo('datum_list')}
-					onClickAbout={() => this.switchViewTo('about')}
+					onClickAbout={() => this.switchModalTo('about')}
 					open={this.state.is_side_menu_open}
 					on_close={this.toggle_side_menu}
 					onClickClearData={this.del_datums}
 				/>
 				{render_view[this.state.current_view]()}
+				<About 
+					open={
+						this.state.current_modal === 'about'
+							? true
+							: false
+					}
+					handle_close={() => this.switchModalTo(false)}
+				/>
 				<ImportExport
 					open={
 						this.state.current_modal === 'import_export'
 							? true
 							: false
 					}
-					handle_close={() => this.toggle_modal(false)}
+					handle_close={() => this.switchModalTo(false)}
 					datums={this.state.datums}
 					import_datums={this.import_datums}
 				/>
