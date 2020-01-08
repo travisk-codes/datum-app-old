@@ -1,10 +1,13 @@
 import React from 'react'
 import {
 <<<<<<< HEAD
+<<<<<<< HEAD
 	Fab,
 =======
 	// Fab,
 >>>>>>> 905cb95... fixes errors and warnings
+=======
+>>>>>>> b960f7d... links menu item about to new view, misc clean up and style changes
 	Divider,
 	Drawer,
 	List,
@@ -81,7 +84,8 @@ export default function SideMenu(props) {
 				</ListItem>
 				<ListItem
 					button
-					onClick={props.onClickList}
+					key='about'
+					onClick={props.onClickAbout}
 				>
 					<ListItemIcon>
 						<InfoIcon />

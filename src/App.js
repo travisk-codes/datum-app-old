@@ -17,8 +17,10 @@ import {
 } from '@material-ui/core/styles'
 
 import DatumBar from './components/DatumBar'
+import TopBar from './components/TopBar'
 import DatumList from './views/DatumList'
 import Splash from './views/Splash'
+import About from './views/About'
 import Todos from './views/Todos'
 import SideMenu from './components/SideMenu'
 import ImportExport from './modals/ImportExport'
@@ -158,7 +160,7 @@ class App extends Component {
 		)
 		this.add_tag_metadata = this.add_tag_metadata.bind(this)
 		this.del_tag_metadata = this.del_tag_metadata.bind(this)
-		this.switch_view_to = this.switch_view_to.bind(this)
+		this.switchViewTo = this.switchViewTo.bind(this)
 		this.get_tag_values_for = this.get_tag_values_for.bind(
 			this
 		)
@@ -640,7 +642,7 @@ class App extends Component {
 			datum_bar_input_val: e.target.value,
 		})
 
-	switch_view_to = view =>
+	switchViewTo = view =>
 		this.setState({
 			current_view: view,
 		})
@@ -696,6 +698,7 @@ class App extends Component {
 		// TODO remove tag data
 	}
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 	 loadDB() {
 			console.log(this.props.user)
@@ -809,10 +812,16 @@ class App extends Component {
 					)}
 					onToggleTodo={this.upsertDatum}
 =======
+=======
+	renderAboutView() {
+		return <About />
+	}
+
+>>>>>>> b960f7d... links menu item about to new view, misc clean up and style changes
 	renderSplashView() {
 		return (
 			<Splash
-				switch_view_to={this.switch_view_to}
+				switchViewTo={this.switchViewTo}
 				on_login={this.load_db}
 			/>
 		)
@@ -862,10 +871,11 @@ class App extends Component {
 	}
 
 	render() {
-		const views = {
+		const render_view = {
 			'splash': this.renderSplashView,
 			'datum_list': this.renderDatumListView,
 			'todos': this.renderTodosView,
+			'about': this.renderAboutView
 		}
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -886,29 +896,18 @@ class App extends Component {
 		return (
 			<MuiThemeProvider theme={theme}>
 				<CssBaseline />
-				<AppBar
-					color='secondary'
-				>
-					<Toolbar>
-						<img 
-							style={{paddingTop: 5, marginLeft: '-6px'}}
-							src="datum-logo.png" 
-							width="140px" 
-							alt="Datum logo"
-						/>
-					</Toolbar>
-				</AppBar>
 				<SideMenu
 					on_click_import_export={() =>
 						this.toggle_modal('import_export')
 					}
-					onClickTodos={() => this.switch_view_to('todos')}
-					onClickList={() => this.switch_view_to('datum_list')}
+					onClickTodos={() => this.switchViewTo('todos')}
+					onClickList={() => this.switchViewTo('datum_list')}
+					onClickAbout={() => this.switchViewTo('about')}
 					open={this.state.is_side_menu_open}
 					on_close={this.toggle_side_menu}
 					onClickClearData={this.del_datums}
 				/>
-				{views[this.state.current_view]()}
+				{render_view[this.state.current_view]()}
 				<ImportExport
 					open={
 						this.state.current_modal === 'import_export'

@@ -1,5 +1,10 @@
 import React from 'react'
-import { AppBar, Toolbar } from '@material-ui/core'
+import { 
+	AppBar,
+	IconButton,
+	Toolbar,
+} from '@material-ui/core'
+import MoreIcon from '@material-ui/icons/MoreVertRounded'
 import { withStyles } from '@material-ui/core/styles'
 
 const styles = {
@@ -9,14 +14,21 @@ const styles = {
 }
 
 const TopBar = () => (
-	<AppBar position='fixed'>
-		<Toolbar>
-			<img
-				src={logo}
-				alt='logo'
-				className={classes.top_bar}			/>
-		</Toolbar>
-	</AppBar>
+	<AppBar
+	color='secondary'
+>
+	<Toolbar>
+		<img 
+			style={{paddingTop: 5, marginLeft: '-6px'}}
+			src="datum-logo.png" 
+			width="140px" 
+			alt="Datum logo"
+		/>
+		<IconButton color='primary'>
+			<MoreIcon />
+		</IconButton>
+	</Toolbar>
+</AppBar>
 )
 
 export default withStyles(styles)(TopBar)
