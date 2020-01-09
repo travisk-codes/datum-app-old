@@ -31,10 +31,14 @@ const styles = {
 		// display: controlled
 		position: 'relative',
 <<<<<<< HEAD
+<<<<<<< HEAD
 		flexWrap: 'wrap-reverse',
 =======
 		flexWrap: 'wrap',
 >>>>>>> 905cb95... fixes errors and warnings
+=======
+		flexWrap: 'wrap-reverse',
+>>>>>>> 6887a6c... refactors tag metadata uploading, sorts tag menu tags by last used
 		justifyContent: 'center',
 		padding: 8,
 		margin: 8,
@@ -134,37 +138,53 @@ const TagBar = props => {
 		matches = []
 	}
 	let tags = matches.map(t => {
+<<<<<<< HEAD
 		let name = false,
 <<<<<<< HEAD
 			value = false,
 			tag
+=======
+		let name = false, value = false
+>>>>>>> 6887a6c... refactors tag metadata uploading, sorts tag menu tags by last used
 		if (props.mode === 'tag_name') {
 			name = t
 		}
 		if (props.mode === 'tag_value') {
 			value = t
 		}
+<<<<<<< HEAD
 =======
 			value = false
 		if (props.mode === 'tag_name') name = t
 		if (props.mode === 'tag_value') value = t
 >>>>>>> 905cb95... fixes errors and warnings
+=======
+>>>>>>> 6887a6c... refactors tag metadata uploading, sorts tag menu tags by last used
 		return (
 			<Tag
 				key={t}
 				name={name}
 				value={value}
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 6887a6c... refactors tag metadata uploading, sorts tag menu tags by last used
 				style={{
 					...styles.tag_menu_tag,
 					flexGrow:
 						props.mode === 'tag_name'
+<<<<<<< HEAD
 							? props.get_tag_count_for(name) * 10
 							: 1,
 				}}
 =======
 				style={styles.tag_menu_tag}
 >>>>>>> 905cb95... fixes errors and warnings
+=======
+							? props.getTagCountFor(name) * 10
+							: 1,
+				}}
+>>>>>>> 6887a6c... refactors tag metadata uploading, sorts tag menu tags by last used
 				onClick={() => props.onClick(t)}
 				color={
 					// if no color, color is active tag's
@@ -404,6 +424,7 @@ class DatumBar extends Component {
 				<AddIcon />
 			)
 <<<<<<< HEAD
+<<<<<<< HEAD
 		let tag_names = this.props
 			.get_tag_names()
 			.sort((a, b) => {
@@ -415,6 +436,19 @@ class DatumBar extends Component {
 				if (
 					this.props.get_last_added_for(a) >
 					this.props.get_last_added_for(b)
+=======
+		let tag_names = this.props
+			.getTagNames()
+			.sort((a, b) => {
+				if (
+					this.props.getTagLastAddedFor(a) <
+					this.props.getTagLastAddedFor(b)
+				)
+					return 1
+				if (
+					this.props.getTagLastAddedFor(a) >
+					this.props.getTagLastAddedFor(b)
+>>>>>>> 6887a6c... refactors tag metadata uploading, sorts tag menu tags by last used
 				)
 					return -1
 				return 0
@@ -466,19 +500,27 @@ class DatumBar extends Component {
 						onClick={this.add_tag}
 						tag_colors={this.props.tag_colors}
 <<<<<<< HEAD
+<<<<<<< HEAD
 						tag_names={tag_names}
 =======
 						tag_names={Object.keys(this.props.tag_colors)}
 >>>>>>> 905cb95... fixes errors and warnings
+=======
+						tag_names={tag_names}
+>>>>>>> 6887a6c... refactors tag metadata uploading, sorts tag menu tags by last used
 						active_tag={this.state.active_tag}
 						get_tag_values_for={
 							this.props.get_tag_values_for
 						}
 <<<<<<< HEAD
+<<<<<<< HEAD
 						get_tag_count_for={this.props.get_tag_count_for}
 						mode={this.state.mode}
 						sorted_tags={this.props.sorted_tags}
 =======
+=======
+						getTagCountFor={this.props.getTagCountFor}
+>>>>>>> 6887a6c... refactors tag metadata uploading, sorts tag menu tags by last used
 						mode={this.state.mode}
 >>>>>>> 905cb95... fixes errors and warnings
 					/>

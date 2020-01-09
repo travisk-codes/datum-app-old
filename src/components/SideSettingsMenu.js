@@ -56,7 +56,7 @@ export default function SideMenu(props) {
 				{['Import/Export'].map((text, i) => (
 					<ListItem
 						button
-						onClick={props.on_click_import_export}
+						onClick={props.onClickImportExport}
 						key={text}
 					>
 						<ListItemIcon>

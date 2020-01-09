@@ -159,8 +159,12 @@ class App extends Component {
 			is_side_menu_open: false,
 =======
 			current_side_menu: false,
+<<<<<<< HEAD
 >>>>>>> 811213f... splits side menu into app and settings
 			current_modal: 'about',
+=======
+			current_modal: false,
+>>>>>>> 6887a6c... refactors tag metadata uploading, sorts tag menu tags by last used
 		}
 		this.add_active_datum = this.add_active_datum.bind(this)
 		this.del_datum = this.del_datum.bind(this)
@@ -204,7 +208,11 @@ class App extends Component {
 		this.renderSplashView = this.renderSplashView.bind(this)
 		this.renderDatumListView = this.renderDatumListView.bind(this)
 		this.renderTodosView = this.renderTodosView.bind(this)
-		this.addTagMetadataFromDatums = this.addTagMetadataFromDatums.bind(this)
+		this.upsertTags = this.upsertTags.bind(this)
+		this.getTagNames = this.getTagNames.bind(this)
+		this.getTagCountFor = this.getTagCountFor.bind(this)
+		this.getTagLastAddedFor = this.getTagLastAddedFor.bind(this)
+		this.addDatums = this.addDatums.bind(this)
 	}
 
 <<<<<<< HEAD
@@ -282,7 +290,8 @@ class App extends Component {
 		})
 		await this.loadLocalDB()
 		if (!this.state.datums.length) {
-			this.add_datums(init_datums)
+			await this.addDatums(init_datums)
+			await this.upsertTags(init_datums)
 		}
 	}
 
@@ -303,6 +312,7 @@ class App extends Component {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	userSignOut() {
 		this.props.signOut()
 		this.setState({
@@ -318,16 +328,33 @@ class App extends Component {
 >>>>>>> c32acd9... fixes all merge conflicts
 	async addTagMetadataFromDatums(datums) {
 		let all_tag_metadata = []
+=======
+	async upsertTags(datums) {
+		if (!Array.isArray(datums)) datums = [datums]
+
+		let self = this
+		function getStateIndexOfTag(tag_name) {
+			self.state.tags.some((tag, i) => {
+				if (tag.name === tag_name) return i
+			})
+		}
+		
+		let new_tags_data = this.state.tags
+>>>>>>> 6887a6c... refactors tag metadata uploading, sorts tag menu tags by last used
 		datums.forEach(d => {
 			d.tags.forEach(t => {
+
 				let tag_data = {}
-				const tag_already_exists = all_tag_metadata
+				const tag_already_exists = this.state.tags
 					.filter(existing => existing.name === t.name)
 				if (tag_already_exists.length) {
 					tag_data = tag_already_exists.pop()
 					tag_data.instance_times.push(d.time)
 					tag_data.instance_peers.push(d.tags)
 					tag_data.instance_values.push(t.value)
+					new_tags_data[
+						getStateIndexOfTag(tag_data.name)
+					] = tag_data
 				} else {
 					tag_data = {
 						id: uuid(),
@@ -336,12 +363,13 @@ class App extends Component {
 						instance_times: [d.time],
 						instance_peers: [d.tags],
 						instance_values: [t.value],
-					}	
+					}
+					new_tags_data.push(tag_data)
 				}
-				all_tag_metadata.push(tag_data)
 			})
 		})
-		await this.db_tags.bulkInsert(all_tag_metadata)
+		await this.db_tags.find().remove()
+		await this.db_tags.bulkInsert(new_tags_data)
 	}
 
 <<<<<<< HEAD
@@ -357,9 +385,8 @@ class App extends Component {
 			const name = dt.name
 			const value = dt.value
 			let tag_data, existence
-			const existing_tag_data = this.state.tags.filter(
-				st => st.name === dt.name
-			)
+			const existing_tag_data = this.state.tags
+				.filter(st => st.name === dt.name)
 			if (!existing_tag_data.length) {
 				// create new entry for tag
 				existence = false
@@ -491,7 +518,7 @@ class App extends Component {
 		}, 100) // give state some time to update before scroll, janky solution :/*/
 	}
 
-	async add_datums(new_datums) {
+	async addDatums(new_datums) {
 		const new_datum_ids = new_datums.map(d => d.id)
 		let { datums } = this.state
 		// default to overwriting existing datums for now
@@ -502,6 +529,7 @@ class App extends Component {
 			}
 			return true
 		})
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -540,6 +568,10 @@ class App extends Component {
 >>>>>>> df0f6cc... fixes color flashing bug, finally
 =======
 		await this.addTagMetadataFromDatums(new_datums)
+=======
+		await this.upsertTags(new_datums)
+		//await this.addTagMetadataFromDatums(new_datums)
+>>>>>>> 6887a6c... refactors tag metadata uploading, sorts tag menu tags by last used
 		await this.db_datums.bulkInsert(new_datums)
 		//datums = datums.concat(new_datums)
 		//this.setState({ datums })
@@ -704,11 +736,12 @@ class App extends Component {
 	}
 
 	async import_datums(datums) {
-		await this.del_datums()
-		await this.add_datums(datums)
+		 await this.del_datums()
+		 await this.addDatums(datums)
 		// TODO remove tag data
 	}
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 	 loadDB() {
@@ -824,6 +857,27 @@ class App extends Component {
 					onToggleTodo={this.upsertDatum}
 =======
 =======
+=======
+	getTagNames() {
+		return this.state.tags.map(t => t.name)
+	}
+
+	getTagCountFor(tag) {
+		return this.state.tags
+			.filter(t => t.name === tag)[0]
+			.instance_times
+			.length
+	}
+
+	getTagLastAddedFor(tag) {
+		const tag_metadata = this.state.tags
+			.filter(t => t.name === tag)[0]
+		return tag_metadata.instance_times[
+			tag_metadata.instance_times.length - 1
+		]
+	}
+
+>>>>>>> 6887a6c... refactors tag metadata uploading, sorts tag menu tags by last used
 	renderAboutView() {
 		return <About />
 	}
@@ -857,6 +911,9 @@ class App extends Component {
 					on_del_tag={this.del_tag}
 					on_add_datum={this.add_active_datum}
 					get_tag_values_for={this.get_tag_values_for}
+					getTagNames={this.getTagNames}
+					getTagCountFor={this.getTagCountFor}
+					getTagLastAddedFor={this.getTagLastAddedFor}
 					tag_colors={tag_colors}
 					addTagColor={this.addTagColor}
 					active_datum={this.state.active_datum}
@@ -882,6 +939,7 @@ class App extends Component {
 	}
 
 	render() {
+		console.log(this.state.tags)
 		const render_view = {
 			'splash': this.renderSplashView,
 			'datum_list': this.renderDatumListView,
@@ -913,12 +971,12 @@ class App extends Component {
 					onClickList={() => this.switchViewTo('datum_list')}
 					open={this.state.current_side_menu === 'apps'}
 					on_close={() => this.switchSideMenuTo(false)}
-					onClickClearData={this.del_datums}
 				/>
 				<SideSettingsMenu
 					onClickImportExport={() => this.switchModalTo('import_export')}
 					onClickAbout={() => this.switchModalTo('about')}
 					on_close={() => this.switchSideMenuTo(false)}
+					onClickClearData={this.del_datums}
 					open={this.state.current_side_menu === 'settings'}
 				/>
 				{render_view[this.state.current_view]()}
