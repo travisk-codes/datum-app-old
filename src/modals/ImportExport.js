@@ -52,7 +52,7 @@ function ImportExport(props) {
 					csv_datums = csv_datums.substring('data:text/csv;charset=utf-8,'.length) // wow
 				}
 				const datums = csv_to_datums(csv_datums)
-				props.import_datums(datums)
+				props.importDatums(datums)
 			}
 		})(e.target.files[0])
 		reader.readAsText(e.target.files[0])
