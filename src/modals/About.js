@@ -7,13 +7,7 @@ import {
 	DialogContentText,
 	DialogTitle,
 } from '@material-ui/core'
-
-import ImportIcon from '@material-ui/icons/ArrowDownwardRounded'
-import ExportIcon from '@material-ui/icons/ArrowUpwardRounded'
 import CancelIcon from '@material-ui/icons/CancelRounded'
-
-import { datums_to_csv, csv_to_datums } from '../utils/csv'
-
 import { withStyles } from '@material-ui/core/styles'
 
 const styles = {

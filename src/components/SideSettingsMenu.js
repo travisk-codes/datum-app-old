@@ -12,12 +12,6 @@ import {
 import ImportExportIcon from '@material-ui/icons/ImportExportRounded'
 import HelpIcon from '@material-ui/icons/HelpRounded'
 import InfoIcon from '@material-ui/icons/InfoRounded'
-import DoneIcon from '@material-ui/icons/DoneAllRounded'
-import ListIcon from '@material-ui/icons/ListRounded'
-import MoneyIcon from '@material-ui/icons/AttachMoneyRounded'
-import StatsIcon from '@material-ui/icons/TimelineRounded'
-import TimelineIcon from '@material-ui/icons/ViewDayRounded'
-import HabitsIcon from '@material-ui/icons/UpdateRounded'
 import ClearIcon from '@material-ui/icons/ClearRounded'
 
 export default function SideMenu(props) {

@@ -3,25 +3,22 @@
 	"version": "0.1.0",
 	"private": true,
 	"dependencies": {
-<<<<<<< HEAD
-		"@material-ui/core": "^3.5.1",
-		"@material-ui/icons": "^3.0.1",
-		"firebase": "^7.4.0",
-		"firebase-admin": "^8.7.0",
-		"firebase-tools": "^7.8.1",
-=======
 		"@material-ui/core": "^4.0.0",
 		"@material-ui/styles": "^4.0.0",
 		"@material-ui/icons": "^4.0.0",
->>>>>>> c2eafc4... styles done todos, enables menu options
 		"material-ui-chip-input": "^1.0.0-beta.8",
-		"npm": "^6.13.1",
+		"pouchdb": "^7.0.0",
+		"pouchdb-adapter-http": "^7.0.0",
+		"pouchdb-adapter-idb": "^7.0.0",
+		"pouchdb-adapter-memory": "^7.0.0",
+		"pouchdb-authentication": "^1.1.3",
 		"react": "^16.6.3",
 		"react-dom": "^16.6.3",
 		"react-scripts": "^2.1.8",
 		"react-virtualized-auto-sizer": "^1.0.2",
 		"react-window": "^1.8.5",
-		"react-with-firebase-auth": "^1.2.0",
+		"rxdb": "^8.0.7",
+		"rxjs": "^6.4.0",
 		"uuid": "^3.3.2",
 		"why-did-you-update": "^1.0.6"
 	},

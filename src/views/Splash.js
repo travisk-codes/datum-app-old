@@ -2,12 +2,6 @@ import React, { Component } from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import { Button, TextField } from '@material-ui/core'
 
-<<<<<<< HEAD
-import { signIn } from './utils/auth'
-import {db} from './utils/db'
-import { datum_schema, tag_schema } from './schemas'
-=======
->>>>>>> 905cb95... fixes errors and warnings
 //import secret from './secret'
 import logo from '../datum-logo.svg'
 
@@ -266,60 +260,56 @@ class Splash extends Component {
 		]
 		return (
 			<div className={classes.container}>
-				<img
-					src={logo}
-					alt='logo'
-					className={classes.logo}
-				/>
-				<span className={classes.tag_line}>
-					{'a personal data management platform\ntesting'}
-				</span>
+							<img
+											src={logo}
+											alt='logo'
+											className={classes.logo}
+							/>
+							<span className={classes.tag_line}>
+											{'a personal data management platform'}
+							</span>
 
-				<div className={classes.inline_container}>
-					<Button
-						onClick={this.signIn}
-						variant='outlined'
-						size='medium'
-<<<<<<< HEAD
-						component='div'
-=======
->>>>>>> 905cb95... fixes errors and warnings
-						className={`${classes.button} ${classes.container_item}`}
-					>
-						Online Sync
-					</Button>
-					<Button
-						onClick={() =>
-							this.props.switch_view_to('datum_list')
-						}
-						component='div'
-						variant='outlined'
-						size='medium'
-						className={`${classes.button} ${classes.container_item}`}
-					>
-						Offline Only
-					</Button>
-					<Button
-<<<<<<< HEAD
-						component='div'
-						variant='outlined'
-						size='medium'
-=======
-						onClick={() =>
-							this.props.switch_view_to('datum_list')
-						}
-						variant='outlined'
-						size='medium'
-						component='span'
->>>>>>> 905cb95... fixes errors and warnings
-						className={`${classes.button} ${classes.container_item}`}
-					>
-						Learn More
-					</Button>
-				</div>
+							<div className={classes.inline_container}>
+											<Button
+															component='span'
+															variant='outlined'
+															size='medium'
+															className={`${classes.button} ${classes.container_item}`}
+											>
+															Learn More
+											</Button>
+											<Button
+															onClick={() =>
+																			this.props.switch_view_to('datum_list')
+															}
+															variant='outlined'
+															size='medium'
+															component='span'
+															className={`${classes.button} ${classes.container_item}`}
+											>
+															Open App
+											</Button>
+							</div>
+
+							<form
+											style={{
+															display: 'flex',
+															flexDirection: 'column',
+											}}
+											onSubmit={this.handle_submit}
+							>
+											<div className={classes.inline_container}>
+															{this.render_text_field(text_fields[0])}
+															{this.render_text_field(text_fields[1])}
+											</div>
+
+											{this.render_text_field(text_fields[2])}
+											{this.render_text_field(text_fields[3])}
+											{this.render_submit_button()}
+							</form>
 			</div>
-		)
-	}
+)
+}
 }
 
 export default withStyles(styles)(Splash)

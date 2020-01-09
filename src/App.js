@@ -1,16 +1,11 @@
 import React, { Component } from 'react'
-<<<<<<< HEAD
-import withFirebaseAuth from 'react-with-firebase-auth'
-
-=======
 import RxDB from 'rxdb'
 import memory from 'pouchdb-adapter-memory'
 import idb from 'pouchdb-adapter-idb'
 import http from 'pouchdb-adapter-http'
->>>>>>> 273fe4c... gets rxdb working
 import uuid from 'uuid/v4'
 
-import { CssBaseline, AppBar, Toolbar } from '@material-ui/core'
+import { CssBaseline } from '@material-ui/core'
 import {
 	MuiThemeProvider,
 	createMuiTheme,
@@ -30,88 +25,16 @@ import ImportExport from './modals/ImportExport'
 
 import { datum_schema, tag_schema } from './schemas'
 import { rand_color } from './utils/getTagColor'
-<<<<<<< HEAD
-<<<<<<< HEAD
 import init_datums from './init_datums'
-import secret from './utils/secret'
-import firebase from './firebase'
-
-<<<<<<< HEAD
-import 'firebase/database'
-
-function load(app, user) {
-	firebase
-		.database()
-		.ref(`/${user.uid}/datums`)
-		.on('value', snapshot => {
-			let datums_state = []
-			console.log(snapshot.val())
-			let datums = snapshot.val()
-			for (let datum_id in datums) {
-				datums_state.push({
-					id: datum_id,
-					tags: datums[datum_id].tags,
-					time: datums[datum_id].time,
-				})
-			}
-			datums_state.forEach(d => app.add_tag_metadata(d))
-			app.setState({
-				datums: datums_state,
-			})
-		})
-}
-=======
-const log = x => console.log(x)
-=======
-//import init_datums from './init_datums'
-=======
-import init_datums from './init_datums'
-<<<<<<< HEAD
->>>>>>> f73c15d... if empty, loads default datums
-=======
 import Datum from './DatumClass'
->>>>>>> d58f105... checks box if datum has "done" tag
 //import secret from './secret'
 
 //const log = x => console.log(x)
-<<<<<<< HEAD
->>>>>>> 905cb95... fixes errors and warnings
-const empty_datum = () => ({
-	id: null,
-	time: null,
-	tags: [],
-})
->>>>>>> 643eadb... prettifies
-
-<<<<<<< HEAD
-function add(datum, user) {
-		firebase
-			.database()
-			.ref(`/${user.uid}/datums`)
-			.push(datum)
-}
-=======
 const empty_datum = () => (new Datum(null, null, []))
->>>>>>> d260815... empty_datum func returns Datum and not object
 
-function del(id, user) {
-		firebase
-			.database()
-			.ref(`/${user.uid}/datums/${id}`)
-			.remove()
-	}
-
-const log = x => console.log(x)
-const empty_datum = () => ({
-	id: null,
-	time: null,
-	tags: [],
-})
-=======
 RxDB.plugin(idb)
 RxDB.plugin(memory)
 RxDB.plugin(http)
->>>>>>> 273fe4c... gets rxdb working
 
 const theme = createMuiTheme({
 	palette: {
@@ -138,34 +61,11 @@ class App extends Component {
 			tags: [],
 			active_datum: new Datum(),
 			stashed_datum: null,
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-			current_view: 'splash',
-=======
-			current_view: 'todos',
->>>>>>> c2eafc4... styles done todos, enables menu options
-=======
 			current_view: 'datum_list',
-<<<<<<< HEAD
->>>>>>> 22a2c59... updates functions to use new Datum class, adds clear all feature, minor cosmetic updates, fills out side menu icons, adds fab to Todos page, misc updates
-=======
-			current_view: 'todos',
->>>>>>> f8174ab... adds todo input/bar to Todos view, updates datum list on add
-=======
-			current_view: 'datum_list',
->>>>>>> d928976... shows about modal on side menu item click
-			is_side_menu_open: false,
-=======
 			current_side_menu: false,
-<<<<<<< HEAD
->>>>>>> 811213f... splits side menu into app and settings
-			current_modal: 'about',
-=======
 			current_modal: false,
->>>>>>> 6887a6c... refactors tag metadata uploading, sorts tag menu tags by last used
 		}
+		this.subs = []
 		this.add_active_datum = this.add_active_datum.bind(this)
 		this.del_datum = this.del_datum.bind(this)
 		this.del_datums = this.del_datums.bind(this)
@@ -182,31 +82,8 @@ class App extends Component {
 		)
 		this.switchSideMenuTo = this.switchSideMenuTo.bind(this)
 		this.switchModalTo = this.switchModalTo.bind(this)
-<<<<<<< HEAD
-		this.import_datums = this.import_datums.bind(this)
-<<<<<<< HEAD
-		this.get_tag_names = this.get_tag_names.bind(this)
-		this.get_tag_count_for = this.get_tag_count_for.bind(
-			this
-		)
-		this.get_last_added_for = this.get_last_added_for.bind(
-			this
-		)
-		this.userSignOut = this.userSignOut.bind(this)
-=======
-=======
 		this.importDatums = this.importDatums.bind(this)
->>>>>>> f9c220f... minor tweaks, clean up, etc.
 		this.upsertDatum = this.upsertDatum.bind(this)
-<<<<<<< HEAD
->>>>>>> a35d481... toggles todos on click checkbox
-	}
-
-<<<<<<< HEAD
-	componentDidMount() {
-=======
-	async componentDidMount() {
-=======
 		this.loadLocalDB = this.loadLocalDB.bind(this)
 		this.renderSplashView = this.renderSplashView.bind(this)
 		this.renderDatumListView = this.renderDatumListView.bind(this)
@@ -218,26 +95,8 @@ class App extends Component {
 		this.addDatums = this.addDatums.bind(this)
 	}
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 	async loadLocalDB() {
->>>>>>> 22a2c59... updates functions to use new Datum class, adds clear all feature, minor cosmetic updates, fills out side menu icons, adds fab to Todos page, misc updates
-		let get_init_datums_tags = false
-		const db = await RxDB.create({
-			name: 'datum_app',
-			adapter: 'idb',
-			queryChangeDetection: true,
-			ignoreDuplicate: true,
-		})
-
-		this.db_datums = await db.collection({
-=======
-	async loadLocalDB(load_init_datums) {
-=======
-	async loadLocalDB() {
->>>>>>> 937f533... fixes slow add/remove datums, fixes insert conflicts
 		this.db_datums = await this.db.collection({
->>>>>>> df0f6cc... fixes color flashing bug, finally
 			name: 'datums',
 			schema: datum_schema,
 		})
@@ -300,38 +159,13 @@ class App extends Component {
 
 	componentWillUnmount() {
 		this.subs.forEach(s => s.unsubscribe())
->>>>>>> 273fe4c... gets rxdb working
 	}
 
 	shouldComponentUpdate(nextProps, nextState) {
 		if (this.state !== nextState) return true
-		if (this.props !== nextProps) {
-			if (this.props.user) load(this, nextProps.user)
-			return true
-		}
 		return false
 	}
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-	userSignOut() {
-		this.props.signOut()
-		this.setState({
-			current_view: 'splash',
-			is_side_menu_open: false,
-		})
-	}
-
-	add_tag_metadata(datum) {
-=======
-=======
-=======
->>>>>>> c32acd9... fixes all merge conflicts
-	async addTagMetadataFromDatums(datums) {
-		let all_tag_metadata = []
-=======
 	async upsertTags(datums) {
 		if (!Array.isArray(datums)) datums = [datums]
 
@@ -339,11 +173,11 @@ class App extends Component {
 		function getStateIndexOfTag(tag_name) {
 			self.state.tags.some((tag, i) => {
 				if (tag.name === tag_name) return i
+				return false
 			})
 		}
 		
 		let new_tags_data = this.state.tags
->>>>>>> 6887a6c... refactors tag metadata uploading, sorts tag menu tags by last used
 		datums.forEach(d => {
 			d.tags.forEach(t => {
 
@@ -375,12 +209,7 @@ class App extends Component {
 		await this.db_tags.bulkInsert(new_tags_data)
 	}
 
-<<<<<<< HEAD
->>>>>>> df0f6cc... fixes color flashing bug, finally
-=======
->>>>>>> c32acd9... fixes all merge conflicts
 	async add_tag_metadata(datum) {
->>>>>>> 9404929... existing tags get color when that tag is added
 		const time = datum.time
 		let all_tag_data = []
 		let tag_exists = []
@@ -475,14 +304,7 @@ class App extends Component {
 			active_datum.tags = tags
 			datums.push(active_datum)
 		}
-<<<<<<< HEAD
-		add(active_datum, this.props.user)
-=======
 
-<<<<<<< HEAD
-		await this.db_datums.upsert(active_datum)
->>>>>>> 273fe4c... gets rxdb working
-=======
 		let { id, time } = active_datum
 		let old_datum_format = {
 			id,
@@ -491,7 +313,6 @@ class App extends Component {
 		}
 
 		await this.db_datums.upsert(old_datum_format)
->>>>>>> 22a2c59... updates functions to use new Datum class, adds clear all feature, minor cosmetic updates, fills out side menu icons, adds fab to Todos page, misc updates
 		this.add_tag_metadata(active_datum)
 
 		// load empty or stashed datum in datum bar
@@ -503,10 +324,7 @@ class App extends Component {
 		}
 
 		this.setState({
-<<<<<<< HEAD
-=======
 			//datums,
->>>>>>> 273fe4c... gets rxdb working
 			stashed_datum,
 			active_datum,
 		})
@@ -524,7 +342,7 @@ class App extends Component {
 	async addDatums(new_datums) {
 		this.setState({ new_datums })
 		const new_datum_ids = new_datums.map(d => d.id)
-		let { datums } = this.state
+		let datums = this.state.datums
 		// default to overwriting existing datums for now
 		datums = datums.filter(d => {
 			if (new_datum_ids.includes(d.id)) {
@@ -533,87 +351,23 @@ class App extends Component {
 			}
 			return true
 		})
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
-		await this.addTagMetadataFromDatums(new_datums)
-<<<<<<< HEAD
->>>>>>> df0f6cc... fixes color flashing bug, finally
-		new_datums.forEach(async d => {
-			await this.db_datums.upsert(d)
-		})
-<<<<<<< HEAD
->>>>>>> f73c15d... if empty, loads default datums
-		datums = datums.concat(new_datums)
-		this.setState({ datums })
-		let updates = {}
-		new_datums.forEach(d => {
-			this.add_tag_metadata(d)
-			const new_datum_key = firebase
-				.database()
-				.ref()
-				.child('datums')
-				.push().key
-			updates['/datums/' + new_datum_key] = d
-		})
-		firebase
-			.database()
-			.ref()
-			.update(updates)
-=======
-=======
-		await this.db_datums.bulkInsert(new_datums)
->>>>>>> 937f533... fixes slow add/remove datums, fixes insert conflicts
-		//datums = datums.concat(new_datums)
-		//this.setState({ datums })
->>>>>>> df0f6cc... fixes color flashing bug, finally
-=======
-		await this.addTagMetadataFromDatums(new_datums)
-=======
 		await this.upsertTags(new_datums)
-<<<<<<< HEAD
-		//await this.addTagMetadataFromDatums(new_datums)
->>>>>>> 6887a6c... refactors tag metadata uploading, sorts tag menu tags by last used
-=======
->>>>>>> f9c220f... minor tweaks, clean up, etc.
 		await this.db_datums.bulkInsert(new_datums)
 		//datums = datums.concat(new_datums)
 		//this.setState({ datums })
->>>>>>> c32acd9... fixes all merge conflicts
 	}
 
 	async del_datum(id) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-		this.del_tag_metadata(id)
-		this.setState(state => ({
-			datums: state.datums.filter(datum => datum.id !== id),
-		}))
-<<<<<<< HEAD
-		del(id, this.props.user)
-=======
-=======
-		console.log(await this.db_datums.findOne().exec())
->>>>>>> f73c15d... if empty, loads default datums
-=======
->>>>>>> 22a2c59... updates functions to use new Datum class, adds clear all feature, minor cosmetic updates, fills out side menu icons, adds fab to Todos page, misc updates
 		const datum_to_delete = await this.db_datums
 			.findOne()
 			.where('id')
 			.eq(id)
 			.exec()
 		datum_to_delete.remove()
-<<<<<<< HEAD
->>>>>>> 273fe4c... gets rxdb working
-=======
 		this.del_tag_metadata(id)
 		this.setState(state => ({
 			datums: state.datums.filter(datum => datum.id !== id),
 		}))
->>>>>>> f73c15d... if empty, loads default datums
 		console.log(`datum ${id} deleted`)
 	}
 
@@ -710,31 +464,6 @@ class App extends Component {
 		}
 	}
 
-<<<<<<< HEAD
-	get_tag_names = () => {
-		return this.state.tags.map(t => t.name)
-	}
-
-	get_tag_count_for = tag => {
-		return this.state.tags.filter(t => t.name === tag)[0]
-			.instance_times.length
-	}
-
-	get_last_added_for = tag => {
-		const tag_metadata = this.state.tags.filter(
-			t => t.name === tag
-		)[0]
-		return tag_metadata.instance_times[
-			tag_metadata.instance_times.length - 1
-		]
-	}
-
-	get_datum_ids() {
-		return this.state.datums.map(d => d.id)
-	}
-
-=======
->>>>>>> f9c220f... minor tweaks, clean up, etc.
 	switchSideMenuTo(menu_name) {
 		this.setState({
 			current_side_menu: menu_name,
@@ -751,123 +480,6 @@ class App extends Component {
 		// TODO remove tag data
 	}
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-	 loadDB() {
-			console.log(this.props.user)
-			 load(this, this.props.user)
-		console.log('loaded!')
-	}
-
-	render() {
-		let tag_colors = {}
-		this.state.tags.forEach(({ name, color }) => {
-			tag_colors[name] = color
-		})
-<<<<<<< HEAD
-<<<<<<< HEAD
-		const views = {
-			splash: (
-				<Splash
-					switch_view_to={this.switch_view_to}
-					load_db={this.loadDB}
-					signIn={this.props.signInWithGoogle}
-					user={this.props.user}
-				/>
-			),
-			datum_list: (
-				<>
-					<SideMenu
-						on_click_import_export={() =>
-							this.toggle_modal('import_export')
-						}
-						open={this.state.is_side_menu_open}
-						on_close={this.toggle_side_menu}
-						sign_out={this.userSignOut}
-					/>
-					<DatumList
-						datums={this.state.datums}
-						tag_colors={tag_colors}
-						onSelectEdit={this.edit_datum}
-						onSelectDelete={this.del_datum}
-					/>
-					<DatumBar
-						on_add_tag={this.add_tag}
-						on_del_tag={this.del_tag}
-						on_add_datum={this.add_active_datum}
-						get_tag_values_for={this.get_tag_values_for}
-						tag_colors={tag_colors}
-						get_tag_names={this.get_tag_names}
-						get_tag_count_for={this.get_tag_count_for}
-						get_last_added_for={this.get_last_added_for}
-						active_datum={this.state.active_datum}
-						on_button_long_press={this.toggle_side_menu}
-					/>
-					<ImportExport
-						open={
-							this.state.current_modal === 'import_export'
-								? true
-								: false
-						}
-						handle_close={() => this.toggle_modal(false)}
-						datums={this.state.datums}
-						import_datums={this.import_datums}
-					/>
-				</>
-			),
-		}
-		return (
-			<MuiThemeProvider theme={theme}>
-				<CssBaseline />
-				{views[this.state.current_view]}
-=======
-=======
-		// eslint-disable-next-line
-<<<<<<< HEAD
->>>>>>> 905cb95... fixes errors and warnings
-		const splash = (
-			<Splash
-				switch_view_to={this.switch_view_to}
-				on_login={this.load_db}
-			/>
-		)
-=======
-		const views = {
-			'splash': (
-				<Splash
-					switch_view_to={this.switch_view_to}
-					on_login={this.load_db}
-				/>
-			),
-			'datum_list': (
-				<>
-					<DatumList
-						datums={this.state.datums}
-						tag_colors={tag_colors}
-						onSelectEdit={this.edit_datum}
-						onSelectDelete={this.del_datum}
-					/>
-					<DatumBar
-						on_add_tag={this.add_tag}
-						on_del_tag={this.del_tag}
-						on_add_datum={this.add_active_datum}
-						get_tag_values_for={this.get_tag_values_for}
-						tag_colors={tag_colors}
-						active_datum={this.state.active_datum}
-						on_button_long_press={this.toggle_side_menu}
-					/>
-				</>
-			),
-			'todos': (
-				<Todos 
-					todoItems={this.state.datums.filter(
-						d => d.hasTag('todo')
-					)}
-					onToggleTodo={this.upsertDatum}
-=======
-=======
-=======
 	getTagNames() {
 		return this.state.tags.map(t => t.name)
 	}
@@ -887,12 +499,10 @@ class App extends Component {
 		]
 	}
 
->>>>>>> 6887a6c... refactors tag metadata uploading, sorts tag menu tags by last used
 	renderAboutView() {
 		return <About />
 	}
 
->>>>>>> b960f7d... links menu item about to new view, misc clean up and style changes
 	renderSplashView() {
 		return (
 			<Splash
@@ -912,7 +522,6 @@ class App extends Component {
 				<DatumList
 					datums={this.state.datums}
 					tag_colors={tag_colors}
->>>>>>> cf37d74... pulls views out into own render methods
 					onSelectEdit={this.edit_datum}
 					onSelectDelete={this.del_datum}
 				/>
@@ -955,22 +564,6 @@ class App extends Component {
 			'todos': this.renderTodosView,
 			'about': this.renderAboutView
 		}
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 579a9c1... Todos button in side menu opens Todos view
-=======
-		console.log(this.state.datums.filter(
-			d => {
-				let todo_found = false
-				d.tags.forEach(t => {
-					if (t.name === 'todo') todo_found = true
-				})
-				return todo_found
-			}
-		))
->>>>>>> 6e982e7... loads todo texts in Todos view
-=======
->>>>>>> d58f105... checks box if datum has "done" tag
 		return (
 			<MuiThemeProvider theme={theme}>
 				<CssBaseline />
@@ -1007,19 +600,9 @@ class App extends Component {
 					datums={this.state.datums}
 					importDatums={this.importDatums}
 				/>
->>>>>>> 643eadb... prettifies
 			</MuiThemeProvider>
 		)
 	}
 }
 
-const firebaseAppAuth = firebase.auth()
-
-const providers = {
-	googleProvider: new firebase.auth.GoogleAuthProvider(),
-}
-
-export default withFirebaseAuth({
-	providers,
-	firebaseAppAuth,
-})(App)
+export default App
