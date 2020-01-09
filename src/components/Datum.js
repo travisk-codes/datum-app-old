@@ -19,6 +19,7 @@ const styles = {
 			display: 'inline-flex',
 			overflow: 'auto',
 <<<<<<< HEAD
+<<<<<<< HEAD
 			width: '100%',
 		}
 	},
@@ -28,6 +29,10 @@ const styles = {
 		},
 		overflow: 'scroll',
 >>>>>>> 880d239... fixes datum layout
+=======
+			width: '100%',
+		},
+>>>>>>> f9c220f... minor tweaks, clean up, etc.
 	},
 	datum_w_menu_open: {
 		boxShadow: '0 0 13px -10px black',
@@ -48,6 +53,7 @@ const styles = {
 =======
 		textAlign: 'center',
 		paddingRight: 9,
+		justifyContent: 'flex-end',
 	},
 	rightScrollFade: {
 		background: 'linear-gradient(to left, #fafafa, #ffffff00',
@@ -140,11 +146,14 @@ class Datum extends Component {
 			<ListItem divider className={(this.state.menu_open ? classes.datum_w_menu_open : classes.datum)}>
 				<ListItemText className={classes.container}>
 <<<<<<< HEAD
+<<<<<<< HEAD
 				<Timestamp time={this.props.time} className={classes.timestamp}/>
 
 =======
 					<Timestamp time={this.props.time} className={classes.timestamp}/>
 >>>>>>> 880d239... fixes datum layout
+=======
+>>>>>>> f9c220f... minor tweaks, clean up, etc.
 					{this.props.tags.map(t => (
 						<Tag
 							key={t.name + t.value}
@@ -152,6 +161,7 @@ class Datum extends Component {
 							color={this.props.tag_colors[t.name]}
 						/>
 					))}
+					<Timestamp time={this.props.time} className={classes.timestamp}/>	
 					<div className={classes.rightScrollFade} />
 				</ListItemText>
 				<ListItemSecondaryAction>

@@ -180,9 +180,9 @@ class App extends Component {
 		this.get_tag_values_for = this.get_tag_values_for.bind(
 			this
 		)
-		this.get_datum_ids = this.get_datum_ids.bind(this)
 		this.switchSideMenuTo = this.switchSideMenuTo.bind(this)
 		this.switchModalTo = this.switchModalTo.bind(this)
+<<<<<<< HEAD
 		this.import_datums = this.import_datums.bind(this)
 <<<<<<< HEAD
 		this.get_tag_names = this.get_tag_names.bind(this)
@@ -194,6 +194,9 @@ class App extends Component {
 		)
 		this.userSignOut = this.userSignOut.bind(this)
 =======
+=======
+		this.importDatums = this.importDatums.bind(this)
+>>>>>>> f9c220f... minor tweaks, clean up, etc.
 		this.upsertDatum = this.upsertDatum.bind(this)
 <<<<<<< HEAD
 >>>>>>> a35d481... toggles todos on click checkbox
@@ -519,6 +522,7 @@ class App extends Component {
 	}
 
 	async addDatums(new_datums) {
+		this.setState({ new_datums })
 		const new_datum_ids = new_datums.map(d => d.id)
 		let { datums } = this.state
 		// default to overwriting existing datums for now
@@ -570,8 +574,11 @@ class App extends Component {
 		await this.addTagMetadataFromDatums(new_datums)
 =======
 		await this.upsertTags(new_datums)
+<<<<<<< HEAD
 		//await this.addTagMetadataFromDatums(new_datums)
 >>>>>>> 6887a6c... refactors tag metadata uploading, sorts tag menu tags by last used
+=======
+>>>>>>> f9c220f... minor tweaks, clean up, etc.
 		await this.db_datums.bulkInsert(new_datums)
 		//datums = datums.concat(new_datums)
 		//this.setState({ datums })
@@ -612,13 +619,13 @@ class App extends Component {
 
 	async del_datums(ids = []) {
 		if (!ids.length) {
-			await this.db_datums.remove()
-			await this.db_tags.remove()
-			await this.loadLocalDB()
 			this.setState({
 				datums: [],
 				tags: [],
 			})
+			await this.db_datums.remove()
+			await this.db_tags.remove()
+			await this.loadLocalDB()
 		} else {
 			// TODO remove its tags metadata
 			this.setState({
@@ -703,6 +710,7 @@ class App extends Component {
 		}
 	}
 
+<<<<<<< HEAD
 	get_tag_names = () => {
 		return this.state.tags.map(t => t.name)
 	}
@@ -725,6 +733,8 @@ class App extends Component {
 		return this.state.datums.map(d => d.id)
 	}
 
+=======
+>>>>>>> f9c220f... minor tweaks, clean up, etc.
 	switchSideMenuTo(menu_name) {
 		this.setState({
 			current_side_menu: menu_name,
@@ -735,7 +745,7 @@ class App extends Component {
 		this.setState({ current_modal: modal_name })
 	}
 
-	async import_datums(datums) {
+	async importDatums(datums) {
 		 await this.del_datums()
 		 await this.addDatums(datums)
 		// TODO remove tag data
@@ -939,7 +949,6 @@ class App extends Component {
 	}
 
 	render() {
-		console.log(this.state.tags)
 		const render_view = {
 			'splash': this.renderSplashView,
 			'datum_list': this.renderDatumListView,
@@ -996,7 +1005,7 @@ class App extends Component {
 					}
 					handle_close={() => this.switchModalTo(false)}
 					datums={this.state.datums}
-					import_datums={this.import_datums}
+					importDatums={this.importDatums}
 				/>
 >>>>>>> 643eadb... prettifies
 			</MuiThemeProvider>
