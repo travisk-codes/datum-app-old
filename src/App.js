@@ -145,6 +145,13 @@ class App extends Component {
 	}
 
 	async componentDidMount() {
+		let visited = localStorage['alreadyVisited']
+		if (visited) {
+			this.setState({ current_modal: false })
+		} else {
+			this.setState({ current_modal: 'about'})
+			localStorage['alreadyVisited'] = true
+		}
 		this.db = await RxDB.create({
 			name: 'datum_app',
 			adapter: 'idb',
