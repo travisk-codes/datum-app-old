@@ -17,7 +17,7 @@ import {
 	Typography,
 } from '@material-ui/core'
 import MoreIcon from '@material-ui/icons/MoreVert'
-import MenuIcon from '@material-ui/icons/MenuRounded'
+import MenuIcon from '@material-ui/icons/AmpStoriesRounded'
 import AddIcon from '@material-ui/icons/AddRounded'
 import Datum from '../DatumClass'
 
@@ -29,7 +29,7 @@ const useStyles = makeStyles(theme  => ({
 		paddingLeft: 10,
 	},
 	todoBar: {
-		display: 'flex',
+		display: 'inline-flex',
 		position: 'fixed',
 		flexDirection: 'column',
 		justifyContent: 'center',
@@ -40,7 +40,7 @@ const useStyles = makeStyles(theme  => ({
 		height: 56,
 		boxShadow: '0px 2px 20px rgba(0, 0, 0, 0.2)',
 		paddingLeft: 6,
-		paddingRight: 54,
+		paddingRight: 56,
 	},
 	fab: {
 		position: 'fixed',
@@ -50,7 +50,15 @@ const useStyles = makeStyles(theme  => ({
 	todoTextField: {
 		display: 'flex',
 		alignItems: 'stretch',
-	}
+	},
+	title: {
+		paddingLeft: '0.5em',
+		fontWeight: 'bold',
+		backgroundColor: 'whitesmoke'
+	},
+	sectionDivider: {
+		//	width: '5em',
+		}
 }))
 
 function TodoItemMenu(props) {
@@ -161,7 +169,7 @@ function TodoItem(props) {
 				<TodoName />
 				<TodoMenu />
 			</ListItem>
-			<Divider variant='inset' component='li' />
+			<Divider variant='inset' component='hr' />
 		</div>
 	)
 
@@ -229,10 +237,15 @@ function Todos(props) {
   return (
 		<div className={classes.container}>
 			<List>
+				<Typography className={classes.title} variant='subtitle1'>Todo</Typography>
+				<Divider className={classes.sectionDivider} />
 				{incomplete_todos}
+				<Divider style={{width: '5.135em', marginTop: -1}} />
+				<Typography className={classes.title} variant='subtitle1'>Done</Typography>
+				<Divider className={classes.sectionDivider} />
 				{complete_todos}
 			</List>
-			<Toolbar className={classes.todoBar}>
+			<div className={classes.todoBar}>
 				<form onSubmit={e => onSubmitTodo(e)}>
 					<TextField 
 						className={classes.todoTextField} 
@@ -245,17 +258,17 @@ function Todos(props) {
 						color='secondary'
 					/>
 				</form>
-			</Toolbar>
-			<Fab
-				onClick={on_click_btn}
-				onContextMenu={props.onButtonLongPress} // capture long press & right click
-				onDoubleClick={props.onButtonLongPress}
-				className={classes.fab}
-				color='primary'
-				size='small'
-			>
-				{btn_icon}
-			</Fab>
+				<Fab
+					onClick={on_click_btn}
+					onContextMenu={props.onButtonLongPress} // capture long press & right click
+					onDoubleClick={props.onButtonLongPress}
+					className={classes.fab}
+					color='primary'
+					size='small'
+				>
+					{btn_icon}
+				</Fab>
+			</div>
 		</div>
   );
 }
