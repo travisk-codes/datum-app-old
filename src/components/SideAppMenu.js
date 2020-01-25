@@ -31,9 +31,9 @@ export default function SideMenu(props) {
 						onClick={props.onClickList}
 					>
 					<ListItemIcon>
-						<HabitsIcon />
+						<MoneyIcon />
 					</ListItemIcon>
-					<ListItemText primary='Habits' />
+					<ListItemText primary='Money' />
 				</ListItem>
 				<ListItem
 					button
@@ -57,12 +57,11 @@ export default function SideMenu(props) {
 				</ListItem>
 				<ListItem
 					button
-					disabled
-					onClick={props.onClickList}>
+					onClick={props.onClickHabits}>
 					<ListItemIcon>
-						<MoneyIcon />
+						<HabitsIcon />
 					</ListItemIcon>
-					<ListItemText primary='Money' />
+					<ListItemText primary='Habits' />
 				</ListItem>
 
 				<ListItem

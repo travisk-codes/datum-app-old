@@ -21,3 +21,13 @@ A personal metrics management platform: know yourself through data
 		- trigger browser api to download file
 
 TODO if bar empty, button opens menu, else adds datum
+
+## SCRATCH
+### Habits View
+- Story 1:
+	1. open empty view
+	2. click add habit
+	3. toggle habit for today
+	4. toggle habit for yesterday
+	5. untoggle habit for today
+	6. delete tag

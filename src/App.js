@@ -14,6 +14,7 @@ import {
 import DatumList from './views/DatumList'
 import Splash from './views/Splash'
 import Todos from './views/Todos'
+import Habits from './views/Habits'
 
 import DatumBar from './components/DatumBar'
 import TopBar from './components/TopBar'
@@ -61,7 +62,7 @@ class App extends Component {
 			tags: [],
 			active_datum: new Datum(),
 			stashed_datum: null,
-			current_view: 'datum_list',
+			current_view: 'habits',
 			current_side_menu: false,
 			current_modal: false,
 		}
@@ -88,6 +89,7 @@ class App extends Component {
 		this.renderSplashView = this.renderSplashView.bind(this)
 		this.renderDatumListView = this.renderDatumListView.bind(this)
 		this.renderTodosView = this.renderTodosView.bind(this)
+		this.renderHabitsView = this.renderHabitsView.bind(this)
 		this.upsertTags = this.upsertTags.bind(this)
 		this.getTagNames = this.getTagNames.bind(this)
 		this.getTagCountFor = this.getTagCountFor.bind(this)
@@ -564,12 +566,26 @@ class App extends Component {
 		)
 	}
 
+	renderHabitsView() {
+		return (
+			<Habits
+				habits={this.state.datums.filter(
+					d => d.hasTag('daily')
+				)}
+				onCheckDay={this.upsertDatum}
+				onUncheckDay={this.del_datum}
+				onButtonLongPress={() => this.switchSideMenuTo('apps')}
+			/>
+		)
+	}
+
 	render() {
 		const render_view = {
 			'splash': this.renderSplashView,
 			'datum_list': this.renderDatumListView,
 			'todos': this.renderTodosView,
-			'about': this.renderAboutView
+			'about': this.renderAboutView,
+			'habits': this.renderHabitsView,
 		}
 		return (
 			<MuiThemeProvider theme={theme}>
@@ -577,6 +593,7 @@ class App extends Component {
 				<TopBar onOpenSettingsMenu={() => this.switchSideMenuTo('settings')}/>
 				<SideAppMenu
 					onClickTodos={() => this.switchViewTo('todos')}
+					onClickHabits={() => this.switchViewTo('habits')}
 					onClickList={() => this.switchViewTo('datum_list')}
 					open={this.state.current_side_menu === 'apps'}
 					on_close={() => this.switchSideMenuTo(false)}
