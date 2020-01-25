@@ -23,4 +23,7 @@ export default [
 	new Datum(uuid(), Date.now() + 4, [
 		{ name: 'todo', value: 'pay bills'},
 	]),
+	new Datum(uuid(), Date.now() + 6, [
+		{ name: 'daily', value: 'make bed'}
+	]),
 ]

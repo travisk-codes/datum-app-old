@@ -162,7 +162,7 @@ class App extends Component {
 		await this.loadLocalDB()
 		if (!this.state.datums.length) {
 			await this.addDatums(init_datums)
-			await this.upsertTags(init_datums)
+			//await this.upsertTags(init_datums)
 		}
 	}
 
@@ -351,9 +351,8 @@ class App extends Component {
 	async addDatums(new_datums) {
 		this.setState({ new_datums })
 		const new_datum_ids = new_datums.map(d => d.id)
-		let datums = this.state.datums
 		// default to overwriting existing datums for now
-		datums = datums.filter(d => {
+		this.state.datums.forEach(d => {
 			if (new_datum_ids.includes(d.id)) {
 				this.del_tag_metadata(d.id)
 				return false
@@ -570,7 +569,7 @@ class App extends Component {
 		return (
 			<Habits
 				habits={this.state.datums.filter(
-					d => d.hasTag('daily')
+					d => d.hasTag('daily') || d.hasTag('habit')
 				)}
 				onCheckDay={this.upsertDatum}
 				onUncheckDay={this.del_datum}
