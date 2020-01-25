@@ -54,7 +54,16 @@ export default function Habits(props) {
 	
 	function renderRows() {
 		return props.habits.map(h => {
+			console.log(moment(h.time).day())
 			let habit_name = capitalizeWord(h.tags[0].value)
+			let checkbox_cells = last_seven_days.map(d => (
+				<TableCell key={d} className={classes.checkbox_cell} align='center'>
+					<Checkbox
+						checked={moment(h.time).day() === days.indexOf(d)}
+						onClick={() => console.log(days.indexOf(d))}
+					/>
+				</TableCell>
+			))		
 			return (
 				<TableRow key={h.id}>
 					<TableCell component="th" scope="row">
@@ -66,13 +75,12 @@ export default function Habits(props) {
 		})
 	}
 
+	// 
+
 	let header_cells = last_seven_days.map(d => (
 		<TableCell key={d} className={classes.header_cell} align='center'>{d}</TableCell>
 	))
 	
-	let checkbox_cells = last_seven_days.map(d => (
-		<TableCell key={d} className={classes.checkbox_cell} align='center'><Checkbox /></TableCell>
-	))
 
   return (
 		<div>
