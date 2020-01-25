@@ -21,7 +21,8 @@ import AddIcon from '@material-ui/icons/AddRounded'
 
 const useStyles = makeStyles(theme  => ({
 	container: {
-		marginTop: 56, // top bar
+		marginTop: 60, // top bar with extra space
+		marginBottom: 56 // bottom bar
 	},
 	checkbox: {
 		paddingLeft: 10,
@@ -50,7 +51,7 @@ const useStyles = makeStyles(theme  => ({
 		alignItems: 'stretch',
 	},
 	title: {
-		paddingLeft: '0.5em',
+		paddingLeft: '.95em',
 		fontWeight: 'bold',
 		backgroundColor: 'whitesmoke'
 	},
