@@ -1,11 +1,11 @@
 import moment from 'moment'
-import { convertRelativeDateToAbsolute } from './Habits'
+import { getDate } from './Habits'
 
 it('converts relative dates to absolute', () => {
 	let days_ago, from_date, result
 	function test() {
 		expect(
-			convertRelativeDateToAbsolute(days_ago, from_date)
+			getDate(days_ago, from_date)
 		).toBe(result)	
 	}
 

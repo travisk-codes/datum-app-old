@@ -31,3 +31,57 @@ TODO if bar empty, button opens menu, else adds datum
 	4. toggle habit for yesterday
 	5. untoggle habit for today
 	6. delete tag
+
+OBJECT SHAPES:
+
+datum = {
+	id: uuid()
+	time: unixTime
+	tags: [
+		{ name: a, value: b },
+		{ name: c },
+		{ name: d },
+	]
+}
+
+||
+\/
+
+habit = {
+	name: string
+	relative_date: days from today?
+}
+
+||
+\/
+
+datum = {
+	id: uuid()
+	time: relativeDateToUnixTime(days_since_now)
+	tags: [
+		{ name: 'habit', value: habit.name }
+	];
+}
+
+
+
+habits = {
+	habit1: [0, 0, 1, 0, ...]
+	habit2: ''
+	...
+}
+
+onClickCheckbox:
+- figure out date from position in array
+- send: habit name, date, create/delete
+
+
+
+
+
+
+
+
+* front-end web-app dev
+* daily habit tracker
+* React, Material-UI

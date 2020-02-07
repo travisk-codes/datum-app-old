@@ -30,8 +30,18 @@ export default class Datum {
 		this.tags = tags
 	}
 
+	hasValue(tag_name) {
+		if (!this.hasTag(tag_name)) {
+			throw new Error('datum does not have tag ' + tag_name)
+		}
+		if (this.getValue(tag_name) === null) {
+			return false
+		}
+		return true
+	}
+
 	getValue(tag_name) {
-		let value
+		let value = null
 		this.tags.forEach(t => {
 			if (t.name === tag_name) value = t.value
 		})
