@@ -8,6 +8,8 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox'
+import TextField from '@material-ui/core/TextField'
+
 import MenuIcon from '@material-ui/icons/AmpStoriesRounded'
 import LinkIcon from '@material-ui/icons/LinkRounded'
 import GradeIcon from '@material-ui/icons/GradeRounded'
@@ -45,6 +47,24 @@ const useStyles = makeStyles({
 	checkbox_cell: {
 		paddingLeft: 0,
 		paddingRight: 0,
+	},
+	todoBar: {
+		display: 'inline-flex',
+		position: 'fixed',
+		flexDirection: 'column',
+		justifyContent: 'center',
+		alignItems: 'stretch',
+		left: 0,
+		right: 0,
+		bottom: 0,
+		height: 56,
+		boxShadow: '0px 2px 20px rgba(0, 0, 0, 0.2)',
+		paddingLeft: 6,
+		paddingRight: 56,
+	},
+	todoTextField: {
+		display: 'flex',
+		alignItems: 'stretch',
 	},
 	fab: {
 		position: 'fixed',
@@ -103,7 +123,6 @@ export function getLongestChain(days) {
 
 
 export function getDate(days_ago, from_date) {
-	console.log('called getDate')
 	if (days_ago < 0) days_ago *= -1
 	return moment(from_date)
 		.subtract(days_ago, 'days')
@@ -111,7 +130,6 @@ export function getDate(days_ago, from_date) {
 }
 
 export function convertDatumToHabit(datum) {
-	console.log('called convertDatumToHabit')
 	let habit = {}
 
 	// get the name from different datum formats
@@ -140,7 +158,6 @@ export function convertDatumToHabit(datum) {
 }
 
 function reduceDatumsToHabits(datums) {
-	console.log('called reduceDatumToHabit')
 
 	let habits = datums.map(datum => convertDatumToHabit(datum))
 
@@ -166,7 +183,7 @@ function reduceDatumsToHabits(datums) {
 }
 
 export default function Habits(props) {
-	console.log('render Habits')
+	let [text, setText ] = React.useState('')
 	const classes = useStyles()
 
 	function toggleChecked(habit, day, completed_id) {
@@ -184,9 +201,20 @@ export default function Habits(props) {
 		}
 	}
 
+	function onSubmitHabit(e) {
+		e.preventDefault()
+		props.onAddHabit([{
+			name: 'habit',
+			value: text,
+		}])
+		setText('')
+	}
+
+	function onChangeHabitTextField(e) {
+		setText(e.target.value)
+	}
 
 	function Checkboxes({days, habit}) {
-		console.log('render Checkboxes')
 		let cells = []
 		for (let i = 0; i < 7; i++) {
 			cells.push(
@@ -202,9 +230,7 @@ export default function Habits(props) {
 	}
 	
 	function DayRows() {
-		console.log('render Rows')
 		const habits = reduceDatumsToHabits(props.habits)
-		console.log(habits)
 		let rows = []
 		for (let name in habits) {
 			rows.push(
@@ -229,23 +255,24 @@ export default function Habits(props) {
 		return rows
 	}
 
-	function NameCountRows() {
-		console.log('render Rows')
-		const habits = reduceDatumsToHabits(props.habits)
-		let rows = []
-		for (let name in habits) {
-			console.log(getChain(habits[name]))
-			rows.push(
-			)
-		}
-		return rows
-	}
-
 	const header_cells = last_seven_days.map(d => (
 		<TableCell key={d} className={classes.header_cell} align='center'>{d}</TableCell>
 	))
 
 	const app_btn = (
+		<div className={classes.todoBar}>
+		<form onSubmit={e => onSubmitHabit(e)}>
+			<TextField 
+				className={classes.todoTextField} 
+				onChange={e => onChangeHabitTextField(e)}
+				value={text}
+				label='Habit' 
+				placeholder='New Habit' 
+				variant='outlined' 
+				size='small' 
+				color='secondary'
+			/>
+		</form>
 		<Fab
 			onClick={props.onButtonLongPress}
 			onContextMenu={props.onButtonLongPress} // capture long press & right click
@@ -256,7 +283,8 @@ export default function Habits(props) {
 		>
 			<MenuIcon />
 		</Fab>
-	)
+	</div>
+)
 	
 	// TODO: place separate table with name and count before
 	//       days, with days scrolled off as far as oldest
@@ -264,23 +292,6 @@ export default function Habits(props) {
 
   return (
 		<div className={classes.container}>
-
-			{/*<TableContainer className={classes.nameCountTableContainer} component={Paper}>
-				<Table className={classes.table} aria-label='simple table'>
-					
-					<TableHead>
-						<TableRow>
-						<TableCell align='left'>Habit</TableCell>
-						<TableCell align='left'>Count</TableCell>
-						</TableRow>
-					</TableHead>
-
-					<TableBody>
-						<NameCountRows />
-					</TableBody>
-
-				</Table>
-			</TableContainer>*/}
 
 			<TableContainer className={classes.tableContainer} component={Paper}>
 				<Table className={classes.table} aria-label="simple table">

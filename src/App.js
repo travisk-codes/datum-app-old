@@ -573,19 +573,21 @@ class App extends Component {
 				)}
 				onCheckDay={this.upsertDatum}
 				onUncheckDay={this.del_datum}
+				onAddHabit={tags => this.upsertDatum(this.createNewDatum(tags))}
 				onButtonLongPress={() => this.switchSideMenuTo('apps')}
 			/>
 		)
 	}
 
 	render() {
-		const render_view = {
+		const	CurrentView = {
 			'splash': this.renderSplashView,
 			'datum_list': this.renderDatumListView,
 			'todos': this.renderTodosView,
 			'about': this.renderAboutView,
 			'habits': this.renderHabitsView,
-		}
+		}[this.state.current_view]
+
 		return (
 			<MuiThemeProvider theme={theme}>
 				<CssBaseline />
@@ -604,7 +606,7 @@ class App extends Component {
 					onClickClearData={this.del_datums}
 					open={this.state.current_side_menu === 'settings'}
 				/>
-				{render_view[this.state.current_view]()}
+				<CurrentView view={this.state.current_view} />
 				<About 
 					open={
 						this.state.current_modal === 'about'
