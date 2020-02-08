@@ -15,9 +15,22 @@ import Datum from '../DatumClass'
 import uuid from 'uuid';
 
 const useStyles = makeStyles({
+	container: {
+		display: 'flex'
+	},
+	nameCountTableContainer: {
+		maxWidth: 'fit-content',
+	},
+	tableContainer: {
+	},
   table: {
 		//minWidth: 650,
 		marginTop: 60,
+	},
+	name: {
+		padding: '1.95em',
+		paddingLeft: '1em',
+		paddingRight: '0em',
 	},
 	header_cell: {
 		paddingLeft: 0,
@@ -46,20 +59,32 @@ const last_seven_days = [
 	days[(today + 1) % 7],
 ]
 
-function capitalizeWord(word) {
-	return word.charAt(0).toUpperCase() + word.slice(1)
+export function capitalizeWords(words) {
+	words = words.split(' ').map(
+		word => word.charAt(0).toUpperCase() + word.slice(1)
+	)
+	return words.join(' ')
+}
+
+export function getChain(days) {
+	let chain = 0
+	if (!days.length) return 0
+	while(typeof days[chain] === 'string') {
+		chain++
+	}
+	return chain
 }
 
 export function getDate(days_ago, from_date) {
-	console.log('getDate')
+	console.log('called getDate')
 	if (days_ago < 0) days_ago *= -1
 	return moment(from_date)
 		.subtract(days_ago, 'days')
 		.valueOf()
 }
 
-function convertDatumToHabit(datum) {
-	console.log('convertDatumToHabit')
+export function convertDatumToHabit(datum) {
+	console.log('called convertDatumToHabit')
 	let habit = {}
 
 	// get the name from different datum formats
@@ -74,6 +99,7 @@ function convertDatumToHabit(datum) {
 	} else {
 		console.error('Unable to convert datum into habit object')
 	}
+	habit.name = capitalizeWords(habit.name)
 
 	// how many days ago from today? an integer
 	const now = moment().dayOfYear()
@@ -87,7 +113,7 @@ function convertDatumToHabit(datum) {
 }
 
 function reduceDatumsToHabits(datums) {
-	console.log('reduceDatumToHabit')
+	console.log('called reduceDatumToHabit')
 
 	let habits = datums.map(datum => convertDatumToHabit(datum))
 
@@ -112,8 +138,8 @@ function reduceDatumsToHabits(datums) {
 	return groupedHabits
 }
 
-
 export default function Habits(props) {
+	console.log('render Habits')
 	const classes = useStyles()
 
 	function toggleChecked(habit, day, completed_id) {
@@ -148,7 +174,7 @@ export default function Habits(props) {
 		return cells
 	}
 	
-	function Rows() {
+	function DayRows() {
 		console.log('render Rows')
 		const habits = reduceDatumsToHabits(props.habits)
 		console.log(habits)
@@ -156,9 +182,6 @@ export default function Habits(props) {
 		for (let name in habits) {
 			rows.push(
 			<TableRow key={name}>
-				<TableCell component='th' scope='row'>
-					{capitalizeWord(name)}
-				</TableCell>
 				<Checkboxes
 					days={habits[name]}
 					habit={name}
@@ -169,7 +192,25 @@ export default function Habits(props) {
 		return rows
 	}
 
-	// 
+	function NameCountRows() {
+		console.log('render Rows')
+		const habits = reduceDatumsToHabits(props.habits)
+		let rows = []
+		for (let name in habits) {
+			console.log(getChain(habits[name]))
+			rows.push(
+			<TableRow key={name}>
+				<TableCell className={classes.name} component='th' scope='row'>
+					{name}
+				</TableCell>
+				<TableCell align='right'>
+					{getChain(habits[name])}
+				</TableCell>
+			</TableRow>
+			)
+		}
+		return rows
+	}
 
 	const header_cells = last_seven_days.map(d => (
 		<TableCell key={d} className={classes.header_cell} align='center'>{d}</TableCell>
@@ -188,21 +229,40 @@ export default function Habits(props) {
 		</Fab>
 	)
 	
+	// TODO: place separate table with name and count before
+	//       days, with days scrolled off as far as oldest
+	//       habit
 
   return (
-		<div>
-			<TableContainer component={Paper}>
+		<div className={classes.container}>
+
+			<TableContainer className={classes.nameCountTableContainer} component={Paper}>
+				<Table className={classes.table} aria-label='simple table'>
+					
+					<TableHead>
+						
+						<TableCell align='left'>Habit</TableCell>
+						<TableCell align='left'>Count</TableCell>
+					</TableHead>
+
+					<TableBody>
+						<NameCountRows />
+					</TableBody>
+
+				</Table>
+			</TableContainer>
+
+			<TableContainer className={classes.tableContainer} component={Paper}>
 				<Table className={classes.table} aria-label="simple table">
 					
 					<TableHead>
 						<TableRow>
-							<TableCell align='left'>Habit</TableCell>
 							{header_cells}
 						</TableRow>
 					</TableHead>
 
 					<TableBody>
-						<Rows />
+						<DayRows />
 					</TableBody>
 
 				</Table>
