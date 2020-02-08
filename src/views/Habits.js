@@ -9,6 +9,8 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox'
 import MenuIcon from '@material-ui/icons/AmpStoriesRounded'
+import LinkIcon from '@material-ui/icons/LinkRounded'
+import GradeIcon from '@material-ui/icons/GradeRounded'
 import Fab from '@material-ui/core/Fab'
 import moment from 'moment'
 import Datum from '../DatumClass'
@@ -35,6 +37,10 @@ const useStyles = makeStyles({
 	header_cell: {
 		paddingLeft: 0,
 		paddingRight: 0,
+	},
+	icon_cell: {
+		paddingLeft: '0.5em',
+		paddingRight: '0.5em',
 	},
 	checkbox_cell: {
 		paddingLeft: 0,
@@ -74,6 +80,27 @@ export function getChain(days) {
 	}
 	return chain
 }
+
+export function getLongestChain(days) {
+	let current_chain = 0
+	let longest_chain = 0
+	days.forEach(day => {
+		if (day !== false) {
+			current_chain++
+		} else {
+			if (current_chain > longest_chain) {
+				longest_chain = current_chain
+			}
+			current_chain = 0
+		}
+	})
+	// single value non-false array edge case
+	if (current_chain > longest_chain) {
+		longest_chain = current_chain
+	}
+	return longest_chain
+}
+
 
 export function getDate(days_ago, from_date) {
 	console.log('called getDate')
@@ -182,6 +209,16 @@ export default function Habits(props) {
 		for (let name in habits) {
 			rows.push(
 			<TableRow key={name}>
+				<TableCell className={classes.name} component='th' scope='row'>
+					{name}
+				</TableCell>
+				<TableCell className={classes.icon_cell} align='center'>
+					{getChain(habits[name])}
+				</TableCell>
+				<TableCell className={classes.icon_cell}align='center'>
+					{getLongestChain(habits[name])}
+				</TableCell>
+
 				<Checkboxes
 					days={habits[name]}
 					habit={name}
@@ -199,14 +236,6 @@ export default function Habits(props) {
 		for (let name in habits) {
 			console.log(getChain(habits[name]))
 			rows.push(
-			<TableRow key={name}>
-				<TableCell className={classes.name} component='th' scope='row'>
-					{name}
-				</TableCell>
-				<TableCell align='right'>
-					{getChain(habits[name])}
-				</TableCell>
-			</TableRow>
 			)
 		}
 		return rows
@@ -236,13 +265,14 @@ export default function Habits(props) {
   return (
 		<div className={classes.container}>
 
-			<TableContainer className={classes.nameCountTableContainer} component={Paper}>
+			{/*<TableContainer className={classes.nameCountTableContainer} component={Paper}>
 				<Table className={classes.table} aria-label='simple table'>
 					
 					<TableHead>
-						
+						<TableRow>
 						<TableCell align='left'>Habit</TableCell>
 						<TableCell align='left'>Count</TableCell>
+						</TableRow>
 					</TableHead>
 
 					<TableBody>
@@ -250,13 +280,16 @@ export default function Habits(props) {
 					</TableBody>
 
 				</Table>
-			</TableContainer>
+			</TableContainer>*/}
 
 			<TableContainer className={classes.tableContainer} component={Paper}>
 				<Table className={classes.table} aria-label="simple table">
 					
 					<TableHead>
 						<TableRow>
+							<TableCell align='left'>Habit</TableCell>
+							<TableCell className={classes.icon_cell} fontSize='small' align='right'><LinkIcon /></TableCell>
+							<TableCell className={classes.icon_cell} fontSize='small' align='right'><GradeIcon /></TableCell>
 							{header_cells}
 						</TableRow>
 					</TableHead>
@@ -267,6 +300,7 @@ export default function Habits(props) {
 
 				</Table>
 			</TableContainer>
+
 			{app_btn}
 		</div>
   );

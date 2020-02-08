@@ -4,6 +4,7 @@ import {
 	capitalizeWords,
 	convertDatumToHabit,
 	getChain,
+	getLongestChain,
 } from './Habits'
 import Datum from '../DatumClass'
 
@@ -48,6 +49,50 @@ it('counts your current completion chain', () => {
 	chain = 2
 	test()
 })
+
+it('counts your longest completion chain', () => {
+	let days, chain
+	function test() {
+		expect(getLongestChain(days)).toBe(chain)
+	}
+
+	days = [false]
+	chain = 0
+	test()
+
+	days = ['uuid']
+	chain = 1
+	test()
+
+	days = [false, 'uuid']
+	chain = 1
+	test()
+
+	days = ['uuid', false]
+	chain = 1
+	test()
+
+	days = [false, false, 'uuid', 'uuid']
+	chain = 2
+	test()
+
+	days = ['uuid', false, 'uuid', 'uuid']
+	chain = 2
+	test()
+
+	days = [false, 'uuid', false, false]
+	chain = 1
+	test()
+
+	days = []
+	chain = 0
+	test()
+
+	days = ['uuid', 'uuid']
+	chain = 2
+	test()
+})
+
 
 it('converts relative dates to absolute', () => {
 	let days_ago, from_date, result
