@@ -62,7 +62,7 @@ class App extends Component {
 			tags: [],
 			active_datum: new Datum(),
 			stashed_datum: null,
-			current_view: 'habits',
+			current_view: 'datum_list',
 			current_side_menu: false,
 			current_modal: false,
 		}
