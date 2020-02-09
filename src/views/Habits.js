@@ -241,7 +241,7 @@ export default function Habits(props) {
 				<TableCell className={classes.icon_cell} align='center'>
 					{getChain(habits[name])}
 				</TableCell>
-				<TableCell className={classes.icon_cell}align='center'>
+				<TableCell className={classes.icon_cell} align='center'>
 					{getLongestChain(habits[name])}
 				</TableCell>
 
@@ -299,8 +299,8 @@ export default function Habits(props) {
 					<TableHead>
 						<TableRow>
 							<TableCell align='left'>Habit</TableCell>
-							<TableCell className={classes.icon_cell} fontSize='small' align='right'><LinkIcon /></TableCell>
-							<TableCell className={classes.icon_cell} fontSize='small' align='right'><GradeIcon /></TableCell>
+							<TableCell className={classes.icon_cell} fontSize='small' align='center'><LinkIcon /></TableCell>
+							<TableCell className={classes.icon_cell} fontSize='small' align='center'><GradeIcon /></TableCell>
 							{header_cells}
 						</TableRow>
 					</TableHead>
