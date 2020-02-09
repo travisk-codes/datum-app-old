@@ -5,6 +5,7 @@ import {
 	convertDatumToHabit,
 	getChain,
 	getLongestChain,
+	sortHabitsByName,
 } from './Habits'
 import Datum from '../DatumClass'
 
@@ -20,6 +21,35 @@ it('capitalizes words', () => {
 
 	before = 'test again'
 	after = 'Test Again'
+	test()
+})
+
+it('sorts habits in alphabetical order', () => {
+	let before, after
+	function test() {
+		expect(sortHabitsByName(before)).toEqual(after)
+	}
+
+	before = {
+		b: 'bleh',
+		a: 'blah',
+	}
+	after = {
+		a: 'blah',
+		b: 'bleh',
+	}
+	test()
+
+	before = {
+		a: 'blah',
+	}
+	after = {
+		a: 'blah',
+	}
+	test()
+
+	before = {}
+	after = {}
 	test()
 })
 

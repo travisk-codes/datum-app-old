@@ -101,6 +101,20 @@ export function getChain(days) {
 	return chain
 }
 
+export function sortHabitsByName(habits) {
+	if (habits.length <= 1) return habits
+	let sorted_habit_names = []
+	for (let habit in habits) {
+		sorted_habit_names.push(habit)
+	}
+	sorted_habit_names.sort()
+	let sorted_habits = {}
+	sorted_habit_names.forEach(name => {
+		sorted_habits[name] = habits[name]
+	})
+	return sorted_habits
+}
+
 export function getLongestChain(days) {
 	let current_chain = 0
 	let longest_chain = 0
@@ -176,7 +190,7 @@ function reduceDatumsToHabits(datums) {
 		}
 
 		group[habit.name] = days
-		return group
+		return sortHabitsByName(group)
 	}, {})
 
 	return groupedHabits
