@@ -78,6 +78,27 @@ onClickCheckbox:
 
 
 
+### TIMELINE VIEW
+
+start nap T
+stop nap T+60
+start med T+90
+
+
+habits = [
+	// encounter second item
+	{
+		name: 'nap',
+		height: 60,
+	},
+	// encounter a stop, switch to white/empty
+	{
+		name: null,
+		height: 60,
+	},
+
+]
+
 
 
 

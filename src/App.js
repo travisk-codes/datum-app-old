@@ -15,6 +15,7 @@ import DatumList from './views/DatumList'
 import Splash from './views/Splash'
 import Todos from './views/Todos'
 import Habits from './views/Habits'
+import Timeline from './views/Timeline'
 
 import DatumBar from './components/DatumBar'
 import TopBar from './components/TopBar'
@@ -62,7 +63,7 @@ class App extends Component {
 			tags: [],
 			active_datum: new Datum(),
 			stashed_datum: null,
-			current_view: 'datum_list',
+			current_view: 'timeline',
 			current_side_menu: false,
 			current_modal: false,
 		}
@@ -90,6 +91,7 @@ class App extends Component {
 		this.renderDatumListView = this.renderDatumListView.bind(this)
 		this.renderTodosView = this.renderTodosView.bind(this)
 		this.renderHabitsView = this.renderHabitsView.bind(this)
+		this.renderTimelineView = this.renderTimelineView.bind(this)
 		this.upsertTags = this.upsertTags.bind(this)
 		this.getTagNames = this.getTagNames.bind(this)
 		this.getTagCountFor = this.getTagCountFor.bind(this)
@@ -579,6 +581,17 @@ class App extends Component {
 		)
 	}
 
+	renderTimelineView() {
+		return (
+			<Timeline
+				items={this.state.datums.filter(
+					d => d.hasTag('start') || d.hasTag('stop')
+				)}
+				onButtonLongPress={() => this.switchSideMenuTo('apps')}
+			/>
+		)
+	}
+
 	render() {
 		const	CurrentView = {
 			'splash': this.renderSplashView,
@@ -586,6 +599,7 @@ class App extends Component {
 			'todos': this.renderTodosView,
 			'about': this.renderAboutView,
 			'habits': this.renderHabitsView,
+			'timeline': this.renderTimelineView
 		}[this.state.current_view]
 
 		return (
@@ -596,6 +610,7 @@ class App extends Component {
 					onClickTodos={() => this.switchViewTo('todos')}
 					onClickHabits={() => this.switchViewTo('habits')}
 					onClickList={() => this.switchViewTo('datum_list')}
+					onClickTimeline={() => this.switchViewTo('timeline')}
 					open={this.state.current_side_menu === 'apps'}
 					on_close={() => this.switchSideMenuTo(false)}
 				/>

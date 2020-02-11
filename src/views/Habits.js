@@ -48,20 +48,6 @@ const useStyles = makeStyles({
 		paddingLeft: 0,
 		paddingRight: 0,
 	},
-	todoBar: {
-		display: 'inline-flex',
-		position: 'fixed',
-		flexDirection: 'column',
-		justifyContent: 'center',
-		alignItems: 'stretch',
-		left: 0,
-		right: 0,
-		bottom: 0,
-		height: 56,
-		boxShadow: '0px 2px 20px rgba(0, 0, 0, 0.2)',
-		paddingLeft: 6,
-		paddingRight: 56,
-	},
 	todoTextField: {
 		display: 'flex',
 		alignItems: 'stretch',
@@ -275,34 +261,30 @@ export default function Habits(props) {
 
 	const app_btn = (
 		<div className={classes.todoBar}>
-		<form onSubmit={e => onSubmitHabit(e)}>
-			<TextField 
-				className={classes.todoTextField} 
-				onChange={e => onChangeHabitTextField(e)}
-				value={text}
-				label='Habit' 
-				placeholder='New Habit' 
-				variant='outlined' 
-				size='small' 
-				color='secondary'
-			/>
-		</form>
-		<Fab
-			onClick={props.onButtonLongPress}
-			onContextMenu={props.onButtonLongPress} // capture long press & right click
-			onDoubleClick={props.onButtonLongPress}
-			className={classes.fab}
-			color='primary'
-			size='small'
-		>
-			<MenuIcon />
-		</Fab>
-	</div>
-)
-	
-	// TODO: place separate table with name and count before
-	//       days, with days scrolled off as far as oldest
-	//       habit
+			<form onSubmit={e => onSubmitHabit(e)}>
+				<TextField 
+					className={classes.todoTextField} 
+					onChange={e => onChangeHabitTextField(e)}
+					value={text}
+					label='Habit' 
+					placeholder='New Habit' 
+					variant='outlined' 
+					size='small' 
+					color='secondary'
+				/>
+			</form>
+			<Fab
+				onClick={props.onButtonLongPress}
+				onContextMenu={props.onButtonLongPress} // capture long press & right click
+				onDoubleClick={props.onButtonLongPress}
+				className={classes.fab}
+				color='primary'
+				size='small'
+			>
+				<MenuIcon />
+			</Fab>
+		</div>
+	)
 
   return (
 		<div className={classes.container}>
