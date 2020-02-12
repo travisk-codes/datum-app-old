@@ -44,7 +44,7 @@ export function csv_to_datums(csv_string) {
 		const row = rows[i].split(',')
 		let datum = new Datum(
 			row[0] || uuid(),
-			Date.parse(row[1]) || Date.now(),
+			Number(row[1]),
 			[],
 		)
 

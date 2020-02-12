@@ -587,6 +587,7 @@ class App extends Component {
 				items={this.state.datums.filter(
 					d => d.hasTag('start') || d.hasTag('stop')
 				)}
+				datums={this.state.datums}
 				onButtonLongPress={() => this.switchSideMenuTo('apps')}
 			/>
 		)
