@@ -77,4 +77,16 @@ export default class Datum {
 		this.tags = this.tags.filter(t => t.name !== name)
 	}
 
+	stringifyTags() {
+		let tag_string = ''
+		this.tags.forEach(tag => {
+			if (tag.value !== undefined) {
+				tag_string += (`${tag.name}: ${tag.value}, `)
+			} else {
+				tag_string += (`${tag.name}, `)
+			}
+		})
+		tag_string = tag_string.slice(0, -2)
+		return tag_string
+	}
 }

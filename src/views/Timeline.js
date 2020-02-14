@@ -1,4 +1,5 @@
 import React from 'react';
+import moment from 'moment'
 import { makeStyles } from '@material-ui/core/styles';
 //import Table from '@material-ui/core/Table';
 //import TableBody from '@material-ui/core/TableBody';
@@ -20,24 +21,37 @@ import Fab from '@material-ui/core/Fab'
 
 const useStyles = makeStyles({
 	container: {
-		margin: '60px 0',
 		position: 'relative',
 		display: 'flex',
 		flexDirection: 'column',
+		//top: 90,
+		left: 0,
+		right: 0,
+		//bottom: 100,
 	},
 	timelineBlock: {
+		position: 'relative',
 		display: 'flex',
 		width: '50%',
-		border: '1px solid white',
 		backgroundColor: 'salmon',
 		color: 'white',
-		borderRadius: '.25em',
+		borderRadius: '.33em',
 		paddingLeft: '0.25em',
 	},
 	timelineInstant: {
+		display: 'flex',
+		justifyContent: 'flex-end',
+		alignItems: 'flex-end',
 		position: 'absolute',
 		width: '100%',
 		borderBottom: '1px solid lightgrey',
+		backgroundColor: 'white'
+	},
+	hourMark: {
+		display: 'flex',
+		position: 'absolute',
+		width: '100%',
+		borderBottom: '1px dashed lightgrey',
 	},
 	todoBar: {
 		display: 'inline-flex',
@@ -52,6 +66,7 @@ const useStyles = makeStyles({
 		boxShadow: '0px 2px 20px rgba(0, 0, 0, 0.2)',
 		paddingLeft: 6,
 		paddingRight: 56,
+		backgroundColor: 'whitesmoke'
 	},
 	todoTextField: {
 		display: 'flex',
@@ -64,9 +79,9 @@ const useStyles = makeStyles({
 	},
 })
 
-export function convertDatumsToBlocks(datums) {
+export function convertDatumsToBlocks(datums, time_of_first_datum) {
 	let heights = []
-	let lastTime = 0
+	let lastTime = time_of_first_datum
 	let name = ''
 	if (datums === undefined) return heights
 	datums.forEach(datum => {
@@ -94,14 +109,35 @@ export function convertDatumsToInstances(datums) {
 	datums = datums.filter(d => !d.hasTag('start') || !d.hasTag('stop'))
 	// save the datetime of first datum
 	const time_of_first_datum = datums[0].time
-	datums.shift()
 	// add to array difference between datum and first dt
-	let instance_heights = [0]
+	let instance_heights = [{position: 0, label: datums[0].stringifyTags()}]
+	datums.shift()
 	datums.forEach(datum => {
 		const difference = Math.round((datum.time - time_of_first_datum) / 1000 / 60)
-		instance_heights.push(difference)
+		instance_heights.push({
+			position: difference,
+			label: datum.stringifyTags()
+		})
 	})
 	return instance_heights
+}
+
+export function mapTimeToPixel(time, relative_start_time) {
+	let time_difference = time - relative_start_time
+	let pixel_position = Math.round(time_difference / 1000 / 60)
+	return pixel_position
+}
+
+export function hourMarkPositions(start_time, end_time) {
+	let hour_mark_positions = []
+	let total_pixel_count = mapTimeToPixel(end_time, start_time)
+	let minute_of_start_time = moment(start_time).minute()
+	let first_hour_starting_position = 60 - minute_of_start_time
+	for (let i = first_hour_starting_position; i < total_pixel_count; i += 60) {
+		hour_mark_positions.push(i)
+	}
+
+	return hour_mark_positions
 }
 
 export default function Timeline(props) {
@@ -134,20 +170,30 @@ export default function Timeline(props) {
 		</div>
 	)
 
+	const time_of_first_datum = props.datums[0] ? props.datums[0].time : 0
+	const last_datum = props.datums[props.datums.length - 1] || 0
   return (
 		<div className={classes.container}>
-			{convertDatumsToBlocks(props.items).map(({name, height}, i) => (
+			{convertDatumsToInstances(props.datums).map((instance, i) => (
+				<div className={classes.timelineInstant}
+					key={i}
+					style={{height: instance.position}}>
+					{instance.label}
+				</div>
+			)).reverse()}
+			{convertDatumsToBlocks(props.items, time_of_first_datum).map(({name, height}, i) => (
 				<div className={classes.timelineBlock} 
 					key={i}
-					style={{height, backgroundColor: name === '' ? '#fafafa' : 'salmon'}}>
+					style={{height, backgroundColor: name === '' ? 'rgba(0,0,0,0)' : 'salmon'}}>
 						{name}
 					</div>
 			))}
-			{convertDatumsToInstances(props.datums).map((height, i) => (
-				<div className={classes.timelineInstant}
-					key={i}
-					style={{height}}
+			{hourMarkPositions(time_of_first_datum, last_datum.time).map(tick => (
+				<div className={classes.hourMark}
+					key={tick}
+					style={{height: tick}}
 				/>
+				
 			))}
 			{app_btn}
 		</div>
