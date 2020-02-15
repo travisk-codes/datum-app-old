@@ -45,20 +45,23 @@ const useStyles = makeStyles({
 	},
 	timelineInstant: {
 		display: 'flex',
-		justifyContent: 'flex-end',
+		justifyContent: 'space-between',
 		alignItems: 'flex-end',
 		position: 'absolute',
 		width: '100%',
 		borderBottom: '1px solid grey',
 		textShadow: '0 0 10px white',
 		paddingRight: '0.33em',
-		backgroundColor: 'white',
 	},
 	hourMark: {
 		display: 'flex',
 		position: 'absolute',
 		width: '100%',
 		borderBottom: '1px dotted lightgrey',
+		justifyContent: 'flex-start',
+		alignItems: 'flex-end',
+		color: 'lightgrey',
+		paddingLeft: '.33em',
 	},
 	dayMark: {
 		display: 'flex',
@@ -138,7 +141,8 @@ export function convertDatumsToInstances(datums) {
 		const difference = Math.round((datum.time - time_of_first_datum) / 1000 / 60)
 		instance_heights.push({
 			position: difference,
-			label: datum.stringifyTags()
+			label: datum.stringifyTags(),
+			time: moment(datum.time).format('HH:mm')
 		})
 	})
 	return instance_heights
@@ -154,9 +158,16 @@ export function hourMarkPositions(start_time, end_time) {
 	let hour_mark_positions = []
 	let total_pixel_count = mapTimeToPixel(end_time, start_time)
 	let minute_of_start_time = moment(start_time).minute()
+	let hour_of_start_time = moment(start_time).hour()
 	let first_hour_starting_position = 60 - minute_of_start_time
 	for (let i = first_hour_starting_position; i < total_pixel_count; i += 60) {
-		hour_mark_positions.push(i)
+		hour_of_start_time += 1
+		let hour_of_day = hour_of_start_time % 24
+		if (hour_of_day < 10) hour_of_day = '0' + hour_of_day
+		hour_mark_positions.push({
+			position: i,
+			label: hour_of_day
+		})
 	}
 
 	return hour_mark_positions
@@ -250,13 +261,26 @@ export default function Timeline(props) {
   return (
 		<div className={classes.container}>
 			<div className={classes.innerContainer}>
+				{hourMarkPositions(time_of_first_datum, last_datum.time).map(tick => (
+					<div className={classes.hourMark}
+						key={tick.position}
+						style={{height: tick.position}}
+					>{tick.label}</div>			
+				))}
+				{dayMarks(time_of_first_datum, last_datum.time).map(tick => (
+					<div className={classes.dayMark}
+						key={tick}
+						style={{height: tick.position}}
+					><span style={{backgroundColor: '#fafafa'}}>{tick.label}</span></div>
+				))}
 				{convertDatumsToInstances(props.datums).map((instance, i) => (
 					<div className={classes.timelineInstant}
 						key={i}
 						style={{height: instance.position}}>
-						{instance.label}
+						<span style={{backgroundColor: 'rgba(255, 255, 255, 0.5)'}}>{instance.time}</span>
+						<span style={{backgroundColor: 'rgba(255, 255, 255, 0.5)'}}>{instance.label}</span>
 					</div>
-				)).reverse()}
+				))}
 				{convertDatumsToBlocks(props.items, time_of_first_datum).map(({name, height}, i) => (
 					<div className={classes.timelineBlock} 
 						key={i}
@@ -264,25 +288,9 @@ export default function Timeline(props) {
 							{name}
 						</div>
 				))}
-				{dayMarks(time_of_first_datum, last_datum.time).map(tick => (
-					<div className={classes.dayMark}
-						key={tick}
-						style={{height: tick.position}}
-					>{tick.label}</div>
-				))}
-				{hourMarkPositions(time_of_first_datum, last_datum.time).map(tick => (
-					<div className={classes.hourMark}
-						key={tick}
-						style={{height: tick}}
-					/>			
-				))}
-
 			<div ref={endRef} />
 			</div>
 			{app_btn}
 		</div>
   );
 }
-
-/*
-*/
