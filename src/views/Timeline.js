@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import moment from 'moment'
 import { makeStyles } from '@material-ui/core/styles';
 //import Table from '@material-ui/core/Table';
@@ -21,13 +21,18 @@ import Fab from '@material-ui/core/Fab'
 
 const useStyles = makeStyles({
 	container: {
+		position: 'fixed',
+		top: 60,
+		left: 0,
+		right: 0,
+		bottom: 60,
+		overflow: 'auto'
+	},
+	innerContainer: {
+		paddingTop: 20,
 		position: 'relative',
 		display: 'flex',
 		flexDirection: 'column',
-		//top: 90,
-		left: 0,
-		right: 0,
-		//bottom: 100,
 	},
 	timelineBlock: {
 		position: 'relative',
@@ -44,14 +49,26 @@ const useStyles = makeStyles({
 		alignItems: 'flex-end',
 		position: 'absolute',
 		width: '100%',
-		borderBottom: '1px solid lightgrey',
-		backgroundColor: 'white'
+		borderBottom: '1px solid grey',
+		textShadow: '0 0 10px white',
+		paddingRight: '0.33em',
+		backgroundColor: 'white',
 	},
 	hourMark: {
 		display: 'flex',
 		position: 'absolute',
 		width: '100%',
-		borderBottom: '1px dashed lightgrey',
+		borderBottom: '1px dotted lightgrey',
+	},
+	dayMark: {
+		display: 'flex',
+		position: 'absolute',
+		width: '100%',
+		borderBottom: '1px solid lightgrey',
+		justifyContent: 'flex-start',
+		alignItems: 'flex-end',
+		color: 'grey',
+		paddingLeft: '.33em',
 	},
 	todoBar: {
 		display: 'inline-flex',
@@ -78,6 +95,10 @@ const useStyles = makeStyles({
 		bottom: 8,
 	},
 })
+
+export function msToMin(interval) {
+	return Math.round(interval / 1000 / 60)
+}
 
 export function convertDatumsToBlocks(datums, time_of_first_datum) {
 	let heights = []
@@ -113,6 +134,7 @@ export function convertDatumsToInstances(datums) {
 	let instance_heights = [{position: 0, label: datums[0].stringifyTags()}]
 	datums.shift()
 	datums.forEach(datum => {
+		if (datum.hasTag('start') || datum.hasTag('stop')) return
 		const difference = Math.round((datum.time - time_of_first_datum) / 1000 / 60)
 		instance_heights.push({
 			position: difference,
@@ -140,8 +162,61 @@ export function hourMarkPositions(start_time, end_time) {
 	return hour_mark_positions
 }
 
+export function insertIntervalsBetween(datums) {
+	let previous_datum = datums.shift()
+	let datums_and_intervals = [ previous_datum ]
+	datums.forEach((d, i) => {
+		if (i + 1 === datums.length) return
+		datums_and_intervals.push({
+			after: previous_datum.tags,
+			before: d.tags,
+			duration: d.time - previous_datum.time
+		})
+		datums_and_intervals.push(d)
+		previous_datum = d
+	})
+	return datums_and_intervals
+}
+
+function monthAndDayOf(unix_time) {
+	let month = moment(unix_time).month() + 1
+	let date = moment(unix_time).date()
+	return month + '/' + date
+}
+
+/**
+ * Given an interval of time, returns the position of day
+ * marks and a label with that day's date
+ * @param {number} start_time unix time in ms
+ * @param {number} end_time unix time in ms
+ * @return {object[]} label-position pairs
+ */
+export function dayMarks(start_time, end_time) {
+	let day_positions_and_labels = []
+	let minutes_until_next_day = msToMin(
+		moment(start_time).endOf('day') - moment(start_time)
+	)
+	for (let i = minutes_until_next_day; i < msToMin(end_time - start_time); i += 60 * 24) {
+		day_positions_and_labels.push({
+			position: i,
+			label: monthAndDayOf(start_time + i * 60 * 1000)
+		})
+	}
+	
+	
+	// keep adding days until end_time is exceeded
+	return day_positions_and_labels
+}
+
 export default function Timeline(props) {
 	const classes = useStyles()
+	const endRef = React.useRef(null)
+
+	function scrollToEnd() {
+		endRef.current.scrollIntoView()
+	}
+
+	useEffect(scrollToEnd)
 
 	const app_btn = (
 		<div className={classes.todoBar}>
@@ -174,28 +249,40 @@ export default function Timeline(props) {
 	const last_datum = props.datums[props.datums.length - 1] || 0
   return (
 		<div className={classes.container}>
-			{convertDatumsToInstances(props.datums).map((instance, i) => (
-				<div className={classes.timelineInstant}
-					key={i}
-					style={{height: instance.position}}>
-					{instance.label}
-				</div>
-			)).reverse()}
-			{convertDatumsToBlocks(props.items, time_of_first_datum).map(({name, height}, i) => (
-				<div className={classes.timelineBlock} 
-					key={i}
-					style={{height, backgroundColor: name === '' ? 'rgba(0,0,0,0)' : 'salmon'}}>
-						{name}
+			<div className={classes.innerContainer}>
+				{convertDatumsToInstances(props.datums).map((instance, i) => (
+					<div className={classes.timelineInstant}
+						key={i}
+						style={{height: instance.position}}>
+						{instance.label}
 					</div>
-			))}
-			{hourMarkPositions(time_of_first_datum, last_datum.time).map(tick => (
-				<div className={classes.hourMark}
-					key={tick}
-					style={{height: tick}}
-				/>
-				
-			))}
+				)).reverse()}
+				{convertDatumsToBlocks(props.items, time_of_first_datum).map(({name, height}, i) => (
+					<div className={classes.timelineBlock} 
+						key={i}
+						style={{height, backgroundColor: name === '' ? 'rgba(0,0,0,0)' : 'salmon'}}>
+							{name}
+						</div>
+				))}
+				{dayMarks(time_of_first_datum, last_datum.time).map(tick => (
+					<div className={classes.dayMark}
+						key={tick}
+						style={{height: tick.position}}
+					>{tick.label}</div>
+				))}
+				{hourMarkPositions(time_of_first_datum, last_datum.time).map(tick => (
+					<div className={classes.hourMark}
+						key={tick}
+						style={{height: tick}}
+					/>			
+				))}
+
+			<div ref={endRef} />
+			</div>
 			{app_btn}
 		</div>
   );
 }
+
+/*
+*/
