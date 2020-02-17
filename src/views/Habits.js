@@ -26,6 +26,9 @@ const useStyles = makeStyles({
 		maxWidth: 'fit-content',
 	},
 	tableContainer: {
+		position: 'fixed',
+		width: '100%',
+		overflow: 'auto',
 	},
   table: {
 		//minWidth: 650,
