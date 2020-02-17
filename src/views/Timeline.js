@@ -26,7 +26,8 @@ const useStyles = makeStyles({
 		left: 0,
 		right: 0,
 		bottom: 60,
-		overflow: 'auto'
+		overflowY: 'auto',
+		overflowX: 'hidden',
 	},
 	innerContainer: {
 		paddingTop: 20,
@@ -50,8 +51,11 @@ const useStyles = makeStyles({
 		position: 'absolute',
 		width: '100%',
 		borderBottom: '1px solid grey',
-		textShadow: '0 0 10px white',
 		paddingRight: '0.33em',
+	},
+	instanceTime: {
+		backgroundColor: '#fafafa80',
+		paddingLeft: '0.33em',
 	},
 	hourMark: {
 		display: 'flex',
@@ -219,6 +223,20 @@ export function dayMarks(start_time, end_time) {
 	return day_positions_and_labels
 }
 
+// https://stackoverflow.com/a/16348977
+function stringToColor(str) {
+	let hash = 0
+	for (let i = 0; i < str.length; i++) {
+		hash = str.charCodeAt(i) + ((hash << 5) - hash)
+	}
+	let color = '#'
+	for (let i = 0; i < 3; i++) {
+		let value = (hash >> (i * 8)) & 0xFF
+		color += ('00' + value.toString(16)).substr(-2)
+	}
+	return color
+}
+
 export default function Timeline(props) {
 	const classes = useStyles()
 	const endRef = React.useRef(null)
@@ -269,7 +287,7 @@ export default function Timeline(props) {
 				))}
 				{dayMarks(time_of_first_datum, last_datum.time).map(tick => (
 					<div className={classes.dayMark}
-						key={tick}
+						key={tick.position}
 						style={{height: tick.position}}
 					><span style={{backgroundColor: '#fafafa'}}>{tick.label}</span></div>
 				))}
@@ -277,14 +295,14 @@ export default function Timeline(props) {
 					<div className={classes.timelineInstant}
 						key={i}
 						style={{height: instance.position}}>
-						<span style={{backgroundColor: 'rgba(255, 255, 255, 0.5)'}}>{instance.time}</span>
-						<span style={{backgroundColor: 'rgba(255, 255, 255, 0.5)'}}>{instance.label}</span>
+						<span className={classes.instanceTime}>{instance.time}</span>
+						<span style={{backgroundColor: '#fafafa80'}}>{instance.label}</span>
 					</div>
 				))}
 				{convertDatumsToBlocks(props.items, time_of_first_datum).map(({name, height}, i) => (
 					<div className={classes.timelineBlock} 
 						key={i}
-						style={{height, backgroundColor: name === '' ? 'rgba(0,0,0,0)' : 'salmon'}}>
+						style={{height, backgroundColor: name === '' ? 'rgba(0,0,0,0)' : stringToColor(name)}}>
 							{name}
 						</div>
 				))}

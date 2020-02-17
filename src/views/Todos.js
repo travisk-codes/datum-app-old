@@ -40,6 +40,7 @@ const useStyles = makeStyles(theme  => ({
 		boxShadow: '0px 2px 20px rgba(0, 0, 0, 0.2)',
 		paddingLeft: 6,
 		paddingRight: 56,
+		backgroundColor: 'whitesmoke',
 	},
 	fab: {
 		position: 'fixed',

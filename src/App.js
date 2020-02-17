@@ -4,6 +4,7 @@ import memory from 'pouchdb-adapter-memory'
 import idb from 'pouchdb-adapter-idb'
 import http from 'pouchdb-adapter-http'
 import uuid from 'uuid/v4'
+import SugarDate from 'sugar-date'
 
 import { CssBaseline } from '@material-ui/core'
 import {
@@ -63,7 +64,7 @@ class App extends Component {
 			tags: [],
 			active_datum: new Datum(),
 			stashed_datum: null,
-			current_view: 'timeline',
+			current_view: 'datum_list',
 			current_side_menu: false,
 			current_modal: false,
 		}
@@ -272,9 +273,15 @@ class App extends Component {
 	}
 
 	createNewDatum(tags) {
+		let time = Date.now()
+		tags.forEach(tag => {
+			if (tag.name === 'time') {
+				time = new Date(SugarDate.Date.create(tag.value)).valueOf()
+			}
+		})
 		return new Datum(
 			uuid(),
-			Date.now(),
+			time,
 			tags
 		)
 	}
@@ -306,13 +313,17 @@ class App extends Component {
 		if (active_datum.id) {
 			// already exists
 			active_datum.tags = tags
+			if (active_datum.hasTag('time')) {
+				let time = new Date(
+					SugarDate.Date.create(active_datum.getValue('time'))
+				).valueOf()
+				active_datum.time = time
+			}
 			datums = datums.map(d =>
 				d.id === active_datum.id ? active_datum : d
 			)
 		} else {
-			active_datum.id = uuid()
-			active_datum.time = Date.now()
-			active_datum.tags = tags
+			active_datum = this.createNewDatum(tags)
 			datums.push(active_datum)
 		}
 

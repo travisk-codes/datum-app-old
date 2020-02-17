@@ -20,6 +20,7 @@
 		"react-window": "^1.8.5",
 		"rxdb": "^8.0.7",
 		"rxjs": "^6.4.0",
+		"sugar-date": "^2.0.6",
 		"uuid": "^3.3.2",
 		"why-did-you-update": "^1.0.6"
 	},
