@@ -46,7 +46,7 @@ function ImportExport(props) {
 				<DialogTitle className={classes.title} id="alert-dialog-title">{'Datum is for your personal data.'}</DialogTitle>
 				<DialogContent>
 					<DialogContentText className={classes.section} id="alert-dialog-description">
-						{'Whether it\'s your to-do list, financials, calories or private notes, Datum let\'s you—and only you—see your data how you want. Datom does not, and will never, look at or sell your data.'}
+						{'Whether it\'s your to-do list, financials, calories or private notes, Datum let\'s you—and only you—see your data how you want. Datum does not, and will never, look at or sell your data.'}
 					</DialogContentText>
 					<DialogContentText className={classes.section} id="alert-dialog-description">
 					Datum is made by Travis Kohlbeck. Please send questions, comments, issues, etc. to <code><span>me</span><span>@</span><span>travisk.info</span></code>. Source code can be found at <a href='https://github.com/travisk-codes/datum-app'>GitHub</a>. Donations are accepted on <a href='https://patreon.com/homaro'>Patreon</a>.

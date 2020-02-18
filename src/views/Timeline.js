@@ -50,12 +50,15 @@ const useStyles = makeStyles({
 		alignItems: 'flex-end',
 		position: 'absolute',
 		width: '100%',
-		borderBottom: '1px solid grey',
-		paddingRight: '0.33em',
+		borderBottom: '1px dashed grey',
 	},
-	instanceTime: {
-		backgroundColor: '#fafafa80',
+	instanceLabel: {
+		backgroundColor: '#fafafa',
 		paddingLeft: '0.33em',
+		paddingRight: '0.33em',
+		borderBottom: '1px solid #fafafa',
+		marginBottom: '-1px',
+		lineHeight: '7px',
 	},
 	hourMark: {
 		display: 'flex',
@@ -295,8 +298,8 @@ export default function Timeline(props) {
 					<div className={classes.timelineInstant}
 						key={i}
 						style={{height: instance.position}}>
-						<span className={classes.instanceTime}>{instance.time}</span>
-						<span style={{backgroundColor: '#fafafa80'}}>{instance.label}</span>
+						<span className={classes.instanceLabel}>{instance.time}</span>
+						<span className={classes.instanceLabel}>{instance.label}</span>
 					</div>
 				))}
 				{convertDatumsToBlocks(props.items, time_of_first_datum).map(({name, height}, i) => (

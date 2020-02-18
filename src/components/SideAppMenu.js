@@ -37,14 +37,14 @@ export default function SideMenu(props) {
 				</ListItem>
 				<ListItem
 					button
-					disabled
-					onClick={props.onClickList}
+					onClick={props.onClickStats}
 				>
 					<ListItemIcon>
 						<StatsIcon />
 					</ListItemIcon>
 					<ListItemText primary='Stats' />
 				</ListItem>
+
 				<ListItem
 					button
 					onClick={props.onClickTimeline}>
