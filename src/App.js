@@ -7,10 +7,7 @@ import uuid from 'uuid/v4'
 import SugarDate from 'sugar-date'
 
 import { CssBaseline } from '@material-ui/core'
-import {
-	MuiThemeProvider,
-	createMuiTheme,
-} from '@material-ui/core/styles'
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
 
 import DatumList from './views/DatumList'
 import Splash from './views/Splash'
@@ -34,7 +31,7 @@ import Datum from './DatumClass'
 //import secret from './secret'
 
 //const log = x => console.log(x)
-const empty_datum = () => (new Datum(null, null, []))
+const empty_datum = () => new Datum(null, null, [])
 
 RxDB.plugin(idb)
 RxDB.plugin(memory)
@@ -75,15 +72,11 @@ class App extends Component {
 		this.del_datums = this.del_datums.bind(this)
 		this.edit_datum = this.edit_datum.bind(this)
 		this.find_datum = this.find_datum.bind(this)
-		this.update_datum_bar_input = this.update_datum_bar_input.bind(
-			this
-		)
+		this.update_datum_bar_input = this.update_datum_bar_input.bind(this)
 		this.add_tag_metadata = this.add_tag_metadata.bind(this)
 		this.del_tag_metadata = this.del_tag_metadata.bind(this)
 		this.switchViewTo = this.switchViewTo.bind(this)
-		this.get_tag_values_for = this.get_tag_values_for.bind(
-			this
-		)
+		this.get_tag_values_for = this.get_tag_values_for.bind(this)
 		this.switchSideMenuTo = this.switchSideMenuTo.bind(this)
 		this.switchModalTo = this.switchModalTo.bind(this)
 		this.importDatums = this.importDatums.bind(this)
@@ -110,11 +103,11 @@ class App extends Component {
 		const d_subscription = this.db_datums
 			.find()
 			.sort({ time: 1 })
-			.$.subscribe(docs => {
+			.$.subscribe((docs) => {
 				if (!docs.length) {
 				} else {
 					this.setState({
-						datums: docs.map(({ id, time, tags }) => (new Datum(id, time, tags))),
+						datums: docs.map(({ id, time, tags }) => new Datum(id, time, tags)),
 					})
 				}
 			})
@@ -124,30 +117,28 @@ class App extends Component {
 			name: 'tags',
 			schema: tag_schema,
 		})
-		const t_subscription = this.db_tags
-			.find()
-			.$.subscribe(docs => {
-				if (!docs) return
-				this.setState({
-					tags: docs.map(
-						({
-							id,
-							name,
-							color,
-							instance_times,
-							instance_peers,
-							instance_values,
-						}) => ({
-							id,
-							name,
-							color,
-							instance_times,
-							instance_peers,
-							instance_values,
-						})
-					),
-				})
+		const t_subscription = this.db_tags.find().$.subscribe((docs) => {
+			if (!docs) return
+			this.setState({
+				tags: docs.map(
+					({
+						id,
+						name,
+						color,
+						instance_times,
+						instance_peers,
+						instance_values,
+					}) => ({
+						id,
+						name,
+						color,
+						instance_times,
+						instance_peers,
+						instance_values,
+					}),
+				),
 			})
+		})
 		this.subs.push(t_subscription)
 	}
 
@@ -156,7 +147,7 @@ class App extends Component {
 		if (visited) {
 			this.setState({ current_modal: false })
 		} else {
-			this.setState({ current_modal: 'about'})
+			this.setState({ current_modal: 'about' })
 			localStorage['alreadyVisited'] = true
 		}
 		this.db = await RxDB.create({
@@ -172,7 +163,7 @@ class App extends Component {
 	}
 
 	componentWillUnmount() {
-		this.subs.forEach(s => s.unsubscribe())
+		this.subs.forEach((s) => s.unsubscribe())
 	}
 
 	shouldComponentUpdate(nextProps, nextState) {
@@ -190,22 +181,20 @@ class App extends Component {
 				return false
 			})
 		}
-		
-		let new_tags_data = this.state.tags
-		datums.forEach(d => {
-			d.tags.forEach(t => {
 
+		let new_tags_data = this.state.tags
+		datums.forEach((d) => {
+			d.tags.forEach((t) => {
 				let tag_data = {}
-				const tag_already_exists = this.state.tags
-					.filter(existing => existing.name === t.name)
+				const tag_already_exists = this.state.tags.filter(
+					(existing) => existing.name === t.name,
+				)
 				if (tag_already_exists.length) {
 					tag_data = tag_already_exists.pop()
 					tag_data.instance_times.push(d.time)
 					tag_data.instance_peers.push(d.tags)
 					tag_data.instance_values.push(t.value)
-					new_tags_data[
-						getStateIndexOfTag(tag_data.name)
-					] = tag_data
+					new_tags_data[getStateIndexOfTag(tag_data.name)] = tag_data
 				} else {
 					tag_data = {
 						id: uuid(),
@@ -227,12 +216,13 @@ class App extends Component {
 		const time = datum.time
 		let all_tag_data = []
 		let tag_exists = []
-		datum.tags.forEach(dt => {
+		datum.tags.forEach((dt) => {
 			const name = dt.name
 			const value = dt.value
 			let tag_data, existence
-			const existing_tag_data = this.state.tags
-				.filter(st => st.name === dt.name)
+			const existing_tag_data = this.state.tags.filter(
+				(st) => st.name === dt.name,
+			)
 			if (!existing_tag_data.length) {
 				// create new entry for tag
 				existence = false
@@ -262,9 +252,7 @@ class App extends Component {
 			let data = all_tag_data[i]
 			await this.db_tags.upsert(data)
 			if (tag_exists[i]) {
-				new_state = old_state.map(t =>
-					t.name === data.name ? data : t
-				)
+				new_state = old_state.map((t) => (t.name === data.name ? data : t))
 			} else {
 				new_state.push(data)
 			}
@@ -276,37 +264,33 @@ class App extends Component {
 
 	createNewDatum(tags) {
 		let time = Date.now()
-		tags.forEach(tag => {
+		tags.forEach((tag) => {
 			if (tag.name === 'time') {
 				time = new Date(SugarDate.Date.create(tag.value)).valueOf()
 			}
 		})
-		return new Datum(
-			uuid(),
-			time,
-			tags
-		)
+		return new Datum(uuid(), time, tags)
 	}
 
-	async upsertDatum(datum) { try {
-		let { datums } = this.state
-		if (datum.getId()) {
-			datums = datums.map(
-				d => d.id === datum.id ? datum : d
-			)
-		} else {
-			datums.concat(datum)
-		}
-		
-		await this.db_datums.upsert(datum)
-		await this.add_tag_metadata(datum)
+	async upsertDatum(datum) {
+		try {
+			let { datums } = this.state
+			if (datum.getId()) {
+				datums = datums.map((d) => (d.id === datum.id ? datum : d))
+			} else {
+				datums.concat(datum)
+			}
 
-		/*this.setState({
+			await this.db_datums.upsert(datum)
+			await this.add_tag_metadata(datum)
+
+			/*this.setState({
 			datums
 		})*/
-	} catch(e) {
-		throw new Error(e)
-	}}
+		} catch (e) {
+			throw new Error(e)
+		}
+	}
 
 	async add_active_datum(tags) {
 		if (!tags.length) return
@@ -317,13 +301,11 @@ class App extends Component {
 			active_datum.tags = tags
 			if (active_datum.hasTag('time')) {
 				let time = new Date(
-					SugarDate.Date.create(active_datum.getValue('time'))
+					SugarDate.Date.create(active_datum.getValue('time')),
 				).valueOf()
 				active_datum.time = time
 			}
-			datums = datums.map(d =>
-				d.id === active_datum.id ? active_datum : d
-			)
+			datums = datums.map((d) => (d.id === active_datum.id ? active_datum : d))
 		} else {
 			active_datum = this.createNewDatum(tags)
 			datums.push(active_datum)
@@ -365,9 +347,9 @@ class App extends Component {
 
 	async addDatums(new_datums) {
 		this.setState({ new_datums })
-		const new_datum_ids = new_datums.map(d => d.id)
+		const new_datum_ids = new_datums.map((d) => d.id)
 		// default to overwriting existing datums for now
-		this.state.datums.forEach(d => {
+		this.state.datums.forEach((d) => {
 			if (new_datum_ids.includes(d.id)) {
 				this.del_tag_metadata(d.id)
 				return false
@@ -388,8 +370,8 @@ class App extends Component {
 			.exec()
 		datum_to_delete.remove()
 		this.del_tag_metadata(id)
-		this.setState(state => ({
-			datums: state.datums.filter(datum => datum.id !== id),
+		this.setState((state) => ({
+			datums: state.datums.filter((datum) => datum.id !== id),
 		}))
 		console.log(`datum ${id} deleted`)
 	}
@@ -406,41 +388,33 @@ class App extends Component {
 		} else {
 			// TODO remove its tags metadata
 			this.setState({
-				datums: this.state.datums.filter(
-					d => !ids.includes(d.id)
-				),
+				datums: this.state.datums.filter((d) => !ids.includes(d.id)),
 			})
 		}
 	}
 
 	del_tag_metadata(datum_id) {
 		const datum_to_delete = this.state.datums
-			.filter(d => d.id === datum_id)
+			.filter((d) => d.id === datum_id)
 			.pop()
 		const tags_to_delete = datum_to_delete.tags
 		const instance_time = datum_to_delete.time
 		let new_state = this.state.tags
-		tags_to_delete.forEach(dt => {
+		tags_to_delete.forEach((dt) => {
 			try {
-				let tag_data = this.state.tags
-					.filter(st => st.name === dt.name)
-					.pop()
+				let tag_data = this.state.tags.filter((st) => st.name === dt.name).pop()
 				if (tag_data.instance_times.length === 1) {
 					// remove entire tag obj if one left
-					new_state = new_state.filter(
-						t => t.name !== dt.name
-					)
+					new_state = new_state.filter((t) => t.name !== dt.name)
 				} else {
 					// remove instances from tag obj
 					const index = tag_data.instance_times.findIndex(
-						time => time === instance_time.toString()
+						(time) => time === instance_time.toString(),
 					)
 					tag_data.instance_times.splice(index, 1)
 					tag_data.instance_peers.splice(index, 1)
 					tag_data.instance_values.splice(index, 1)
-					new_state = new_state.map(t =>
-						t.name === dt.name ? tag_data : t
-					)
+					new_state = new_state.map((t) => (t.name === dt.name ? tag_data : t))
 				}
 			} catch (e) {
 				console.log(e)
@@ -455,30 +429,26 @@ class App extends Component {
 		console.log(`editing datum ${id}`)
 		this.setState({
 			stashed_datum: this.state.active_datum,
-			active_datum: this.state.datums
-				.filter(d => d.id === id)
-				.pop(),
+			active_datum: this.state.datums.filter((d) => d.id === id).pop(),
 		})
 	}
 
 	find_datum(id) {
-		return this.state.datums.filter(d => d.id === id).pop()
+		return this.state.datums.filter((d) => d.id === id).pop()
 	}
 
-	update_datum_bar_input = e =>
+	update_datum_bar_input = (e) =>
 		this.setState({
 			datum_bar_input_val: e.target.value,
 		})
 
-	switchViewTo = view =>
+	switchViewTo = (view) =>
 		this.setState({
 			current_view: view,
 		})
 
-	get_tag_values_for = tag_name => {
-		const tag_data = this.state.tags
-			.filter(t => t.name === tag_name)
-			.pop() // always gotta pop the filter
+	get_tag_values_for = (tag_name) => {
+		const tag_data = this.state.tags.filter((t) => t.name === tag_name).pop() // always gotta pop the filter
 		if (!tag_data) return null
 		if (tag_data.instance_values) {
 			return [...new Set(tag_data.instance_values)]
@@ -498,28 +468,23 @@ class App extends Component {
 	}
 
 	async importDatums(datums) {
-		 await this.del_datums()
-		 await this.addDatums(datums)
+		await this.del_datums()
+		await this.addDatums(datums)
 		// TODO remove tag data
 	}
 
 	getTagNames() {
-		return this.state.tags.map(t => t.name)
+		return this.state.tags.map((t) => t.name)
 	}
 
 	getTagCountFor(tag) {
-		return this.state.tags
-			.filter(t => t.name === tag)[0]
-			.instance_times
+		return this.state.tags.filter((t) => t.name === tag)[0].instance_times
 			.length
 	}
 
 	getTagLastAddedFor(tag) {
-		const tag_metadata = this.state.tags
-			.filter(t => t.name === tag)[0]
-		return tag_metadata.instance_times[
-			tag_metadata.instance_times.length - 1
-		]
+		const tag_metadata = this.state.tags.filter((t) => t.name === tag)[0]
+		return tag_metadata.instance_times[tag_metadata.instance_times.length - 1]
 	}
 
 	renderAboutView() {
@@ -527,17 +492,12 @@ class App extends Component {
 	}
 
 	renderSplashView() {
-		return (
-			<Splash
-				switchViewTo={this.switchViewTo}
-				on_login={this.load_db}
-			/>
-		)
+		return <Splash switchViewTo={this.switchViewTo} on_login={this.load_db} />
 	}
 
 	renderDatumListView() {
 		const tag_colors = {}
-		this.state.tags.forEach(t => {
+		this.state.tags.forEach((t) => {
 			tag_colors[t.name] = t.color
 		})
 		return (
@@ -567,15 +527,13 @@ class App extends Component {
 
 	renderTodosView() {
 		return (
-			<Todos 
-				todoItems={this.state.datums.filter(
-					d => d.hasTag('todo')
-				)}
+			<Todos
+				todoItems={this.state.datums.filter((d) => d.hasTag('todo'))}
 				onToggleTodo={this.upsertDatum}
 				onSelectEdit={this.edit_datum}
 				onSelectDelete={this.del_datum}
 				onButtonLongPress={() => this.switchSideMenuTo('apps')}
-				onAddTodo={tags => this.upsertDatum(this.createNewDatum(tags))}
+				onAddTodo={(tags) => this.upsertDatum(this.createNewDatum(tags))}
 			/>
 		)
 	}
@@ -584,11 +542,11 @@ class App extends Component {
 		return (
 			<Habits
 				habits={this.state.datums.filter(
-					d => d.hasTag('daily') || d.hasTag('habit')
+					(d) => d.hasTag('daily') || d.hasTag('habit'),
 				)}
 				onCheckDay={this.upsertDatum}
 				onUncheckDay={this.del_datum}
-				onAddHabit={tags => this.upsertDatum(this.createNewDatum(tags))}
+				onAddHabit={(tags) => this.upsertDatum(this.createNewDatum(tags))}
 				onButtonLongPress={() => this.switchSideMenuTo('apps')}
 			/>
 		)
@@ -598,7 +556,7 @@ class App extends Component {
 		return (
 			<Timeline
 				items={this.state.datums.filter(
-					d => d.hasTag('start') || d.hasTag('stop')
+					(d) => d.hasTag('start') || d.hasTag('stop'),
 				)}
 				datums={this.state.datums}
 				onButtonLongPress={() => this.switchSideMenuTo('apps')}
@@ -616,20 +574,20 @@ class App extends Component {
 	}
 
 	render() {
-		const	CurrentView = {
-			'splash': this.renderSplashView,
-			'datum_list': this.renderDatumListView,
-			'todos': this.renderTodosView,
-			'about': this.renderAboutView,
-			'habits': this.renderHabitsView,
-			'timeline': this.renderTimelineView,
-			'stats': this.renderStatsView,
+		const CurrentView = {
+			splash: this.renderSplashView,
+			datum_list: this.renderDatumListView,
+			todos: this.renderTodosView,
+			about: this.renderAboutView,
+			habits: this.renderHabitsView,
+			timeline: this.renderTimelineView,
+			stats: this.renderStatsView,
 		}[this.state.current_view]
 
 		return (
 			<MuiThemeProvider theme={theme}>
 				<CssBaseline />
-				<TopBar onOpenSettingsMenu={() => this.switchSideMenuTo('settings')}/>
+				<TopBar onOpenSettingsMenu={() => this.switchSideMenuTo('settings')} />
 				<SideAppMenu
 					onClickTodos={() => this.switchViewTo('todos')}
 					onClickHabits={() => this.switchViewTo('habits')}
@@ -647,20 +605,12 @@ class App extends Component {
 					open={this.state.current_side_menu === 'settings'}
 				/>
 				<CurrentView view={this.state.current_view} />
-				<About 
-					open={
-						this.state.current_modal === 'about'
-							? true
-							: false
-					}
+				<About
+					open={this.state.current_modal === 'about' ? true : false}
 					handle_close={() => this.switchModalTo(false)}
 				/>
 				<ImportExport
-					open={
-						this.state.current_modal === 'import_export'
-							? true
-							: false
-					}
+					open={this.state.current_modal === 'import_export' ? true : false}
 					handle_close={() => this.switchModalTo(false)}
 					datums={this.state.datums}
 					importDatums={this.importDatums}
