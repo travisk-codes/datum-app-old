@@ -67,35 +67,9 @@ class App extends Component {
 			current_modal: false,
 		}
 		this.subs = []
-		this.add_active_datum = this.add_active_datum.bind(this)
-		this.del_datum = this.del_datum.bind(this)
-		this.del_datums = this.del_datums.bind(this)
-		this.edit_datum = this.edit_datum.bind(this)
-		this.find_datum = this.find_datum.bind(this)
-		this.update_datum_bar_input = this.update_datum_bar_input.bind(this)
-		this.add_tag_metadata = this.add_tag_metadata.bind(this)
-		this.del_tag_metadata = this.del_tag_metadata.bind(this)
-		this.switchViewTo = this.switchViewTo.bind(this)
-		this.get_tag_values_for = this.get_tag_values_for.bind(this)
-		this.switchSideMenuTo = this.switchSideMenuTo.bind(this)
-		this.switchModalTo = this.switchModalTo.bind(this)
-		this.importDatums = this.importDatums.bind(this)
-		this.upsertDatum = this.upsertDatum.bind(this)
-		this.loadLocalDB = this.loadLocalDB.bind(this)
-		this.renderSplashView = this.renderSplashView.bind(this)
-		this.renderDatumListView = this.renderDatumListView.bind(this)
-		this.renderTodosView = this.renderTodosView.bind(this)
-		this.renderHabitsView = this.renderHabitsView.bind(this)
-		this.renderTimelineView = this.renderTimelineView.bind(this)
-		this.renderStatsView = this.renderStatsView.bind(this)
-		this.upsertTags = this.upsertTags.bind(this)
-		this.getTagNames = this.getTagNames.bind(this)
-		this.getTagCountFor = this.getTagCountFor.bind(this)
-		this.getTagLastAddedFor = this.getTagLastAddedFor.bind(this)
-		this.addDatums = this.addDatums.bind(this)
 	}
 
-	async loadLocalDB() {
+	loadLocalDB = async () => {
 		this.db_datums = await this.db.collection({
 			name: 'datums',
 			schema: datum_schema,
@@ -142,7 +116,7 @@ class App extends Component {
 		this.subs.push(t_subscription)
 	}
 
-	async componentDidMount() {
+	componentDidMount = async () => {
 		let visited = localStorage['alreadyVisited']
 		if (visited) {
 			this.setState({ current_modal: false })
@@ -162,16 +136,16 @@ class App extends Component {
 		}
 	}
 
-	componentWillUnmount() {
+	componentWillUnmount = () => {
 		this.subs.forEach((s) => s.unsubscribe())
 	}
 
-	shouldComponentUpdate(nextProps, nextState) {
+	shouldComponentUpdate = (nextProps, nextState) => {
 		if (this.state != nextState) return true
 		return false
 	}
 
-	async upsertTags(datums) {
+	upsertTags = async (datums) => {
 		if (!Array.isArray(datums)) datums = [datums]
 
 		let self = this
@@ -212,7 +186,7 @@ class App extends Component {
 		await this.db_tags.bulkInsert(new_tags_data)
 	}
 
-	async add_tag_metadata(datum) {
+	add_tag_metadata = async (datum) => {
 		const time = datum.time
 		let all_tag_data = []
 		let tag_exists = []
@@ -262,7 +236,7 @@ class App extends Component {
 		})*/
 	}
 
-	createNewDatum(tags) {
+	createNewDatum = (tags) => {
 		let time = Date.now()
 		tags.forEach((tag) => {
 			if (tag.name === 'time') {
@@ -292,7 +266,7 @@ class App extends Component {
 		}
 	}
 
-	async add_active_datum(tags) {
+	add_active_datum = async (tags) => {
 		if (!tags.length) return
 		let { datums, active_datum, stashed_datum } = this.state
 
@@ -345,7 +319,7 @@ class App extends Component {
 		}, 100) // give state some time to update before scroll, janky solution :/*/
 	}
 
-	async addDatums(new_datums) {
+	addDatums = async (new_datums) => {
 		this.setState({ new_datums })
 		const new_datum_ids = new_datums.map((d) => d.id)
 		// default to overwriting existing datums for now
@@ -362,7 +336,7 @@ class App extends Component {
 		//this.setState({ datums })
 	}
 
-	async del_datum(id) {
+	del_datum = async (id) => {
 		const datum_to_delete = await this.db_datums
 			.findOne()
 			.where('id')
@@ -376,7 +350,7 @@ class App extends Component {
 		console.log(`datum ${id} deleted`)
 	}
 
-	async del_datums(ids = []) {
+	del_datums = async (ids = []) => {
 		if (!ids.length) {
 			this.setState({
 				datums: [],
@@ -393,7 +367,7 @@ class App extends Component {
 		}
 	}
 
-	del_tag_metadata(datum_id) {
+	del_tag_metadata = (datum_id) => {
 		const datum_to_delete = this.state.datums
 			.filter((d) => d.id === datum_id)
 			.pop()
@@ -425,7 +399,7 @@ class App extends Component {
 		})
 	}
 
-	edit_datum(id) {
+	edit_datum = (id) => {
 		console.log(`editing datum ${id}`)
 		this.setState({
 			stashed_datum: this.state.active_datum,
@@ -433,7 +407,7 @@ class App extends Component {
 		})
 	}
 
-	find_datum(id) {
+	find_datum = (id) => {
 		return this.state.datums.filter((d) => d.id === id).pop()
 	}
 
@@ -457,45 +431,45 @@ class App extends Component {
 		}
 	}
 
-	switchSideMenuTo(menu_name) {
+	switchSideMenuTo = (menu_name) => {
 		this.setState({
 			current_side_menu: menu_name,
 		})
 	}
 
-	switchModalTo(modal_name) {
+	switchModalTo = (modal_name) => {
 		this.setState({ current_modal: modal_name })
 	}
 
-	async importDatums(datums) {
+	importDatums = async (datums) => {
 		await this.del_datums()
 		await this.addDatums(datums)
 		// TODO remove tag data
 	}
 
-	getTagNames() {
+	getTagNames = () => {
 		return this.state.tags.map((t) => t.name)
 	}
 
-	getTagCountFor(tag) {
+	getTagCountFor = (tag) => {
 		return this.state.tags.filter((t) => t.name === tag)[0].instance_times
 			.length
 	}
 
-	getTagLastAddedFor(tag) {
+	getTagLastAddedFor = (tag) => {
 		const tag_metadata = this.state.tags.filter((t) => t.name === tag)[0]
 		return tag_metadata.instance_times[tag_metadata.instance_times.length - 1]
 	}
 
-	renderAboutView() {
+	renderAboutView = () => {
 		return <About />
 	}
 
-	renderSplashView() {
+	renderSplashView = () => {
 		return <Splash switchViewTo={this.switchViewTo} on_login={this.load_db} />
 	}
 
-	renderDatumListView() {
+	renderDatumListView = () => {
 		const tag_colors = {}
 		this.state.tags.forEach((t) => {
 			tag_colors[t.name] = t.color
@@ -525,7 +499,7 @@ class App extends Component {
 		)
 	}
 
-	renderTodosView() {
+	renderTodosView = () => {
 		return (
 			<Todos
 				todoItems={this.state.datums.filter((d) => d.hasTag('todo'))}
@@ -538,7 +512,7 @@ class App extends Component {
 		)
 	}
 
-	renderHabitsView() {
+	renderHabitsView = () => {
 		return (
 			<Habits
 				habits={this.state.datums.filter(
@@ -552,7 +526,7 @@ class App extends Component {
 		)
 	}
 
-	renderTimelineView() {
+	renderTimelineView = () => {
 		return (
 			<Timeline
 				items={this.state.datums.filter(
@@ -564,7 +538,7 @@ class App extends Component {
 		)
 	}
 
-	renderStatsView() {
+	renderStatsView = () => {
 		return (
 			<Stats
 				tags={this.state.tags}
@@ -573,7 +547,7 @@ class App extends Component {
 		)
 	}
 
-	render() {
+	render = () => {
 		const CurrentView = {
 			splash: this.renderSplashView,
 			datum_list: this.renderDatumListView,
